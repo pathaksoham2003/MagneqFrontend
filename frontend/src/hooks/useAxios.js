@@ -1,6 +1,6 @@
 import axiosInstance from '../api/axiosInstance';
 import {useNavigate} from 'react-router-dom';
-
+import axios from 'axios';
 /**
  * Custom hook to get the configured Axios instance.
  * @returns {import('axios').AxiosInstance} The configured Axios instance.
@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    return response;
+    return response.data;
   },
   (error) => {
     if (error.response && error.response.status === 403) {
