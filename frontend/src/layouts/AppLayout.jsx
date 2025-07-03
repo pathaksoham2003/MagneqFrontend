@@ -1,12 +1,13 @@
-import { SidebarProvider } from "../context/SidebarContext";
-import { useSidebar } from "../hooks/useSidebar";
-import { Outlet } from "react-router";
+import {SidebarProvider} from "../context/SidebarContext";
+import {useSidebar} from "../hooks/useSidebar";
+import {Outlet} from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
+import {useEffect} from "react";
 
 const LayoutContent = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const {isExpanded, isHovered, isMobileOpen} = useSidebar();
 
   return (
     <div className="min-h-screen xl:flex bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -21,7 +22,6 @@ const LayoutContent = () => {
       >
         <AppHeader />
         <div className="p-8">
-
           <Outlet />
         </div>
       </div>
@@ -30,6 +30,11 @@ const LayoutContent = () => {
 };
 
 const AppLayout = () => {
+  
+  useEffect(() => {
+
+  }, []);
+
   return (
     <SidebarProvider>
       <LayoutContent />

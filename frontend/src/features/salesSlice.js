@@ -1,20 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice } from '@reduxjs/toolkit'
 
-// Async thunk to fetch sales orders
-export const fetchSalesOrders = createAsyncThunk(
-  'sales/fetchSalesOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get('/api/sales-orders') // Replace with your actual endpoint
-      return res.data
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message)
-    }
-  }
-)
-
-// Dummy fallback data
 const dummyData = [
   {
     id: 'SO-001',
@@ -75,7 +60,8 @@ const dummyData = [
     ratio: '50:50',
     quantity: 60,
     status: 'Cancelled',
-  },{
+  },
+  {
     id: 'SO-007',
     createdAt: '2024-11-05',
     customerName: 'Acme Corp',
@@ -110,36 +96,18 @@ const dummyData = [
 const salesSlice = createSlice({
   name: 'sales',
   initialState: {
-    data: [],
-    status: 'idle',
+    data: dummyData,
+    status: 'succeeded',
     error: null,
   },
   reducers: {
-    // this is reset the slice after logout
-      resetSales: (state) => {
-    state.data = [];
-    state.status = 'idle';
-    state.error = null;
-  }
-
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchSalesOrders.pending, (state) => {
-        state.status = 'loading'
-      })
-      .addCase(fetchSalesOrders.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.data = 
-        Array.isArray(action.payload) && action.payload.length
-          ? action.payload:dummyData
-           
-      })
-      .addCase(fetchSalesOrders.rejected, (state) => {
-        state.status = 'failed' 
-        state.data = dummyData
-      })
+    resetSales: (state) => {
+      state.data = dummyData
+      state.status = 'succeeded'
+      state.error = null
+    },
   },
 })
 
+export const { resetSales } = salesSlice.actions
 export default salesSlice.reducer

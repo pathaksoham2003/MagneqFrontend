@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSalesOrders } from '../../features/salesSlice';
 import {
   Table,
   TableBody,
@@ -14,10 +13,7 @@ const SalesTable = () => {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.sales);
 
-  useEffect(() => {
-      dispatch(fetchSalesOrders());
-  }, [dispatch]);
-
+ 
   const getStatusColor = (statusText) => {
     if (!statusText) return 'light';
     const lower = statusText.toLowerCase();

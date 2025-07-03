@@ -1,7 +1,19 @@
-import React from 'react'
+import axios from "axios";
+import { APIS } from "../api/apiUrls";
 
 const useAuth = () => {
-  return {}
-}
+  const register = (data) => {
+    return axios.post(APIS.register, data);
+  };
 
-export default useAuth
+  const login = (data) => {
+    return axios.post(APIS.login, data);
+  };
+
+  return {
+    register,
+    login,
+  };
+};
+
+export default useAuth;

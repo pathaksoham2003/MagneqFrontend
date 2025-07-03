@@ -10,6 +10,10 @@ import Sales from "./pages/Sales";
 import Stores from "./pages/Stores";
 import Purchase from "./pages/Purchase";
 import Production from "./pages/Production";
+import Ledger from "./pages/Ledger";
+import Quality from "./pages/Quality";
+import Email from "./pages/Email";
+import Chat from "./pages/Chat";
 
 function App() {
   return (
@@ -18,12 +22,16 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/create-order" element={<CreateOrder />} />
-          <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/create_order" element={<CreateOrder />} />
+          <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
-          <Route path="/stores" element={<Stores />} />
+          <Route path="/store" element={<Stores />} />
           <Route path="/purchase" element={<Purchase />} />
           <Route path="/production" element={<Production />} />
+          <Route path="/ledger" element={<Ledger />} />
+          <Route path="/quality" element={<Quality />} />
+          <Route path="/email" element={<Email />} />
+          <Route path="/chat" element={<Chat />} />
         </Route>
       </Routes>
     </div>

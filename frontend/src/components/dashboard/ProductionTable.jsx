@@ -1,44 +1,43 @@
-import React, {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../common/Table";
-import Badge from "../common/Badge";
+} from '../common/Table';
+import Badge from '../common/Badge';
 
-const TrackSalesTable = () => {
+const ProductionTable = () => {
   const dispatch = useDispatch();
-  const {data, status} = useSelector((state) => state.sales);
+  const { data } = useSelector((state) => state.production);
+
 
   const getStatusColor = (statusText) => {
-    if (!statusText) return "light";
+    if (!statusText) return 'light';
     const lower = statusText.toLowerCase();
-    if (lower.includes("dispatched") || lower.includes("approved"))
-      return "success";
-    if (lower.includes("in process") || lower.includes("pending"))
-      return "warning";
-    if (lower.includes("fg") || lower.includes("cancelled")) return "info";
-    return "primary";
+    if (lower.includes('approved') || lower.includes('active')) return 'success';
+    if (lower.includes('pending')) return 'warning';
+    if (lower.includes('cancel') || lower.includes('rejected')) return 'error';
+    return 'primary';
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/[0.05] transition-colors">
+    <div className="rounded-xl border border-gray-200 dark:border-white/[0.05] bg-background transition-colors">
       <div className="max-w-full max-h-[500px] overflow-x-auto overflow-y-auto">
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
               {[
-                "Order ID",
-                "Date of Creation",
-                "Customer Name",
-                "Model",
-                "Type",
-                "Ratio",
-                "Qty",
-                "Status",
+                'Order ID',
+                'Date of Creation',
+                'Customer Name',
+                'Model',
+                'Type',
+                'Ratio',
+                'Qty',
+                'Status',
               ].map((col) => (
                 <TableCell
                   key={col}
@@ -55,29 +54,29 @@ const TrackSalesTable = () => {
             {data.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.id ?? "—"}
+                  {order.id ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.createdAt ?? "—"}
+                  {order.createdAt ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.customerName ?? "—"}
+                  {order.customerName ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.model ?? "—"}
+                  {order.model ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.type ?? "—"}
+                  {order.type ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.ratio ?? "—"}
+                  {order.ratio ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.quantity ?? "—"}
+                  {order.quantity ?? '—'}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
                   <Badge size="sm" color={getStatusColor(order.status)}>
-                    {order.status ?? "—"}
+                    {order.status ?? '—'}
                   </Badge>
                 </TableCell>
               </TableRow>
@@ -89,4 +88,4 @@ const TrackSalesTable = () => {
   );
 };
 
-export default TrackSalesTable;
+export default ProductionTable;

@@ -1,33 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router';
-import { Logo} from '../icons';
-import { BsGrid } from "react-icons/bs";
-import { HiOutlineArchiveBox } from "react-icons/hi2";//sales box
-import { PiCubeDuotone } from "react-icons/pi"; //production
-import { CgMenuBoxed } from "react-icons/cg"; //store
-import { TbFileInvoice } from "react-icons/tb"; //purchase
-import { IoChatbubblesOutline } from "react-icons/io5"; //chat
-import { GoMail,GoKebabHorizontal } from "react-icons/go"; //support and horizontal-dots
-import { useSidebar } from '../hooks/useSidebar';
-import {useSelector} from "react-redux"
+import {useCallback, useEffect, useState} from "react";
+import {Link, useLocation, useNavigate} from "react-router";
+import {Logo} from "../icons";
 
-const navItems = [
-  { icon: BsGrid, name: 'Dashboard', path: '/dashboard' },
-  { icon: HiOutlineArchiveBox, name: 'Sales', path: '/sales' },
-  { icon: PiCubeDuotone, name: 'Production', path: '/production' },
-  { icon: CgMenuBoxed, name: 'Stores', path: '/stores' },
-  { icon: TbFileInvoice, name: 'Purchase', path: '/purchase' },
-];
-
-const supportItems = [
-  { icon: IoChatbubblesOutline, name: 'Chat', path: '/support/chat' },
-  { icon: GoMail, name: 'Email', path: '/support/email' },
-];
+import {GoMail, GoKebabHorizontal} from "react-icons/go";
+import {useSidebar} from "../hooks/useSidebar";
+import {useDispatch, useSelector} from "react-redux";
+import {getIcon} from "../utils/asset";
+import {logoutUser} from "../features/authSlice";
 
 const AppSidebar = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-  // const user = useSelector((state) => state.auth.user);
-  const role =  "ADMIN";
+  const {isExpanded, isMobileOpen, isHovered, setIsHovered} = useSidebar();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.route);
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
@@ -36,20 +21,15 @@ const AppSidebar = () => {
     [location.pathname]
   );
 
-  useEffect(() => {
-    let submenuMatched = false;
-    navItems.forEach((nav, index) => {
-      if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (isActive(subItem.path)) {
-            setOpenSubmenu({ type: 'main', index });
-            submenuMatched = true;
-          }
-        });
-      }
-    });
-    if (!submenuMatched) setOpenSubmenu(null);
-  }, [location, isActive]);
+  const buildItems = (keys, prefix = "") =>
+    keys.map((key) => ({
+      name: key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+      path: `${prefix}/${key}`.replace(/\/{2,}/g, "/"), // avoids double slashes
+      icon: getIcon(key),
+    }));
+
+  const navItems = buildItems(user?.sidebar || [], "");
+  const supportItems = buildItems(user?.support || [], "");
 
   const renderMenuItems = (items) => (
     <ul className="flex flex-col gap-3">
@@ -63,17 +43,11 @@ const AppSidebar = () => {
               to={nav.path}
               className={`flex items-center gap-3 px-4 py-2 rounded-md font-medium transition ${
                 active
-                  ? 'bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F] '
-                  : 'text-text hover:hover'
-              } ${!isExpanded && !isHovered ? 'justify-center' : ''}`}
+                  ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F]"
+                  : "text-text hover:hover"
+              } ${!isExpanded && !isHovered ? "justify-center" : ""}`}
             >
-              <Icon
-                className={`w-5 h-5 ${
-                  active
-                    ? 'text-text'
-                    : 'text-text'
-                }`}
-              />
+              <Icon className="w-5 h-5" />
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span>{nav.name}</span>
               )}
@@ -88,25 +62,29 @@ const AppSidebar = () => {
     <aside
       className={`fixed top-0 left-0 h-screen bg-background border-r border-border z-40 transition-all duration-300 px-5 pt-8 ${
         isExpanded || isMobileOpen
-          ? 'w-[290px]'
+          ? "w-[290px]"
           : isHovered
-          ? 'w-[290px]'
-          : 'w-[90px]'
-      } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+          ? "w-[290px]"
+          : "w-[90px]"
+      } ${
+        isMobileOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      
+      {/* Logo */}
       <div
         className={`mb-10 ${
-          !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
+          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         } flex`}
       >
-        <Link to="/" className='flex gap-3'>
-          {(isExpanded || isHovered || isMobileOpen) ? (
+        <Link to="/" className="flex gap-3">
+          {isExpanded || isHovered || isMobileOpen ? (
             <>
-            <Logo/>
-            <div className="font-bold text-3xl text-text font-['Plus_Jakarta_Sans']">Magneq</div>
+              <Logo />
+              <div className="font-bold text-3xl text-text font-['Plus_Jakarta_Sans']">
+                Magneq
+              </div>
             </>
           ) : (
             <Logo />
@@ -114,16 +92,17 @@ const AppSidebar = () => {
         </Link>
       </div>
 
-      {/* Menu */}
-      {}
-      <nav className="mb-8 ">
+      {/* Sidebar */}
+      <nav className="mb-8">
         <h2
-          className={`mb-3  text-xs font-semibold uppercase tracking-widest text-text ${
-            !isExpanded && !isHovered ? 'text-center' : ''
+          className={`mb-3 text-xs font-semibold uppercase tracking-widest text-text ${
+            !isExpanded && !isHovered ? "text-center" : ""
           }`}
         >
-          {(isExpanded || isHovered || isMobileOpen) ? 'Menu' : (
-            <div className='ml-4.5'>
+          {isExpanded || isHovered || isMobileOpen ? (
+            "Menu"
+          ) : (
+            <div className="ml-4.5">
               <GoKebabHorizontal />
             </div>
           )}
@@ -134,12 +113,14 @@ const AppSidebar = () => {
       {/* Support */}
       <nav className="mb-10">
         <h2
-          className={`mb-3 text-xs font-semibold uppercase tracking-widest text-text${
-            !isExpanded && !isHovered ? 'text-center' : ''
+          className={`mb-3 text-xs font-semibold uppercase tracking-widest text-text ${
+            !isExpanded && !isHovered ? "text-center" : ""
           }`}
         >
-          {(isExpanded || isHovered || isMobileOpen) ? 'Support' : (
-            <div className='ml-4.5'>
+          {isExpanded || isHovered || isMobileOpen ? (
+            "Support"
+          ) : (
+            <div className="ml-4.5">
               <GoKebabHorizontal />
             </div>
           )}
@@ -147,10 +128,14 @@ const AppSidebar = () => {
         {renderMenuItems(supportItems)}
       </nav>
 
-      {/* Logout Button */}
+      {/* Logout */}
       <button
+        onClick={() => {
+          dispatch(logoutUser());
+          navigate("/login");
+        }}
         className={`mt-auto mb-6 flex items-center justify-center w-full border rounded-md py-2 text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700 ${
-          isExpanded || isHovered || isMobileOpen ? 'gap-2 px-4' : 'w-10 h-10'
+          isExpanded || isHovered || isMobileOpen ? "gap-2 px-4" : "w-10 h-10"
         }`}
       >
         <svg

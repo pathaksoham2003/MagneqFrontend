@@ -7,18 +7,20 @@ import Button from "../components/buttons/Button";
 import loginBG from "../assets/images/loginPageBGImage.png";
 import Logo from "../assets/images/black logo 1.png";
 import Background from "../assets/images/Rectangle 4209.png";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import useAuth from "../services/useAuth";
+import { useMutation } from "@tanstack/react-query";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    user_name: "",
     password: "",
     role: "ADMIN",
     active: false,
@@ -32,39 +34,34 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await axios.post(`http://${BaseUrl}/api/login`, formData);
-      if (res.data?.token) {
-        dispatch(loginUser(res.data));
-        localStorage.setItem("token",res.data.token)
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      console.log(data.data)
+      if (data.data.token) {
+        dispatch(loginUser(data.data));
+        localStorage.setItem("token", data.data.token);
         navigate("/dashboard");
       } else {
         console.error("Invalid credentials");
       }
-    } catch (err) {
-      console.error("Login failed:", err);
-    }
-    navigate("/dashboard");
+    },
+    onError: (err) => {
+      console.error("Login failed:", err.response?.data || err.message);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate(formData);
   };
 
   return (
     <div className="relative overflow-hidden flex min-h-screen w-full">
-      <img
-        src={loginBG}
-        alt="Login Background"
-        className="absolute h-full w-full object-cover -z-20"
-      />
+      <img src={loginBG} alt="Login Background" className="absolute h-full w-full object-cover -z-20" />
       <div className="flex w-full flex-col lg:flex-row">
-
         <div className="relative lg:w-1/2 flex items-center justify-center px-8 py-12 text-white">
-          <img
-            src={Background}
-            alt="Overlay Texture"
-            className="absolute inset-0 h-fit object-cover  -z-10"
-          />
+          <img src={Background} alt="Overlay Texture" className="absolute inset-0 h-fit object-cover  -z-10" />
           <div className="w-fit pl-4">
             <p className="text-2xl mb-3">Leading Manufacturer of a wide range of</p>
             <h1 className="text-5xl font-extrabold leading-tight">
@@ -74,19 +71,16 @@ const Login = () => {
         </div>
 
         <div className="lg:w-1/2 flex items-center justify-center px-6 py-12">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-md bg-white p-8 rounded-xl shadow-xl space-y-5"
-          >
+          <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-xl shadow-xl space-y-5">
             <img src={Logo} alt="Magneq" className="mx-auto mb-6 max-w-[160px]" />
 
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="user_name">Username</Label>
               <Input
-                id="username"
-                name="username"
+                id="user_name"
+                name="user_name"
                 placeholder="John Doe"
-                value={formData.username}
+                value={formData.user_name}
                 onChange={handleChange}
               />
             </div>
@@ -106,7 +100,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <IoEyeOutline className="h-5 w-5" /> : <IoEyeOffOutline className="h-5 w-5" />}
                 </button>
@@ -115,12 +109,7 @@ const Login = () => {
 
             <div>
               <Label htmlFor="role">Role</Label>
-              <Select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-              >
+              <Select id="role" name="role" value={formData.role} onChange={handleChange}>
                 <option value="ADMIN">Admin</option>
                 <option value="EXECUTIVE">Sales Executive</option>
                 <option value="CUSTOMER">Customer</option>
@@ -128,17 +117,12 @@ const Login = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="active"
-                name="active"
-                checked={formData.active}
-                onChange={handleChange}
-              />
+              <Checkbox id="active" name="active" checked={formData.active} onChange={handleChange} />
               <Label htmlFor="active" className="mb-0 mt-1">Active</Label>
             </div>
 
-            <Button type="submit" size="md" variant="primary" className="w-full">
-              Sign In
+            <Button type="submit" size="md" variant="primary" className="w-full" disabled={mutation.isLoading}>
+              {mutation.isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </div>

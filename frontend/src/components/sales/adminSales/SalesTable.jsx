@@ -1,30 +1,27 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchSalesOrders } from '../../../features/salesSlice';
+import React, {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from '../../common/Table';
-import Badge from '../../common/Badge';
+} from "../../common/Table";
+import Badge from "../../common/Badge";
 
 const SalesTable = () => {
   const dispatch = useDispatch();
-  const { data, status } = useSelector((state) => state.sales);
-
-  useEffect(() => {
-      dispatch(fetchSalesOrders());
-  }, [dispatch]);
+  const {data, status} = useSelector((state) => state.sales);
 
   const getStatusColor = (statusText) => {
-    if (!statusText) return 'light';
+    if (!statusText) return "light";
     const lower = statusText.toLowerCase();
-    if (lower.includes('dispatched') || lower.includes('approved')) return 'success';
-    if (lower.includes('in process')|| lower.includes('pending') ) return 'warning';
-    if (lower.includes('fg')|| lower.includes('cancelled')) return 'info';
-    return 'primary';
+    if (lower.includes("dispatched") || lower.includes("approved"))
+      return "success";
+    if (lower.includes("in process") || lower.includes("pending"))
+      return "warning";
+    if (lower.includes("fg") || lower.includes("cancelled")) return "info";
+    return "primary";
   };
 
   return (
@@ -34,14 +31,14 @@ const SalesTable = () => {
           <TableHeader className="sticky top-0 z-10 bg-background border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
               {[
-                'Order ID',
-                'Date of Creation',
-                'Customer Name',
-                'Model',
-                'Type',
-                'Ratio',
-                'Qty',
-                'Status',
+                "Order ID",
+                "Date of Creation",
+                "Customer Name",
+                "Model",
+                "Type",
+                "Ratio",
+                "Qty",
+                "Status",
               ].map((col) => (
                 <TableCell
                   key={col}
@@ -58,29 +55,29 @@ const SalesTable = () => {
             {data.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.id ?? '—'}
+                  {order.id ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.createdAt ?? '—'}
+                  {order.createdAt ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.customerName ?? '—'}
+                  {order.customerName ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.model ?? '—'}
+                  {order.model ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.type ?? '—'}
+                  {order.type ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.ratio ?? '—'}
+                  {order.ratio ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.quantity ?? '—'}
+                  {order.quantity ?? "—"}
                 </TableCell>
                 <TableCell className="px-5 py-3 text-start text-theme-sm">
                   <Badge size="sm" color={getStatusColor(order.status)}>
-                    {order.status ?? '—'}
+                    {order.status ?? "—"}
                   </Badge>
                 </TableCell>
               </TableRow>
