@@ -18,7 +18,7 @@ const Production = () => {
         variant="primary"
         startIcon={<HiOutlineArchiveBox />}
         onClick={() => {
-          navigate("/create-order");
+          navigate("/create_order");
         }}
       >
         Create Order
@@ -29,7 +29,7 @@ const Production = () => {
         variant="primary"
         startIcon={<PiCubeDuotone />}
         onClick={() => {
-          navigate("/track-order");
+          navigate("/track_order");
         }}
       >
         Track Orders

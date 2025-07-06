@@ -3,6 +3,8 @@ import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import Button from "./components/buttons/Button";
 import ProtectedLayout from "./components/ProtectedLayout";
+import PurchaseOrder from "./components/purchase/PurchaseOrder";
+import CreatePO from "./components/purchase/CreatePO";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import TrackOrder from "./pages/TrackOrder";
@@ -30,8 +32,11 @@ function App() {
           <Route path="/create_order" element={<CreateOrder />} />
           <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
-
-          <Route path="/purchase" element={<Purchase />} />
+          <Route path="/store" element={<Stores />} />
+          <Route element={<Purchase />} >
+            <Route path="/purchase" element={<PurchaseOrder />} />
+            <Route path="/create_po" element={<CreatePO />} />
+          </Route>
           <Route path="/production" element={<Production />} />
           <Route path="/ledger" element={<Ledger />} />
           <Route path="/quality" element={<Quality />} />

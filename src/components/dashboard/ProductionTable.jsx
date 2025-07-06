@@ -1,18 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from '../common/Table';
+import DaynamicTable from '../common/Table';
 import Badge from '../common/Badge';
 
 const ProductionTable = () => {
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.production);
 
+  const headers = [
+    'Order ID',
+    'Date of Creation',
+    'Customer Name',
+    'Model',
+    'Type',
+    'Ratio',
+    'Qty',
+    'Status',
+  ];
 
   const getStatusColor = (statusText) => {
     if (!statusText) return 'light';
@@ -23,68 +27,47 @@ const ProductionTable = () => {
     return 'primary';
   };
 
-  return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/[0.05] bg-background transition-colors">
-      <div className="max-w-full max-h-[500px] overflow-x-auto overflow-y-auto">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background border-b border-gray-100 dark:border-white/[0.05]">
-            <TableRow>
-              {[
-                'Order ID',
-                'Date of Creation',
-                'Customer Name',
-                'Model',
-                'Type',
-                'Ratio',
-                'Qty',
-                'Status',
-              ].map((col) => (
-                <TableCell
-                  key={col}
-                  isHeader
-                  className="px-5 py-3 font-medium text-text text-start text-theme-xs"
-                >
-                  {col}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHeader>
+  const formatCell = (cell, idx) => {
+    if (idx === 1 && typeof cell === 'string' && /^\d{4}-\d{2}-\d{2}T?/.test(cell)) {
+      return new Date(cell).toLocaleDateString();
+    }
 
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {data.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.id ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.createdAt ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.customerName ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.model ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.type ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.ratio ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  {order.quantity ?? '—'}
-                </TableCell>
-                <TableCell className="px-5 py-3 text-start text-theme-sm">
-                  <Badge size="sm" color={getStatusColor(order.status)}>
-                    {order.status ?? '—'}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+    if (idx === 7) {
+      return (
+        <Badge size="sm" color={getStatusColor(cell)}>
+          {cell ?? '—'}
+        </Badge>
+      );
+    }
+
+    return cell ?? '—';
+  };
+
+  const tableData = {
+    item: data.map((order) => ({
+      id: order.id,
+      data: [
+        order.id,
+        order.createdAt,
+        order.customerName,
+        order.model,
+        order.type,
+        order.ratio,
+        order.quantity,
+        order.status,
+      ],
+    })),
+    page_no: 1,
+    total_pages: 1,
+    total_items: data.length,
+  };
+
+  return (
+    <DaynamicTable
+      header={headers}
+      tableData={tableData}
+      formatCell={formatCell}
+    />
   );
 };
 

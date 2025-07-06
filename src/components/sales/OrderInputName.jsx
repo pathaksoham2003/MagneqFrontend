@@ -4,9 +4,10 @@ import Label from "../forms/Label";
 import { useSelector } from "react-redux";
 
 const OrderNameInput = ({ repName, setRepName, customerName, setCustomerName }) => {
-//   const user = useSelector((state) => state.auth.user);
-  const role = "ADMN";
-
+  const user = useSelector((state) => state.auth.route);
+  // console.log(user);
+  const role = user?.role || "default";
+  // console.log(role);
   return role === "ADMIN" ? (
     <div className="space-y-2">
       <Label htmlFor="customerName" className="text-xl font-medium">Customer Name</Label>
