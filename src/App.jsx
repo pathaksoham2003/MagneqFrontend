@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import Button from "./components/buttons/Button";
@@ -20,20 +20,22 @@ import Store from "./pages/Store/Index";
 import StoreList from "./pages/Store/StoreList";
 import AddStock from "./pages/Store/AddStock";
 import ClassDetail from "./pages/Store/ClassDetail";
-import StoreCard from "./pages/Store/StoreCard";
+import StoreCard from "./pages/Store/StoreHeader";
+import Stores from "./pages/Stores";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 
 function App() {
   return (
     <div className="App">
+      <ReactQueryDevtools initialIsOpen={false} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/create_order" element={<CreateOrder />} />
           <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
-          <Route path="/store" element={<Stores />} />
-          <Route element={<Purchase />} >
+          <Route element={<Purchase />}>
             <Route path="/purchase" element={<PurchaseOrder />} />
             <Route path="/create_po" element={<CreatePO />} />
           </Route>
@@ -42,11 +44,10 @@ function App() {
           <Route path="/quality" element={<Quality />} />
           <Route path="/email" element={<Email />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/store" element={<Store />}>
-            <Route path="storecard" element={<StoreCard />}>
-              <Route index element={<StoreList />} />
-              <Route path="class-detail" element={<ClassDetail />} />
-            </Route>
+          <Route path="/store" element={<Stores />} />
+          <Route path="/stores" element={<Store />}>
+            <Route path="class/:classType" element={<StoreList />} />
+            <Route path="class/:classType/:id" element={<ClassDetail />} />
             <Route path="add" element={<AddStock />} />
           </Route>
         </Route>

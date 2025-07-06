@@ -1,16 +1,13 @@
-import {HiOutlineArchiveBox} from "react-icons/hi2";
-import SearchBar from "../../components/common/Searchbar";
+import React, { useState } from "react";
 import Button from "../../components/buttons/Button";
-import {Outlet, useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import SearchBar from "../../components/common/Searchbar";
+import { HiOutlineArchiveBox } from "react-icons/hi2";
+import StoreHeader from "./StoreHeader";
+import RawItemList from "./RawItemList";
 
-const Store = () => {
-  const navigate = useNavigate();
+const Stores = () => {
+  const [activeClass, setActiveClass] = useState("A");
 
-  useEffect(() => {
-    navigate("/store/class/A");
-  }, []);
-  
   return (
     <div
       className="min-h-screen"
@@ -19,7 +16,7 @@ const Store = () => {
         color: "rgba(var(--text))",
       }}
     >
-      <div className="flex flex-row  gap-4 md:gap-6 bg-transparent mx-auto">
+      <div className="flex flex-row gap-4 md:gap-6 bg-transparent mx-auto">
         <div className="w-72">
           <SearchBar placeholder="Search using Name" />
         </div>
@@ -32,15 +29,6 @@ const Store = () => {
         >
           Add Stock
         </Button>
-        {/* <Button
-          type="button"
-          size="md"
-          variant="primary"
-          startIcon={<HiOutlineArchiveBox />}
-          className="min-w-[160px] shadow-theme-xs"
-        >
-          Edit Stock
-        </Button> */}
         <Button
           type="button"
           size="md"
@@ -52,9 +40,14 @@ const Store = () => {
         </Button>
       </div>
 
-      <Outlet />
+      <StoreHeader
+        activeClass={activeClass}
+        onClassChange={(cls) => setActiveClass(cls)}
+      />
+
+      <RawItemList classType={activeClass} />
     </div>
   );
 };
 
-export default Store;
+export default Stores;

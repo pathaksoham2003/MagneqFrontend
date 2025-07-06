@@ -1,113 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit'
-
-const dummyData = [
-  {
-    id: 'SO-001',
-    createdAt: '2024-11-05',
-    customerName: 'Acme Corp',
-    model: 'X100',
-    type: 'Retail',
-    ratio: '60:40',
-    quantity: 120,
-    status: 'Approved',
-  },
-  {
-    id: 'SO-002',
-    createdAt: '2024-11-06',
-    customerName: 'Globex Ltd',
-    model: 'Z200',
-    type: 'Wholesale',
-    ratio: '70:30',
-    quantity: 85,
-    status: 'Pending',
-  },
-  {
-    id: 'SO-003',
-    createdAt: '2024-11-07',
-    customerName: 'Initech',
-    model: 'M300',
-    type: 'Retail',
-    ratio: '50:50',
-    quantity: 60,
-    status: 'Cancelled',
-  },
-  {
-    id: 'SO-004',
-    createdAt: '2024-11-05',
-    customerName: 'Acme Corp',
-    model: 'X100',
-    type: 'Retail',
-    ratio: '60:40',
-    quantity: 120,
-    status: 'Approved',
-  },
-  {
-    id: 'SO-005',
-    createdAt: '2024-11-06',
-    customerName: 'Globex Ltd',
-    model: 'Z200',
-    type: 'Wholesale',
-    ratio: '70:30',
-    quantity: 85,
-    status: 'Pending',
-  },
-  {
-    id: 'SO-006',
-    createdAt: '2024-11-07',
-    customerName: 'Initech',
-    model: 'M300',
-    type: 'Retail',
-    ratio: '50:50',
-    quantity: 60,
-    status: 'Cancelled',
-  },
-  {
-    id: 'SO-007',
-    createdAt: '2024-11-05',
-    customerName: 'Acme Corp',
-    model: 'X100',
-    type: 'Retail',
-    ratio: '60:40',
-    quantity: 120,
-    status: 'Approved',
-  },
-  {
-    id: 'SO-008',
-    createdAt: '2024-11-06',
-    customerName: 'Globex Ltd',
-    model: 'Z200',
-    type: 'Wholesale',
-    ratio: '70:30',
-    quantity: 85,
-    status: 'Pending',
-  },
-  {
-    id: 'SO-009',
-    createdAt: '2024-11-07',
-    customerName: 'Initech',
-    model: 'M300',
-    type: 'Retail',
-    ratio: '50:50',
-    quantity: 60,
-    status: 'Cancelled',
-  },
-]
+import {createSlice} from "@reduxjs/toolkit";
 
 const salesSlice = createSlice({
-  name: 'sales',
+  name: "sales",
   initialState: {
-    data: dummyData,
-    status: 'succeeded',
-    error: null,
+    data: [],       // sales list
+    header: [],     // table header
+    totalPages: 1,  // pagination
   },
   reducers: {
+    setSales: (state, action) => {
+      state.data = action.payload.item;
+      state.header = action.payload.header;
+      state.totalPages = action.payload.total_pages;
+    },
     resetSales: (state) => {
-      state.data = dummyData
-      state.status = 'succeeded'
-      state.error = null
+      state.data = [];
+      state.header = [];
+      state.totalPages = 1;
     },
   },
-})
+});
 
-export const { resetSales } = salesSlice.actions
-export default salesSlice.reducer
+export const {setSales, resetSales} = salesSlice.actions;
+export default salesSlice.reducer;

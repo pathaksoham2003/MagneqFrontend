@@ -1,5 +1,5 @@
 import useAxios from "../hooks/useAxios";
-import { APIS } from "../api/apiUrls";
+import {APIS} from "../api/apiUrls";
 
 const useSales = () => {
   const api = useAxios();
@@ -8,8 +8,8 @@ const useSales = () => {
     return api.post(`${APIS.sales}`, data);
   };
 
-  const getAllSales = () => {
-    return api.get(`${APIS.sales}`);
+  const getAllSales = async (page,search) => {
+    return await api.get(`${APIS.sales}?page_no=${page}&search=${search}`);
   };
 
   const getSaleById = (id) => {
@@ -18,6 +18,10 @@ const useSales = () => {
 
   const updateSale = (id, data) => {
     return api.put(`${APIS.sales}/${id}`, data);
+  };
+
+  const approaveSale = (id) => {
+    return api.patch(`${APIS.sales}/${id}/approve`);
   };
 
   const deleteSale = (id) => {
@@ -30,6 +34,7 @@ const useSales = () => {
     getSaleById,
     updateSale,
     deleteSale,
+    approaveSale,
   };
 };
 

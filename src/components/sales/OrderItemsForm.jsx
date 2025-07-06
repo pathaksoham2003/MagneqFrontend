@@ -1,195 +1,248 @@
-import React from "react";
-import {Table, TableBody, TableCell, TableHeader, TableRow } from "../table/Table";
+import React, {useEffect, useState} from "react";
 import Select from "../forms/Select";
 import Input from "../forms/Input";
-import Button from '../buttons/Button';
-import Badge from '../common/Badge';
-import Label from '../forms/Label';
-import { LuPencil } from "react-icons/lu";
-
+import Badge from "../common/Badge";
+import Label from "../forms/Label";
+import {useQuery} from "@tanstack/react-query";
+import axios from "axios";
+import useFinishedGoods from "../../services/useFinishedGoods";
+import DaynamicTable from "../common/Table";
+import {LuTrash} from "react-icons/lu";
 
 const OrderItemsForm = ({
   items,
   setItems,
-  model, setModel,
-  type, setType,
-  ratio, setRatio,
-  quantity, setQuantity,
-  description, setDescription,
-  editingId, setEditingId,
-  editedItem, setEditedItem
+  model,
+  setModel,
+  type,
+  setType,
+  ratio,
+  setRatio,
+  quantity,
+  setQuantity,
+  power,
+  setPower,
+  ratePerUnit,
+  setRatePerUnit,
 }) => {
+  const {getModalConfig} = useFinishedGoods();
+  const {
+    data: modelConfig,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["modalConfig"],
+    queryFn: async () => {
+      const data = await getModalConfig();
+      Object.keys(data).forEach((modelKey) => {
+        data[modelKey].powers = data[modelKey].powers.map(Number);
+        const ratios = data[modelKey].ratios;
+        const normalizedRatios = {};
+        Object.keys(ratios).forEach((powerKey) => {
+          normalizedRatios[powerKey.toString()] = ratios[powerKey];
+        });
+        data[modelKey].ratios = normalizedRatios;
+      });
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const [availablePowers, setAvailablePowers] = useState([]);
+  const [availableRatios, setAvailableRatios] = useState([]);
+
+  useEffect(() => {
+    if (model && modelConfig?.[model]) {
+      setAvailablePowers(modelConfig[model].powers);
+    } else {
+      setAvailablePowers([]);
+    }
+    setPower("");
+    setRatio("");
+  }, [model, modelConfig, setPower, setRatio]);
+
+  useEffect(() => {
+    if (
+      model &&
+      power &&
+      modelConfig?.[model]?.ratios &&
+      modelConfig[model].ratios[power.toString()]
+    ) {
+      setAvailableRatios(modelConfig[model].ratios[power.toString()]);
+    } else {
+      setAvailableRatios([]);
+    }
+    setRatio("");
+  }, [power, model, modelConfig, setRatio]);
+
   const handleAddItem = () => {
-    if (!model || !type || !ratio || !quantity) {
+    if (!model || !type || !ratio || !quantity || !power || !ratePerUnit) {
       alert("Please fill all fields before adding item.");
       return;
     }
 
-    const newItem = { id: Date.now(), model, type, ratio, quantity };
-    setItems(prev => [...prev, newItem]);
+    const newItem = {
+      id: Date.now(),
+      model,
+      type,
+      ratio,
+      quantity: parseFloat(quantity),
+      power: parseFloat(power),
+      rate_per_unit: parseFloat(ratePerUnit),
+    };
 
-    setModel('');
-    setType('');
-    setRatio('');
-    setQuantity('');
-    setDescription('');
+    setItems((prev) => [...prev, newItem]);
+
+    setModel("");
+    setType("");
+    setRatio("");
+    setQuantity("");
+    setPower("");
+    setRatePerUnit("");
   };
+
+  if (isLoading) return <p>Loading form config...</p>;
+  if (isError) return <p>Error loading form config</p>;
 
   return (
     <>
-      <div className="grid grid-cols-5 gap-4 items-center mt-8">
+      <div className="grid grid-cols-6 gap-4 items-center mt-8">
         <div>
-          <Label htmlFor="model" className="text-base font-medium">Model</Label>
-          <Select name="model" value={model} onChange={(e) => setModel(e.target.value)} className="border-0 border-gray-600">
+          <Label htmlFor="model">Model</Label>
+          <Select
+            name="model"
+            value={model}
+            onChange={(e) => {
+              setModel(e.target.value);
+              setPower("");
+              setRatio("");
+            }}
+          >
             <option value="">Select Model</option>
-            <option value="MA-102">MA-102</option>
-            <option value="MA-128">MA-128</option>
-            <option value="MA-142">MA-142</option>
-            <option value="MA-160">MA-160</option>
-            <option value="MA-162">MA-162</option>
+            {Object.keys(modelConfig || {}).map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="type" className="text-base font-medium">Type</Label>
-          <Select name="type" value={type} onChange={(e) => setType(e.target.value)} className="border-0 border-gray-600">
-            <option value="">Select Type</option>
-            <option value="Falange">Falange</option>
-            <option value="Foot">Foot</option>
+          <Label htmlFor="power">Power</Label>
+          <Select
+            name="power"
+            value={power}
+            onChange={(e) => {
+              setPower(e.target.value);
+              setRatio("");
+            }}
+            disabled={!availablePowers.length}
+          >
+            <option value="">Select Power</option>
+            {availablePowers.map((p) => (
+              <option key={p} value={p.toString()}>
+                {p}
+              </option>
+            ))}
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="ratio" className="text-base font-medium">Ratio</Label>
-          <Select name="ratio" value={ratio} onChange={(e) => setRatio(e.target.value)} className="border-0 border-gray-600">
+          <Label htmlFor="ratio">Ratio</Label>
+          <Select
+            name="ratio"
+            value={ratio}
+            onChange={(e) => setRatio(e.target.value)}
+            disabled={!availableRatios.length}
+          >
             <option value="">Select Ratio</option>
-            <option value="Rate 1">Rate 1</option>
-            <option value="Rate 2">Rate 2</option>
+            {availableRatios.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </Select>
         </div>
 
-        <div >
-          <Label htmlFor="quantity" className="text-base font-medium">Quantity</Label>
+        <div>
+          <Label htmlFor="type">Type</Label>
+          <Select
+            name="type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          >
+            <option value="">Select Type</option>
+            <option value="B">Base</option>
+            <option value="V">Vertical</option>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor="quantity">Quantity</Label>
           <Input
             name="quantity"
-            placeholder="Enter quantity"
-            type="text"
+            type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="border-0 border-gray-600"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="rate_per_unit">Rate / Unit</Label>
+          <Input
+            name="rate_per_unit"
+            type="number"
+            value={ratePerUnit}
+            onChange={(e) => setRatePerUnit(e.target.value)}
           />
         </div>
       </div>
 
       <div className="pt-6">
-        <Badge variant="light" color="primary" size="sm" className="cursor hover:opacity-90 transition">
-          <button type="button" onClick={handleAddItem}>+ Add Item</button>
+        <Badge variant="light" color="primary" size="sm">
+          <button type="button" onClick={handleAddItem}>
+            + Add Item
+          </button>
         </Badge>
-      </div>
-        <div className="mt-5 p-2">
-            <Label htmlFor="description" className="text-base font-medium ">Description</Label>
-            <Input
-                name="description"
-                placeholder="Enter description"
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="border-0 border-gray-600"
-            />
       </div>
 
       {items.length > 0 && (
-        <div className="rounded-xl border border-gray-200 dark:border-white/[0.05] bg-background mt-6 transition-colors">
-          <div className="max-w-full overflow-x-auto">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background border-b border-gray-100 dark:border-white/[0.05]">
-                <TableRow>
-                  {['Model', 'Type', 'Ratio', 'Quantity', 'Actions'].map((col) => (
-                    <TableCell key={col} isHeader className="px-5 py-3 font-medium text-text text-start text-theme-xs">
-                      {col}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHeader>
-
-              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {items.map((item) => (
-                  <TableRow key={item.id}>
-                    {editingId === item.id ? (
-                      <>
-                        <TableCell className="px-5 py-3">
-                          <Select value={editedItem.model} onChange={(e) => setEditedItem(prev => ({ ...prev, model: e.target.value }))}>
-                            <option value="">Select Model</option>
-                            <option value="MA-102">MA-102</option>
-                            <option value="MA-128">MA-128</option>
-                            <option value="MA-142">MA-142</option>
-                            <option value="MA-160">MA-160</option>
-                            <option value="MA-162">MA-162</option>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="px-5 py-3">
-                          <Select value={editedItem.type} onChange={(e) => setEditedItem(prev => ({ ...prev, type: e.target.value }))}>
-                            <option value="">Select Type</option>
-                            <option value="Falange">Falange</option>
-                            <option value="Foot">Foot</option>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="px-5 py-3">
-                          <Select value={editedItem.ratio} onChange={(e) => setEditedItem(prev => ({ ...prev, ratio: e.target.value }))}>
-                            <option value="">Select Ratio</option>
-                            <option value="Rate 1">Rate 1</option>
-                            <option value="Rate 2">Rate 2</option>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="px-5 py-3">
-                          <Input value={editedItem.quantity} onChange={(e) => setEditedItem(prev => ({ ...prev, quantity: e.target.value }))} />
-                        </TableCell>
-                        <TableCell className="px-5 py-3 flex gap-2">
-                            <Badge color="success">
-                          <Button
-                            size="sm"
-                            variant="success"
-                            onClick={() => {
-                                setItems(prev => prev.map(i => (i.id === item.id ? { ...item, ...editedItem } : i)));
-                                setEditingId(null);
-                                setEditedItem({});
-                            }}
-                            >Save</Button>
-                            </Badge>
-                            <Badge color="error">
-
-                          <Button
-                            size="sm"
-                            variant="error"
-                            onClick={() => {
-                                setEditingId(null);
-                                setEditedItem({});
-                            }}
-                            >Cancel</Button>
-                            </Badge>
-                        </TableCell>
-                      </>
-                    ) : (
-                      <>
-                        <TableCell className="px-5 py-3">{item.model}</TableCell>
-                        <TableCell className="px-5 py-3">{item.type}</TableCell>
-                        <TableCell className="px-5 py-3">{item.ratio}</TableCell>
-                        <TableCell className="px-5 py-3">{item.quantity}</TableCell>
-                        <TableCell className="px-5 py-3">
-                          <Badge color="primary">
-                            <button className="text-blue-400 bg-none flex gap-2" onClick={() => {
-                              setEditingId(item.id);
-                              setEditedItem(item);
-                            }}> <LuPencil className="p-0.5 mt-0.5"/>Edit</button>
-                          </Badge>
-                        </TableCell>
-                      </>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+        <div className="mt-6">
+          <DaynamicTable
+            header={[
+              "Model",
+              "Power",
+              "Ratio",
+              "Type",
+              "Quantity",
+              "Rate",
+              "Actions",
+            ]}
+            tableData={{
+              item: items.map((item) => ({
+                id: item.id,
+                data: [
+                  item.model,
+                  item.power,
+                  item.ratio,
+                  item.type,
+                  item.quantity,
+                  item.rate_per_unit,
+                  <Badge color="primary" key={item.id}>
+                    <button
+                      className="text-red-400 flex gap-2"
+                      onClick={() =>
+                        setItems((prev) => prev.filter((i) => i.id !== item.id))
+                      }
+                    >
+                      <LuTrash className="p-0.5 mt-0.5" />
+                      Delete
+                    </button>
+                  </Badge>,
+                ],
+              })),
+            }}
+          />
         </div>
       )}
     </>

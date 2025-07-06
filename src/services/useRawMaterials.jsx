@@ -1,5 +1,5 @@
 import useAxios from "../hooks/useAxios";
-import { APIS } from "../api/apiUrls";
+import {APIS} from "../api/apiUrls";
 
 const useRawMaterials = () => {
   const api = useAxios();
@@ -36,6 +36,15 @@ const useRawMaterials = () => {
     });
   };
 
+  const getRawMaterialsByClass = (
+    class_type,
+    {page = 1, limit = 10, search = ""} = {}
+  ) => {
+    return api.get(`${APIS.raw_material}/${class_type}`, {
+      params: {page, limit, search},
+    });
+  };
+
   return {
     getAllRawMaterials,
     getRawMaterialById,
@@ -43,6 +52,7 @@ const useRawMaterials = () => {
     updateRawMaterial,
     deleteRawMaterial,
     getFilteredRawMaterials,
+    getRawMaterialsByClass,
   };
 };
 

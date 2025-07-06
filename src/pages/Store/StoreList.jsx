@@ -1,163 +1,104 @@
-import React from 'react'
-import { Table, TableHeader, TableBody, TableRow, TableCell } from "../../components/common/Table";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import StoreHeader from "./StoreHeader";
+import DaynamicTable from "../../components/common/Table"; // adjust import as needed
 
 const StoreList = () => {
-  const stockData = [
-    {
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },{
-      name: "abc",
-      vendor: "Mohan Kumar",
-      date: "22/6/2025",
-      quantity: 100,
-      size: 100,
-      status: "in stock",
-    },
+  const { classType = "A" } = useParams();
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    header: [],
+    item: [],
+    page_no: 1,
+    total_pages: 1,
+    total_items: 0,
+  });
 
-  ];
+  // Dummy data per class type
+  const mockData = {
+    A: {
+      header: ["Class", "Other Specification", "Quantity", "Casting Product"],
+      item: [
+        {
+          id: "686a263c4b1d65f3d8c83bbc",
+          data: ["A", "", "0", "UNFLATTEN"],
+        },
+        {
+          id: "686a263c4b1d65f3d8c83bbd",
+          data: ["A", "", "0", "FLATTEN"],
+        },
+        {
+          id: "686a263c4b1d65f3d8c83bbe",
+          data: ["A", "", "0", "FLATTEN"],
+        },
+      ],
+      page_no: 1,
+      total_pages: 1,
+      total_items: 3,
+    },
+    B: {
+      header: ["Class", "Product", "Quantity", "Status"],
+      item: [
+        {
+          id: "b1",
+          data: ["B", "Transformer", "40", "IN_STOCK"],
+        },
+        {
+          id: "b2",
+          data: ["B", "Switchgear", "25", "OUT_OF_STOCK"],
+        },
+      ],
+      page_no: 1,
+      total_pages: 1,
+      total_items: 2,
+    },
+    C: {
+      header: ["Class", "Other Specification", "Quantity", "Select Items", "Expiry Date"],
+      item: [
+        {
+          id: "c1",
+          data: ["C", "Special use", "12", ["type-A", "type-B"], "2025-09-01"],
+        },
+      ],
+      page_no: 1,
+      total_pages: 1,
+      total_items: 1,
+    },
+  };
+
+  useEffect(() => {
+    // Simulate data fetch based on classType
+    setData(mockData[classType] || mockData.A);
+  }, [classType]);
 
   return (
     <div>
-            <div className="mt-8 rounded-xl shadow-sm w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6"
-        style={{
-          background: "rgba(var(--background))",
-          color: "rgba(var(--text))",
-          borderColor: "rgba(var(--border))",
-        }}
-      >
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader>
-              <TableRow>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Name</TableCell>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Vendor name</TableCell>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Date of Purchasing</TableCell>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Quantity</TableCell>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Size</TableCell>
-                <TableCell isHeader className="px-6 py-3 text-left font-semibold"
-                  style={{ color: "rgba(var(--text))" }}>Status</TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {stockData.map((row, idx) => (
-                <TableRow key={idx} className="border-t" style={{ borderColor: "rgba(var(--border))" }}>
-                  <TableCell className="px-6 py-4">{row.name}</TableCell>
-                  <TableCell className="px-6 py-4">{row.vendor}</TableCell>
-                  <TableCell className="px-6 py-4">{row.date}</TableCell>
-                  <TableCell className="px-6 py-4">{row.quantity}</TableCell>
-                  <TableCell className="px-6 py-4">{row.size}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <span className="text-green-600 bg-green-50 rounded px-2 py-1 text-xs font-medium"
-                      style={{ color: "#15803d", background: "#dcfce7" }}>
-                      {row.status}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="flex flex-wrap justify-center mt-6 gap-1">
-          <nav className="inline-flex items-center space-x-1">
-            <button className="px-3 py-1 text-gray-400 bg-transparent rounded cursor-not-allowed flex items-center" disabled>
-              &larr; Previous
-            </button>
-            <button className="px-3 py-1 rounded bg-blue-600 text-white font-semibold">1</button>
-            <button className="px-3 py-1 rounded text-[rgba(var(--text))] hover:bg-[rgba(var(--hover))]">2</button>
-            <button className="px-3 py-1 rounded text-[rgba(var(--text))] hover:bg-[rgba(var(--hover))]">3</button>
-            <span className="px-2 py-1 text-gray-400">...</span>
-            <button className="px-3 py-1 rounded text-[rgba(var(--text))] hover:bg-[rgba(var(--hover))]">67</button>
-            <button className="px-3 py-1 rounded text-[rgba(var(--text))] hover:bg-[rgba(var(--hover))]">68</button>
-            <button className="px-3 py-1 text-[rgba(var(--text))] bg-transparent rounded flex items-center hover:bg-[rgba(var(--hover))]">
-              Next &rarr;
-            </button>
-          </nav>
-        </div>
+      <StoreHeader />
+      <div className="mt-8 px-2 sm:px-4 md:px-6 lg:px-8">
+        <DaynamicTable
+          header={data.header}
+          tableData={data}
+          formatCell={(cell, idx, id) => {
+            if (Array.isArray(cell)) {
+              return (
+                <div className="flex flex-wrap gap-2">
+                  {cell.map((entry, i) => (
+                    <div
+                      key={i}
+                      className="bg-background text-text text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap"
+                    >
+                      {entry}
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            return cell;
+          }}
+        />
       </div>
-
-
     </div>
-  )
-}
+  );
+};
 
-export default StoreList
+export default StoreList;

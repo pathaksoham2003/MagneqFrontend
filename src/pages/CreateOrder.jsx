@@ -1,17 +1,15 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, {useState} from "react";
+import {useSelector} from "react-redux";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import OrderNameInput from "../components/sales/OrderInputName";
 import OrderItemsForm from "../components/sales/OrderItemsForm";
 import Button from "../components/buttons/Button";
-import useAxios from "../hooks/useAxios"; // your axios instance with interceptors
-import useSales from "../services/useSales"
+import useSales from "../services/useSales";
 
 const CreateOrder = () => {
   const user = useSelector((state) => state.auth.user);
   const role = user?.role || "ADMIN";
   const {createSale} = useSales();
-  const api = useAxios();
   const queryClient = useQueryClient();
 
   const [repName, setRepName] = useState("");
@@ -22,11 +20,12 @@ const CreateOrder = () => {
   const [type, setType] = useState("");
   const [ratio, setRatio] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [power, setPower] = useState("");
+  const [ratePerUnit, setRatePerUnit] = useState("");
 
   const [editingId, setEditingId] = useState(null);
   const [editedItem, setEditedItem] = useState({});
 
-  // Mutation for creating an order
   const {
     mutate: createOrder,
     isPending,
@@ -34,9 +33,9 @@ const CreateOrder = () => {
     isError,
     error,
   } = useMutation({
-    mutationFn: (orderPayload) => crea(orderPayload),
+    mutationFn: (orderPayload) => createSale(orderPayload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] }); // optional, for refetching
+      queryClient.invalidateQueries({queryKey: ["orders"]});
       alert("Order submitted successfully!");
       resetForm();
     },
@@ -61,11 +60,19 @@ const CreateOrder = () => {
     }
 
     const payload = {
-      orderDate: new Date().toISOString(),
-      createdBy: null, // Assuming you’ll use `user._id` or similar later
-      executiveName: role === "ADMIN" ? "Pratik Agrawal" : repName,
-      customerName,
-      items,
+      customer_name: customerName,
+      magneq_user: repName || user?.name || "",
+      description,
+      delivery_date: new Date().toISOString().split("T")[0],
+      created_by: user?._id || null,
+      finished_goods: items.map((item) => ({
+        model: item.model,
+        type: item.type,
+        ratio: item.ratio,
+        power: item.power,
+        quantity: item.quantity,
+        rate_per_unit: item.rate_per_unit,
+      })),
     };
 
     createOrder(payload);
@@ -94,13 +101,26 @@ const CreateOrder = () => {
           setRatio={setRatio}
           quantity={quantity}
           setQuantity={setQuantity}
-          description={description}
-          setDescription={setDescription}
+          power={power}
+          setPower={setPower}
+          ratePerUnit={ratePerUnit}
+          setRatePerUnit={setRatePerUnit}
           editingId={editingId}
           setEditingId={setEditingId}
           editedItem={editedItem}
           setEditedItem={setEditedItem}
         />
+
+        <div className="mt-4">
+          <label className="block mb-1 font-medium">Order Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 border rounded bg-white text-black"
+            placeholder="Enter any additional order details..."
+            rows={3}
+          />
+        </div>
 
         <div className="mt-6">
           <Button
@@ -116,9 +136,13 @@ const CreateOrder = () => {
       </form>
 
       {isError && (
-        <p className="text-red-600 mt-4">Error: {error?.response?.data?.message || error.message}</p>
+        <p className="text-red-600 mt-4">
+          Error: {error?.response?.data?.message || error.message}
+        </p>
       )}
-      {isSuccess && <p className="text-green-600 mt-4">Order submitted successfully!</p>}
+      {isSuccess && (
+        <p className="text-green-600 mt-4">Order submitted successfully!</p>
+      )}
     </div>
   );
 };

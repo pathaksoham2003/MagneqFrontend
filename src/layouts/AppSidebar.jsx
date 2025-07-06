@@ -24,7 +24,8 @@ const AppSidebar = () => {
   const buildItems = (keys, prefix = "") =>
     keys.map((key) => ({
       name: key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-      path: `${prefix}/${key}`.replace(/\/{2,}/g, "/"), // avoids double slashes
+      path:
+        key !== "dashboard" ? `${prefix}/${key}`.replace(/\/{2,}/g, "/") : "/", // avoids double slashes
       icon: getIcon(key),
     }));
 

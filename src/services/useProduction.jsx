@@ -1,11 +1,11 @@
 import useAxios from "../hooks/useAxios";
-import { APIS } from "../api/apiUrls";
+import {APIS} from "../api/apiUrls";
 
 const useProduction = () => {
   const api = useAxios();
 
-  const getPendingProductions = () => {
-    return api.get(`${APIS.production}`);
+  const getPendingProductions = (page, search) => {
+    return api.get(`${APIS.production}?page=${page}&search=${search}`);
   };
 
   const getProductionById = (id) => {

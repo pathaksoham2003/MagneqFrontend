@@ -2,13 +2,10 @@ import React, { useState } from "react";
 import Button from "../../components/buttons/Button";
 import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/common/Table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/table/Table";
 import SuccessModal from "../../components/common/SuccessModal"
 
 const INITIAL_ITEM_LIST = Array.from({ length: 24 }, (_, i) => `Item ${i + 1}`);
-
-
-
 
 const AddStock = () => {
   const [items, setItems] = useState([

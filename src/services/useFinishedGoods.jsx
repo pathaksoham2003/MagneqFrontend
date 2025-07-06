@@ -1,5 +1,5 @@
 import useAxios from "../hooks/useAxios";
-import { APIS } from "../api/apiUrls";
+import {APIS} from "../api/apiUrls";
 
 const useFinishedGoods = () => {
   const api = useAxios();
@@ -10,6 +10,10 @@ const useFinishedGoods = () => {
 
   const getAllFinishedGoods = () => {
     return api.get(`${APIS.finished_goods}`);
+  };
+
+  const getModalConfig = () => {
+    return api.get(`${APIS.finished_goods}/modal_config`);
   };
 
   const getFinishedGoodById = (id) => {
@@ -30,6 +34,7 @@ const useFinishedGoods = () => {
     getFinishedGoodById,
     updateFinishedGood,
     deleteFinishedGood,
+    getModalConfig,
   };
 };
 
