@@ -1,5 +1,5 @@
 import React from "react";
-import {Table, TableBody, TableCell, TableHeader, TableRow } from "../common/Table";
+import {Table, TableBody, TableCell, TableHeader, TableRow } from "../table/Table";
 import Select from "../forms/Select";
 import Input from "../forms/Input";
 import Button from '../buttons/Button';
@@ -89,10 +89,10 @@ const OrderItemsForm = ({
         <div className="mt-5 p-2">
             <Label htmlFor="description" className="text-base font-medium ">Description</Label>
             <Input
-                name="quantity"
+                name="description"
                 placeholder="Enter description"
                 type="text"
-                value={quantity}
+                value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="border-0 border-gray-600"
             />

@@ -9,11 +9,13 @@ import {persistReducer, persistStore} from "redux-persist";
 import authReducer from "../features/authSlice";
 import salesReducer from "../features/salesSlice";
 import productionReducer from "../features/productionSlice";
+import purchaseReducer from "../features/purchaseSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   sales: salesReducer,
   production: productionReducer,
+  purchase: purchaseReducer,
   // Add more slices here
 });
 
