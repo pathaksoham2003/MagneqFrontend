@@ -1,7 +1,7 @@
 import React from 'react';
 import Metrics from '../components/dashboard/Metrics';
-import SalesTable from '../components/dashboard/SalesTable';
 import StatisticsChart from '../components/dashboard/StatisticsChart';
+import SalesTable from '../components/sales/adminSales/SalesTable';
 
 const Home = () => {
   return (

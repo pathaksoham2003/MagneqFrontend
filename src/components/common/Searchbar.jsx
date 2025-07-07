@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiSearch } from "react-icons/ci";
 
-const SearchBar = ({ placeholder }) => {
+const SearchBar = ({ placeholder , className }) => {
   const [query, setQuery] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const SearchBar = ({ placeholder }) => {
   };
 
   return (
-    <div className="flex flex-col gap-1 ">
+    <div className={`flex flex-col gap-1 ${className}`}>
       <div className="flex items-center border w-normal border-gray-300 rounded-md px-3 py-2 shadow-sm">
         <CiSearch className='mr-2'/>
         <input

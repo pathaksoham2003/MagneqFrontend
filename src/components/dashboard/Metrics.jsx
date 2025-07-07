@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
-import { HiOutlineArchiveBox } from "react-icons/hi2";//sales box
-import { PiCubeDuotone } from "react-icons/pi"; //production
-import { BsBriefcase } from "react-icons/bs";
-import { MdBolt } from "react-icons/md";
-import Card from '../card/Card';
+import React, {useEffect, useState} from "react";
+import {HiOutlineArchiveBox} from "react-icons/hi2"; // Sales box
+import {PiCubeDuotone} from "react-icons/pi"; // Purchase
+import {BsBriefcase} from "react-icons/bs"; // Production orders
+import {MdBolt} from "react-icons/md"; // Finished goods
+import Card from "../card/Card";
+import useDashboard from "../../services/useDashboard";
+import {useQuery} from "@tanstack/react-query";
 
 const Metrics = () => {
   const [metrics, setMetrics] = useState({
@@ -14,24 +14,38 @@ const Metrics = () => {
     po: null,
     fg: null,
   });
-  const [loading, setLoading] = useState(true);
+
+  const {getTopHeader} = useDashboard();
+
+  const {isLoading: loading, data: headerData} = useQuery({
+    queryKey: ["dashboard/top"],
+    queryFn: () => getTopHeader(),
+  });
 
   useEffect(() => {
-    const getMetrics = async () => {
-      try {
-        const res = await axios.get('/api/metrics');
-        setMetrics(res.data);
-      } catch (err) {
-        console.error('Failed to fetch metrics:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!headerData) return;
 
-    getMetrics();
-  }, []);
+    setMetrics({
+      Sales: {
+        amount: `₹ ${parseFloat(headerData.total_sales || 0).toLocaleString()}`,
+        percent: headerData.total_sales_change,
+      },
+      purchase: {
+        amount: `₹ ${parseFloat(headerData.total_purchases || 0).toLocaleString()}`,
+        percent: headerData.total_purchases_change,
+      },
+      po: {
+        quantity: headerData.ongoing_production_orders ?? 0,
+        percent: headerData.production_order_change,
+      },
+      fg: {
+        quantity: headerData.current_fg_inventory ?? 0,
+        percent: null, // optional: no percent available for FG inventory
+      },
+    });
+  }, [headerData]);
 
-  const { Sales, purchase, po, fg } = metrics;
+  const {Sales, purchase, po, fg} = metrics;
 
   if (loading) return null;
 

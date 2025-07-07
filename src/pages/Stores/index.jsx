@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Button from "../../components/buttons/Button";
 import SearchBar from "../../components/common/Searchbar";
-import { HiOutlineArchiveBox } from "react-icons/hi2";
+import {HiOutlineArchiveBox} from "react-icons/hi2";
 import StoreHeader from "./StoreHeader";
 import RawItemList from "./RawItemList";
+import {Outlet, useNavigate} from "react-router-dom";
 
 const Stores = () => {
-  const [activeClass, setActiveClass] = useState("A");
-
+  const navigate = useNavigate();
   return (
     <div
       className="min-h-screen"
@@ -21,6 +21,7 @@ const Stores = () => {
           <SearchBar placeholder="Search using Name" />
         </div>
         <Button
+          onClick={() => navigate("/store/add")}
           type="button"
           size="md"
           variant="primary"
@@ -39,13 +40,7 @@ const Stores = () => {
           Purchase Goods
         </Button>
       </div>
-
-      <StoreHeader
-        activeClass={activeClass}
-        onClassChange={(cls) => setActiveClass(cls)}
-      />
-
-      <RawItemList classType={activeClass} />
+      <Outlet />
     </div>
   );
 };

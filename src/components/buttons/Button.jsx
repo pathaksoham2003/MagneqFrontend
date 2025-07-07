@@ -19,6 +19,7 @@ const Button = ({
   const sizeClasses = {
     sm: "px-1 py-1 text-sm",
     md: "px-1 py-1 text-md",
+    lg: "px-2 py-2 text-md",
   };
 
   const variantClasses = {
@@ -67,7 +68,7 @@ const Button = ({
         </svg>
       ) : (
         <>
-          {startIcon && <span className="flex items-centerp-0">{startIcon}</span>}
+          {startIcon && <span className="flex items-center p-0">{startIcon}</span>}
           {children}
           {endIcon && <span className="flex items-center">{endIcon}</span>}
         </>

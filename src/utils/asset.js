@@ -18,7 +18,7 @@ export const getIcon = (key) => {
     dashboard: HiOutlineSquares2X2,
     production: BsBox,
     purchase: IoDocumentTextOutline,
-    store: FaRegRectangleList,
+    store: HiOutlineArchiveBox,
     chat: IoChatbubblesOutline,
     email: GoMail,
   };

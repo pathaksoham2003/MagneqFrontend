@@ -12,8 +12,8 @@ const TableBody = ({ children, className }) => {
   return <tbody className={className}>{children}</tbody>
 }
 
-const TableRow = ({ children, className }) => {
-  return <tr className={className}>{children}</tr>
+const TableRow = ({ children, className , rowOnClick}) => {
+  return <tr className={className} onClick={() => rowOnClick()}>{children}</tr>
 }
 
 const TableCell = ({ children, isHeader = false, className }) => {

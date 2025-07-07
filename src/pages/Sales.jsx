@@ -39,7 +39,7 @@ const Sales = () => {
         <Metrics />
       </div>
       <div className="col-span-12 ">
-        <SalesTable />
+        <SalesTable isDashboard />
       </div>
     </div>
   );

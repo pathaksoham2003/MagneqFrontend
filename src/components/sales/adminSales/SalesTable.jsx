@@ -6,7 +6,7 @@ import useSales from "../../../services/useSales";
 import Button from "../../buttons/Button";
 import Pagination from "../../common/Pagination";
 
-const SalesTable = () => {
+const SalesTable = ({isDashboard}) => {
   const {getAllSales, approaveSale} = useSales();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -16,6 +16,12 @@ const SalesTable = () => {
     queryFn: () => getAllSales(page, search),
     staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (!isDashboard) return;
+    setPage(0);
+    setSearch("");
+  }, [isDashboard]);
 
   const formatCell = (cell, idx, item_id) => {
     if (
@@ -99,11 +105,13 @@ const SalesTable = () => {
         formatCell={formatCell}
       />
       {/* Remove the hardcoded h2 click */}
-      <Pagination
-        currentPage={page}
-        totalPages={data.total_pages}
-        onPageChange={handlePageChange}
-      />
+      {isDashboard && (
+        <Pagination
+          currentPage={page}
+          totalPages={data.total_pages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

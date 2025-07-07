@@ -11,6 +11,7 @@ const DaynamicTable = ({
   header = [],
   tableData = {item: []},
   formatCell: customFormatCell,
+  onRowClick: customRowClick,
 }) => {
   const {item = []} = tableData;
 
@@ -39,6 +40,9 @@ const DaynamicTable = ({
 
   const formatCell = customFormatCell ?? defaultFormatCell;
 
+  const defaultRowClick = () => {};
+  const onRowClick = customRowClick ?? defaultRowClick;
+
   if (!header.length || !item.length) {
     return <p className="text-center py-4">No data available</p>;
   }
@@ -62,8 +66,13 @@ const DaynamicTable = ({
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {item.map((row) => (
-              <TableRow key={row.id}>
+            {item.map((row, index) => (
+              <TableRow
+                key={row.id}
+                rowOnClick={() =>
+                  onRowClick({item_id: row.id, row_number: index})
+                }
+              >
                 {row.data.map((cell, idx) => (
                   <TableCell
                     key={idx}

@@ -5,12 +5,14 @@ import Badge from "../common/Badge";
 import useProduction from "../../services/useProduction";
 import Button from "../buttons/Button";
 import Pagination from "../common/Pagination";
+import {useNavigate} from "react-router-dom";
 
 const ProductionTable = () => {
   const {getPendingProductions, startProductionById, markAsReady} =
     useProduction();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["pendingProductions", page, search],
@@ -77,6 +79,11 @@ const ProductionTable = () => {
     return cell ?? "—";
   };
 
+  const handleRowClick = (obj) => {
+    console.log(obj);
+    navigate(`/production/${obj.item_id}`);
+  };
+
   if (isLoading)
     return <p className="text-center">Loading production data...</p>;
   if (isError)
@@ -95,6 +102,7 @@ const ProductionTable = () => {
           total_items: data?.total_items,
         }}
         formatCell={formatCell}
+        onRowClick={handleRowClick}
       />
 
       <Pagination
