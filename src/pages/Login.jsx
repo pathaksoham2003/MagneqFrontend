@@ -41,7 +41,7 @@ const Login = () => {
       if (data.data.token) {
         dispatch(loginUser(data.data));
         localStorage.setItem("token", data.data.token);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         console.error("Invalid credentials");
       }

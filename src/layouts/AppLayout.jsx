@@ -1,10 +1,12 @@
 import {SidebarProvider} from "../context/SidebarContext";
 import {useSidebar} from "../hooks/useSidebar";
-import {Outlet} from "react-router";
+import {Outlet, useNavigate} from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
 import {useEffect} from "react";
+import {useSelector} from "react-redux";
+import {selectAuth} from "../features/authSlice";
 
 const LayoutContent = () => {
   const {isExpanded, isHovered, isMobileOpen} = useSidebar();
@@ -30,9 +32,13 @@ const LayoutContent = () => {
 };
 
 const AppLayout = () => {
-  
-  useEffect(() => {
+  const user = useSelector(selectAuth);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!user.token) {
+      navigate("/login");
+    }
   }, []);
 
   return (

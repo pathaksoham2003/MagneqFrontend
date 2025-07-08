@@ -1,31 +1,27 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import {Routes, Route, Navigate, useNavigate} from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
-import Button from "./components/buttons/Button";
-import ProtectedLayout from "./components/ProtectedLayout";
 import PurchaseOrder from "./components/purchase/PurchaseOrder";
 import CreatePO from "./components/purchase/CreatePO";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import TrackOrder from "./pages/TrackOrder";
 import Sales from "./pages/Sales";
-
 import Purchase from "./pages/Purchase";
 import Production from "./pages/Production";
 import Ledger from "./pages/Ledger";
 import Email from "./pages/Email";
 import Chat from "./pages/Chat";
-import Store from "./pages/Store/Index";
-import StoreList from "./pages/Store/StoreList";
 import AddStock from "./pages/Store/AddStock";
-import ClassDetail from "./pages/Store/ClassDetail";
-import StoreCard from "./pages/Store/StoreHeader";
 import Stores from "./pages/Stores";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Quality from "./pages/Quality/index";
 import QualityConcen from "./pages/Quality/QualityConcen";
 import CreateTicket from "./pages/Quality/CreateTicket";
 import QualityCard from "./pages/Quality/QualityCard";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import ProductionDetails from "./pages/Production/ProductionDetails";
+import RawMaterial from "./pages/Stores/RawMaterial";
 
 function App() {
   return (
@@ -42,23 +38,27 @@ function App() {
             <Route path="/purchase" element={<PurchaseOrder />} />
             <Route path="/create_po" element={<CreatePO />} />
           </Route>
+          <Route path="/store" element={<Stores />}>
+            <Route index element={<RawMaterial />} />
+            <Route path="add" element={<AddStock />} />
+          </Route>
           <Route path="/production" element={<Production />} />
+          <Route path="/production/:id" element={<ProductionDetails />} />
           <Route path="/ledger" element={<Ledger />} />
 
           <Route path="/email" element={<Email />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/store" element={<Stores />} />
-          <Route path="/stores" element={<Store />}>
+          {/* <Route path="/stores" element={<Store />}>
             <Route path="class/:classType" element={<StoreList />} />
             <Route path="class/:classType/:id" element={<ClassDetail />} />
             <Route path="add" element={<AddStock />} />
-          </Route>
+            </Route> */}
+
           <Route path="/quality" element={<Quality />}>
             <Route path="quality_concern" element={<QualityConcen />} />
             <Route path="create_ticket" element={<CreateTicket />} />
             <Route path="card" element={<QualityCard />} />
-
-          </Route>
+          </Route>         
         </Route>
       </Routes>
     </div>
