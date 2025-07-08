@@ -1,4 +1,4 @@
-import {Routes, Route, Navigate} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import Button from "./components/buttons/Button";
@@ -13,7 +13,6 @@ import Sales from "./pages/Sales";
 import Purchase from "./pages/Purchase";
 import Production from "./pages/Production";
 import Ledger from "./pages/Ledger";
-import Quality from "./pages/Quality";
 import Email from "./pages/Email";
 import Chat from "./pages/Chat";
 import Store from "./pages/Store/Index";
@@ -22,7 +21,11 @@ import AddStock from "./pages/Store/AddStock";
 import ClassDetail from "./pages/Store/ClassDetail";
 import StoreCard from "./pages/Store/StoreHeader";
 import Stores from "./pages/Stores";
-import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Quality from "./pages/Quality/index";
+import QualityConcen from "./pages/Quality/QualityConcen";
+import CreateTicket from "./pages/Quality/CreateTicket";
+import QualityCard from "./pages/Quality/QualityCard";
 
 function App() {
   return (
@@ -41,7 +44,7 @@ function App() {
           </Route>
           <Route path="/production" element={<Production />} />
           <Route path="/ledger" element={<Ledger />} />
-          <Route path="/quality" element={<Quality />} />
+
           <Route path="/email" element={<Email />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/store" element={<Stores />} />
@@ -49,6 +52,12 @@ function App() {
             <Route path="class/:classType" element={<StoreList />} />
             <Route path="class/:classType/:id" element={<ClassDetail />} />
             <Route path="add" element={<AddStock />} />
+          </Route>
+          <Route path="/quality" element={<Quality />}>
+            <Route path="quality_concern" element={<QualityConcen />} />
+            <Route path="create_ticket" element={<CreateTicket />} />
+            <Route path="card" element={<QualityCard />} />
+
           </Route>
         </Route>
       </Routes>

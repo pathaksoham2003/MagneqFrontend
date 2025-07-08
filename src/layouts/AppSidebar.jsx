@@ -17,7 +17,12 @@ const AppSidebar = () => {
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const isActive = useCallback(
-    (path) => location.pathname === path,
+    (path) => {
+      if (path === "/") {
+        return location.pathname === "/";
+      }
+      return location.pathname === path || location.pathname.startsWith(path + "/");
+    },
     [location.pathname]
   );
 
