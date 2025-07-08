@@ -19,7 +19,6 @@ import Quality from "./pages/Quality/index";
 import QualityConcen from "./pages/Quality/QualityConcen";
 import CreateTicket from "./pages/Quality/CreateTicket";
 import QualityCard from "./pages/Quality/QualityCard";
-import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import ProductionDetails from "./pages/Production/ProductionDetails";
 import RawMaterial from "./pages/Stores/RawMaterial";
 
