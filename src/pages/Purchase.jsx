@@ -29,7 +29,7 @@ const Purchase = () => {
         variant="primary"
         startIcon={<HiOutlineArchiveBox />}
         onClick={() => {
-          navigate("/create_po");
+          navigate("/purchase/create_po");
         }}
       >
         Purchase Goods
@@ -40,7 +40,7 @@ const Purchase = () => {
         variant="primary"
         startIcon={<PiCubeDuotone />}
         onClick={() => {
-          navigate("/track_po");
+          navigate("/purchase/track_po");
         }}
       >
         Track Purchase Goods
@@ -50,11 +50,6 @@ const Purchase = () => {
       </div>
       <div className="col-span-12 ">
         <Outlet />
-        {/* <h1 className="text-3xl ml-2">Purchase Orders</h1>
-            <DaynamicTable
-                header={headers}
-                tableData={data}
-            /> */}
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ const SalesTable = ({isDashboard}) => {
         const lower = statusText.toLowerCase();
         if (lower.includes("dispatched") || lower.includes("approved"))
           return "success";
-        if (lower.includes("in process") || lower.includes("pending"))
+        if (lower.includes("inprocess") || lower.includes("pending"))
           return "warning";
         if (lower.includes("fg") || lower.includes("cancelled")) return "info";
         return "primary";

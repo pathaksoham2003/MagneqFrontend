@@ -3,6 +3,7 @@ import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import PurchaseOrder from "./components/purchase/PurchaseOrder";
 import CreatePO from "./components/purchase/CreatePO";
+import TrackPO from "./components/purchase/TrackPO";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import TrackOrder from "./pages/TrackOrder";
@@ -30,9 +31,10 @@ function App() {
           <Route path="/create_order" element={<CreateOrder />} />
           <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
-          <Route element={<Purchase />}>
-            <Route path="/purchase" element={<PurchaseOrder />} />
-            <Route path="/create_po" element={<CreatePO />} />
+          <Route path="/purchase" element={<Purchase />}>
+            <Route index element={<PurchaseOrder />} />
+            <Route path="create_po" element={<CreatePO />} />
+            <Route path="track_po" element={<TrackPO />} />
           </Route>
           <Route path="/store" element={<Stores />}>
             <Route index element={<RawMaterial />} />
