@@ -10,11 +10,15 @@ import Sales from "./pages/Sales";
 import Purchase from "./pages/Purchase";
 import Production from "./pages/Production";
 import Ledger from "./pages/Ledger";
-import Quality from "./pages/Quality";
 import Email from "./pages/Email";
 import Chat from "./pages/Chat";
 import AddStock from "./pages/Store/AddStock";
 import Stores from "./pages/Stores";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Quality from "./pages/Quality/index";
+import QualityConcen from "./pages/Quality/QualityConcen";
+import CreateTicket from "./pages/Quality/CreateTicket";
+import QualityCard from "./pages/Quality/QualityCard";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import ProductionDetails from "./pages/Production/ProductionDetails";
 import RawMaterial from "./pages/Stores/RawMaterial";
@@ -41,14 +45,20 @@ function App() {
           <Route path="/production" element={<Production />} />
           <Route path="/production/:id" element={<ProductionDetails />} />
           <Route path="/ledger" element={<Ledger />} />
-          <Route path="/quality" element={<Quality />} />
+
           <Route path="/email" element={<Email />} />
           <Route path="/chat" element={<Chat />} />
           {/* <Route path="/stores" element={<Store />}>
             <Route path="class/:classType" element={<StoreList />} />
             <Route path="class/:classType/:id" element={<ClassDetail />} />
             <Route path="add" element={<AddStock />} />
-          </Route> */}
+            </Route> */}
+
+          <Route path="/quality" element={<Quality />}>
+            <Route path="quality_concern" element={<QualityConcen />} />
+            <Route path="create_ticket" element={<CreateTicket />} />
+            <Route path="card" element={<QualityCard />} />
+          </Route>         
         </Route>
       </Routes>
     </div>
