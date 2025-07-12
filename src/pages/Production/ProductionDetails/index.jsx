@@ -70,6 +70,7 @@ const ProductionDetails = () => {
           size="lg"
           type="button"
           startIcon={<HiOutlineArchiveBox size={18} />}
+          onClick={()=>{}}
         >
           Notify To Purchase
         </Button>

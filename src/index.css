@@ -15,17 +15,18 @@ layer(base);
   --background: 255,255,255,1;
   --border: 228, 231, 236, 1;
   --text: 16, 24, 40, 1;
-  --hover: 242, 244, 247, 1
-  --icon-bg: 242, 244, 247, 1;
+  --hover: 242, 244, 247, 1;
+  --icon: 242, 244, 247, 1;
+  --button:70, 95, 255, 1;
 }
 
 .light {
   --background: 255,255,255,1;
   --border: 228, 231, 236, 1;
   --text: 16, 24, 40, 1;
-  --hover: 242, 244, 247, 1
+  --hover: 242, 244, 247, 1;
   --card: 255,255,255,1;
-  --icon-bg: 228, 231, 236, 1;
+  --icon: 228, 231, 236, 1;
 }
 
 .dark {
@@ -34,7 +35,7 @@ layer(base);
   --text: 242, 244, 247, 1;
   --hover: 29, 41, 57, 1;
   --card: 29,41,57,1;
-  --icon-bg: 55, 65, 81, 1;
+  --icon: 55, 65, 81, 1;
 }
 
 @theme {
@@ -42,6 +43,9 @@ layer(base);
   --color-border:rgba(var(--border));
   --color-text: rgba(var(--text));
   --color-hover: rgba(var(--hover));
+  --color-icon-bg:rgba(var(--icon));
+  --color-card:rgba(var(--card));
+  --color-button:rgba(var(--button));
 }
 @custom-variant dark (&:is(.dark *));
 @theme {

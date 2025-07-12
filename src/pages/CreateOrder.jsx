@@ -5,8 +5,10 @@ import OrderNameInput from "../components/sales/OrderInputName";
 import OrderItemsForm from "../components/sales/OrderItemsForm";
 import Button from "../components/buttons/Button";
 import useSales from "../services/useSales";
+import { useNavigate } from "react-router-dom";
 
 const CreateOrder = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const role = user?.role || "ADMIN";
   const {createSale} = useSales();
@@ -35,9 +37,10 @@ const CreateOrder = () => {
   } = useMutation({
     mutationFn: (orderPayload) => createSale(orderPayload),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["orders"]});
+      queryClient.invalidateQueries({queryKey: ["sales"]});
       alert("Order submitted successfully!");
       resetForm();
+      navigate("/sales");
     },
     onError: (err) => {
       console.error("Order creation failed:", err);

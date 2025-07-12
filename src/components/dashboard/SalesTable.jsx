@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import DaynamicTable from '../common/Table';
 import Badge from '../common/Badge';
+// this component is not being used anywhere
 
 const SalesTable = () => {
   const dispatch = useDispatch();
