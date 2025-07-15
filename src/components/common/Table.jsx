@@ -69,6 +69,9 @@ const DaynamicTable = ({
             {item.map((row, index) => (
               <TableRow
                 key={row.id}
+                className={customRowClick
+                    ? "hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    : ""}
                 rowOnClick={() =>
                   onRowClick({item_id: row.id, row_number: index})
                 }

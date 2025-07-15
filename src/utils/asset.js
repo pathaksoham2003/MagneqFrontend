@@ -8,6 +8,10 @@ import {HiOutlineSquares2X2} from "react-icons/hi2";
 import {BsBox} from "react-icons/bs";
 import {FaRegRectangleList} from "react-icons/fa6";
 import {IoDocumentTextOutline} from "react-icons/io5";
+import {PiGear} from "react-icons/pi";
+import {FaRegUser} from "react-icons/fa";
+import {BsHouseGear} from "react-icons/bs";
+import {RiSubtractLine} from "react-icons/ri";
 
 export const getIcon = (key) => {
   const iconMap = {
@@ -21,6 +25,12 @@ export const getIcon = (key) => {
     store: HiOutlineArchiveBox,
     chat: IoChatbubblesOutline,
     email: GoMail,
+    class_a: RiSubtractLine,
+    class_b: RiSubtractLine,
+    class_c: RiSubtractLine,
+    raw_material: PiGear,
+    manage_fg: BsHouseGear,
+    manage_users: FaRegUser,
   };
 
   return iconMap[key] || HiOutlineArchiveBox; // default fallback

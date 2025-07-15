@@ -12,4 +12,7 @@ export const APIS = {
   quality: API_URL + "/quality",
   raw_material: API_URL + "/raw_material",
   sales: API_URL + "/sales",
+  manage_user: "/manage/user",
+  manage_finished_good: "/manage/finished_good",
+  manage_raw_material: "/manage/raw_material",
 };

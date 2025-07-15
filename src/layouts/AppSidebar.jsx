@@ -7,6 +7,7 @@ import {useSidebar} from "../hooks/useSidebar";
 import {useDispatch, useSelector} from "react-redux";
 import {getIcon} from "../utils/asset";
 import {logoutUser} from "../features/authSlice";
+import {FaChevronDown} from "react-icons/fa";
 
 const AppSidebar = () => {
   const {isExpanded, isMobileOpen, isHovered, setIsHovered} = useSidebar();
@@ -21,18 +22,48 @@ const AppSidebar = () => {
       if (path === "/") {
         return location.pathname === "/";
       }
-      return location.pathname === path || location.pathname.startsWith(path + "/");
+      return (
+        location.pathname === path || location.pathname.startsWith(path + "/")
+      );
     },
     [location.pathname]
   );
 
   const buildItems = (keys, prefix = "") =>
-    keys.map((key) => ({
-      name: key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-      path:
-        key !== "dashboard" ? `${prefix}/${key}`.replace(/\/{2,}/g, "/") : "/", // avoids double slashes
-      icon: getIcon(key),
-    }));
+    keys
+      .map((item) => {
+        if (typeof item === "string") {
+          return {
+            name: item
+              .replace(/_/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase()),
+            path:
+              item !== "dashboard"
+                ? `${prefix}/${item}`.replace(/\/{2,}/g, "/")
+                : "/",
+            icon: getIcon(item),
+          };
+        } else if (typeof item === "object" && item.route) {
+          const parentName = item.route
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase());
+          const subItems = (item.sub_routes || []).map((sub) => ({
+            name: sub
+              .replace(/_/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase()),
+            path: `/${item.route}/${sub}`,
+            icon: getIcon(sub),
+          }));
+          return {
+            name: parentName,
+            path: `/${item.route}`,
+            icon: getIcon(item.route),
+            subItems,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
 
   const navItems = buildItems(user?.sidebar || [], "");
   const supportItems = buildItems(user?.support || [], "");
@@ -42,24 +73,89 @@ const AppSidebar = () => {
       {items.map((nav) => {
         const Icon = nav.icon;
         const active = isActive(nav.path);
+        const hasSubmenu = Array.isArray(nav.subItems);
+        const isOpen = openSubmenu === nav.name;
 
-        return (
-          <li key={nav.name}>
-            <Link
-              to={nav.path}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md font-medium transition ${
-                active
-                  ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F]"
-                  : "text-text hover:hover"
-              } ${!isExpanded && !isHovered ? "justify-center" : ""}`}
-            >
-              <Icon className="w-5 h-5" />
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span>{nav.name}</span>
+        if (hasSubmenu) {
+          // If it has subItems: render as expandable div
+          return (
+            <li key={nav.name}>
+              <div
+                onClick={() => {
+                  setOpenSubmenu(isOpen ? null : nav.name);
+                }}
+                className={`flex items-center justify-between cursor-pointer px-4 py-2 rounded-md font-medium transition ${
+                  active
+                    ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F]"
+                    : "text-text hover:hover"
+                } ${!isExpanded && !isHovered ? "justify-center" : ""}`}
+              >
+                <div
+                  className={`flex items-center gap-3 ${
+                    !isExpanded && !isHovered ? "justify-center w-full" : ""
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span>{nav.name}</span>
+                  )}
+                </div>
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <FaChevronDown
+                    className={`transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                )}
+              </div>
+
+              {isOpen && (
+                <ul className="ml-8 mt-2 flex flex-col gap-2">
+                  {nav.subItems.map((sub) => {
+                    const SubIcon = sub.icon;
+                    const subActive = isActive(sub.path);
+                    return (
+                      <li key={sub.name}>
+                        <Link
+                          to={sub.path}
+                          className={`flex items-center gap-2 px-2 py-1 rounded-md transition ${
+                            subActive
+                              ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F]"
+                              : "text-text hover:hover"
+                          }`}
+                        >
+                          <SubIcon className="w-4 h-4" />
+                          {(isExpanded || isHovered || isMobileOpen) && (
+                            <span>{sub.name}</span>
+                          )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
-            </Link>
-          </li>
-        );
+            </li>
+          );
+        } else {
+          // If no submenu: render as clickable <Link>
+          return (
+            <li key={nav.name}>
+              <Link
+                to={nav.path}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md font-medium transition ${
+                  active
+                    ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#465FFF1F]"
+                    : "text-text hover:hover"
+                } ${!isExpanded && !isHovered ? "justify-center" : ""}`}
+              >
+                <Icon className="w-5 h-5" />
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <span>{nav.name}</span>
+                )}
+              </Link>
+            </li>
+          );
+        }
       })}
     </ul>
   );
@@ -84,7 +180,7 @@ const AppSidebar = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         } flex`}
       >
-        <Link to="/" className="flex gap-3">
+        <Link to={user.sidebar[0]} className="flex gap-3">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Logo />

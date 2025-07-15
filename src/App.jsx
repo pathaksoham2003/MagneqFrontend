@@ -14,13 +14,20 @@ import Email from "./pages/Email";
 import Chat from "./pages/Chat";
 import AddStock from "./pages/Store/AddStock";
 import Stores from "./pages/Stores";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import Quality from "./pages/Quality/index";
 import QualityConcen from "./pages/Quality/QualityConcen";
 import CreateTicket from "./pages/Quality/CreateTicket";
 import QualityCard from "./pages/Quality/QualityCard";
 import ProductionDetails from "./pages/Production/ProductionDetails";
 import RawMaterial from "./pages/Stores/RawMaterial";
+import FinishedGoods from "./pages/DeveloperPanel/ManageFinishedGood";
+import ManageFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood";
+import ManageRawMaterials from "./pages/DeveloperPanel/ManageRawMaterials";
+import ManageUsers from "./pages/DeveloperPanel/ManageUsers";
+import CreateRawMaterial from "./pages/DeveloperPanel/ManageRawMaterials/CreateRawMaterial";
+import CreateFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/CreateFinishedGood";
+import ViewFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/ViewFinishedGood";
 
 function App() {
   return (
@@ -54,10 +61,23 @@ function App() {
             </Route> */}
 
           <Route path="/quality" element={<Quality />}>
-            <Route path="quality_concern" element={<QualityConcen />} />
+            <Route index element={<QualityConcen />} />
             <Route path="create_ticket" element={<CreateTicket />} />
             <Route path="card" element={<QualityCard />} />
-          </Route>         
+          </Route>
+
+          <Route path="finished_good" element={<ManageFinishedGood />} />
+          <Route path="finished_good/:id" element={<ViewFinishedGood />} />
+          <Route path="finished_good/create" element={<CreateFinishedGood />} />
+          <Route
+            path="raw_material/:class_type"
+            element={<ManageRawMaterials />}
+          />
+          <Route
+            path="raw_material/:class_type/create"
+            element={<CreateRawMaterial />}
+          />
+          <Route path="manage_users" element={<ManageUsers />} />
         </Route>
       </Routes>
     </div>
