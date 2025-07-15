@@ -50,11 +50,6 @@ const Purchase = () => {
       </div>
       <div className="col-span-12 ">
         <Outlet />
-        {/* <h1 className="text-3xl ml-2">Purchase Orders</h1>
-            <DaynamicTable
-                header={headers}
-                tableData={data}
-            /> */}
       </div>
     </div>
   );

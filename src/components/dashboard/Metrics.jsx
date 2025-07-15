@@ -40,7 +40,7 @@ const Metrics = () => {
       },
       fg: {
         quantity: headerData.current_fg_inventory ?? 0,
-        percent: null, // optional: no percent available for FG inventory
+        percent: null, 
       },
     });
   }, [headerData]);

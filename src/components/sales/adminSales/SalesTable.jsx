@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import DaynamicTable from "../../common/Table";
 import Badge from "../../common/Badge";
 import useSales from "../../../services/useSales";
@@ -10,6 +10,7 @@ const SalesTable = ({isDashboard}) => {
   const {getAllSales, approaveSale} = useSales();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const queryClient = useQueryClient();
 
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["sales", page, search],
@@ -55,6 +56,7 @@ const SalesTable = ({isDashboard}) => {
               className="px-2"
               onClick={async () => {
                 await approaveSale(item_id);
+                queryClient.invalidateQueries({queryKey: ["pendingProductions"]});
                 await refetch();
               }}
             >
