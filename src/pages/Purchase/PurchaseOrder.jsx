@@ -1,9 +1,10 @@
 import React, {useState} from "react";
-import DaynamicTable from "../common/Table";
 import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import usePurchase from "../../services/usePurchase";
-import Pagination from "../common/Pagination";
+import PurchaseMetrics from "../../components/purchase/PurchaseMetrix";
+import Pagination from "../../components/common/Pagination";
+import DaynamicTable from "../../components/common/Table";
 
 const PurchaseOrder = () => {
   const headers = [
@@ -30,6 +31,9 @@ const PurchaseOrder = () => {
     );
   return (
     <div>
+      <div className="col-span-12 space-y-4 pb-4">
+        <PurchaseMetrics />
+      </div>
       <h1 className="text-3xl ml-2 mb-3">Purchase Orders</h1>
       <DaynamicTable
         header={headers}

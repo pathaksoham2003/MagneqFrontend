@@ -1,45 +1,29 @@
-import React from 'react'
-import DaynamicTable from '../../components/common/Table'
+import React from "react";
+import {useQuery} from "@tanstack/react-query";
+import {useNavigate} from "react-router-dom";
+import DaynamicTable from "../../components/common/Table";
+import useQuality from "../../services/useQuality";
 
 const tableHeaders = [
-  'Ticket ID',
-  'Vendor name',
-  'Date',
-  'Issue',
-  'Action Taken',
+  "Ticket ID",
+  "Vendor name",
+  "Date",
+  "Issue",
+  "Action Taken",
 ];
-
-const tableData = {
-  item: [
-    { id: 1, data: ['001', 'Mohan Kumar', '22/6/2025', 'Product', 'NO'] },
-    { id: 2, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'NO'] },
-    { id: 3, data: ['001', 'Mohan Kumar', '22/6/2025', '10', 'NO'] },
-    { id: 4, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 5, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'NO'] },
-    { id: 6, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 7, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 8, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 9, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 10, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 11, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 12, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-    { id: 13, data: ['001', 'Mohan Kumar', '22/6/2025', '1000', 'YES'] },
-  ],
-};
 
 const formatCell = (cell, idx) => {
   if (idx === 4) {
-    // Action Taken column
-    const isYes = cell === 'YES';
+    const isYes = cell === "YES";
     return (
       <span
         style={{
-          color: isYes ? '#34C759' : '#FFA500',
-          background: isYes ? 'rgba(52,199,89,0.08)' : 'rgba(255,165,0,0.08)',
-          padding: '2px 12px',
-          borderRadius: '12px',
+          color: isYes ? "#34C759" : "#FFA500",
+          background: isYes ? "rgba(52,199,89,0.08)" : "rgba(255,165,0,0.08)",
+          padding: "2px 12px",
+          borderRadius: "12px",
           fontWeight: 500,
-          fontSize: '14px',
+          fontSize: "14px",
         }}
       >
         {cell}
@@ -50,12 +34,66 @@ const formatCell = (cell, idx) => {
 };
 
 const QualityConcen = () => {
+  const {getAllQualityIssues} = useQuality();
+  const navigate = useNavigate();
+
+  const {data, isLoading, isError} = useQuery({
+    queryKey: ["quality-issues"],
+    queryFn: () => getAllQualityIssues({}),
+  });
+
+  const tableData = {
+    item: Array.isArray(data?.item)
+      ? data.item.map((issue) => {
+          return {
+            id: issue.id,
+            data: [
+              issue.data[0] || issue.ticket_number || issue.id.slice(-5),
+              issue.data[1] || issue.vendor || "—",
+              issue.data[2] || "Invalid Date",
+              issue.data[3] || issue.issue || issue.issue_type || "—",
+              issue.data[4] === "YES" || issue.data[4] === "NO"
+                ? issue.data[4]
+                : issue.action_taken
+                ? "YES"
+                : "NO",
+            ],
+          };
+        })
+      : [],
+  };
+
+  const handleRowClick = ({item_id}) => {
+    navigate(`/quality/${item_id}`);
+  };
+
   return (
-    <div className='mt-4' >
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', color: 'var(--color-text)' }}>Quality Concerns</h2>
-      <DaynamicTable header={tableHeaders} tableData={tableData} formatCell={formatCell} />
+    <div className="mt-4">
+      <h2
+        style={{
+          fontSize: "1.5rem",
+          fontWeight: 700,
+          marginBottom: "2rem",
+          color: "var(--color-text)",
+        }}
+      >
+        Quality Concerns
+      </h2>
+
+      {isLoading ? (
+        <p className="text-center">Loading...</p>
+      ) : isError ? (
+        <p className="text-center text-red-500">Failed to load data</p>
+      ) : (
+        <DaynamicTable
+          header={tableHeaders}
+          tableData={tableData}
+          formatCell={formatCell}
+          onRowClick={handleRowClick}
+        />
+      )}
     </div>
   );
-}
+};
 
-export default QualityConcen
+export default QualityConcen;

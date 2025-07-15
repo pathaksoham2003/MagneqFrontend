@@ -1,13 +1,12 @@
 import {Routes, Route, Navigate, useNavigate} from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
-import PurchaseOrder from "./components/purchase/PurchaseOrder";
-import CreatePO from "./components/purchase/CreatePO";
+import CreatePO from "./pages/Purchase/CreatePO";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import TrackOrder from "./pages/TrackOrder";
 import Sales from "./pages/Sales";
-import Purchase from "./pages/Purchase";
+import Purchase from "./pages/Purchase/index";
 import Production from "./pages/Production";
 import Ledger from "./pages/Ledger";
 import Email from "./pages/Email";
@@ -21,13 +20,13 @@ import CreateTicket from "./pages/Quality/CreateTicket";
 import QualityCard from "./pages/Quality/QualityCard";
 import ProductionDetails from "./pages/Production/ProductionDetails";
 import RawMaterial from "./pages/Stores/RawMaterial";
-import FinishedGoods from "./pages/DeveloperPanel/ManageFinishedGood";
 import ManageFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood";
 import ManageRawMaterials from "./pages/DeveloperPanel/ManageRawMaterials";
 import ManageUsers from "./pages/DeveloperPanel/ManageUsers";
 import CreateRawMaterial from "./pages/DeveloperPanel/ManageRawMaterials/CreateRawMaterial";
 import CreateFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/CreateFinishedGood";
 import ViewFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/ViewFinishedGood";
+import PurchaseOrder from "./pages/Purchase/PurchaseOrder";
 
 function App() {
   return (
@@ -40,9 +39,10 @@ function App() {
           <Route path="/create_order" element={<CreateOrder />} />
           <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
-          <Route element={<Purchase />}>
-            <Route path="/purchase" element={<PurchaseOrder />} />
-            <Route path="/create_po" element={<CreatePO />} />
+          <Route path="/purchase" element={<Purchase />}>
+            <Route index element={<PurchaseOrder />} />
+            <Route path="create" element={<CreatePO />} />
+            <Route path="track" element={<CreatePO />} />
           </Route>
           <Route path="/store" element={<Stores />}>
             <Route index element={<RawMaterial />} />
@@ -63,7 +63,7 @@ function App() {
           <Route path="/quality" element={<Quality />}>
             <Route index element={<QualityConcen />} />
             <Route path="create_ticket" element={<CreateTicket />} />
-            <Route path="card" element={<QualityCard />} />
+            <Route path=":id" element={<QualityCard />} />
           </Route>
 
           <Route path="finished_good" element={<ManageFinishedGood />} />

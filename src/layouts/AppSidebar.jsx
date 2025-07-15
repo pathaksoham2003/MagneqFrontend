@@ -180,7 +180,7 @@ const AppSidebar = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         } flex`}
       >
-        <Link to={user.sidebar[0]} className="flex gap-3">
+        <Link to={user?.sidebar[0]} className="flex gap-3">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Logo />

@@ -1,5 +1,5 @@
 import useAxios from "../hooks/useAxios";
-import { APIS } from "../api/apiUrls";
+import {APIS} from "../api/apiUrls";
 
 const useQuality = () => {
   const api = useAxios();
@@ -12,6 +12,10 @@ const useQuality = () => {
     return api.get(`${APIS.quality}`);
   };
 
+  const getSpecificQualityIssue = (id) => {
+    return api.get(`${APIS.quality}/${id}`);
+  };
+
   const updateQualityIssue = (id, data) => {
     return api.put(`${APIS.quality}/${id}`, data);
   };
@@ -22,6 +26,7 @@ const useQuality = () => {
 
   return {
     createQualityIssue,
+    getSpecificQualityIssue,
     getAllQualityIssues,
     updateQualityIssue,
     deleteQualityIssue,

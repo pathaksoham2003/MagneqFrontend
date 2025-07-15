@@ -7,8 +7,8 @@ import Button from "../components/buttons/Button";
 import loginBG from "../assets/images/loginPageBGImage.png";
 import Logo from "../assets/images/black logo 1.png";
 import Background from "../assets/images/Rectangle 4209.png";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../features/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, selectAuth } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import useAuth from "../services/useAuth";
@@ -34,6 +34,7 @@ const Login = () => {
     }));
   };
 
+  const user = useSelector(selectAuth); 
   const mutation = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
@@ -41,7 +42,7 @@ const Login = () => {
       if (data.data.token) {
         dispatch(loginUser(data.data));
         localStorage.setItem("token", data.data.token);
-        navigate("/");
+        navigate(user?.sidebar[0]);
       } else {
         console.error("Invalid credentials");
       }
