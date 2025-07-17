@@ -27,6 +27,7 @@ import CreateRawMaterial from "./pages/DeveloperPanel/ManageRawMaterials/CreateR
 import CreateFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/CreateFinishedGood";
 import ViewFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/ViewFinishedGood";
 import PurchaseOrder from "./pages/Purchase/PurchaseOrder";
+import PurchaseDetails from "./pages/Purchase/PurchaseDetails";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/purchase" element={<Purchase />}>
             <Route index element={<PurchaseOrder />} />
             <Route path="create" element={<CreatePO />} />
+            <Route path=":id" element={<PurchaseDetails/>} />
             <Route path="track" element={<CreatePO />} />
           </Route>
           <Route path="/store" element={<Stores />}>
