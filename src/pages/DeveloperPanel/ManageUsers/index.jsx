@@ -4,13 +4,13 @@ import useManage from "../../../services/useManage";
 import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import SearchBar from "../../../components/common/Searchbar";
 import DaynamicTable from "../../../components/common/Table";
-import CreateUserModal from "./CreateUserModal";
-
+import CreateUserModal from "./CreateUserPage";
+import {useNavigate} from "react-router-dom";
 const ManageUsers = () => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
-
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const {getUsers, createUser} = useManage();
 
@@ -54,7 +54,9 @@ const ManageUsers = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <Button onClick={() => setIsModalOpen(true)}>Create User</Button>
+        <Button onClick={() => navigate("/manage_users/create")}>
+          Create User
+        </Button>
       </div>
 
       <h2 className="text-xl font-semibold mt-4">Users</h2>
@@ -65,12 +67,6 @@ const ManageUsers = () => {
       )}
 
       <DaynamicTable header={headers} tableData={tableData} />
-
-      <CreateUserModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onUserCreated={onUserCreated}
-      />
     </div>
   );
 };

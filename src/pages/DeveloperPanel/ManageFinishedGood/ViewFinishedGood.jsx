@@ -5,12 +5,17 @@ import useFinishedGoods from "../../../services/useFinishedGoods";
 import useRawMaterials from "../../../services/useRawMaterials";
 import DaynamicTable from "../../../components/common/Table";
 import {useQuery} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import Input from "../../../components/forms/Input";
+import DebouncedSearchInput from '../../../utils/DebouncedSearchInput';
+
+const DEBOUNCE_DELAY = 350;
 
 const ViewFinishedGood = () => {
   const {id} = useParams();
   const {getFinishedGoodById, updateFinishedGood} = useFinishedGoods();
-  const {getFilteredRawMaterials} = useRawMaterials();
+  const {getRawMaterialsByClass} = useRawMaterials();
+  const queryClient = useQueryClient();
 
   const {data, isLoading} = useQuery({
     queryKey: ["finishedGoodById", id],
@@ -25,17 +30,14 @@ const ViewFinishedGood = () => {
     classB: "",
     classC: "",
   });
-  const [searchResults, setSearchResults] = useState({
-    classA: [],
-    classB: [],
-    classC: [],
-  });
+  // searchResults state removed, handled by DebouncedSearchInput
   const [editingData, setEditingData] = useState({
     classA: [],
     classB: [],
     classC: [],
   });
 
+  // Debounced search effect for each class using the custom hook
   useEffect(() => {
     if (data) {
       setFinishedGood(data);
@@ -76,16 +78,22 @@ const ViewFinishedGood = () => {
     }));
   };
 
-  const handleAddRawMaterial = async (classType) => {
-    try {
-      const response = await getFilteredRawMaterials({
-        search: searchTerm[classType],
+  // When focusing a search input, clear other class search terms/results
+  const handleSearchInputFocus = (classType) => {
+    setSearchTerm((prev) => {
+      const cleared = { ...prev };
+      Object.keys(cleared).forEach((key) => {
+        if (key !== classType) cleared[key] = "";
       });
-      setSearchResults((prev) => ({...prev, [classType]: response}));
-    } catch (err) {
-      console.error("Search error", err);
-      setSearchResults((prev) => ({...prev, [classType]: []}));
-    }
+      return cleared;
+    });
+    // setSearchResults((prev) => { // This line is removed as per the edit hint
+    //   const cleared = { ...prev };
+    //   Object.keys(cleared).forEach((key) => {
+    //     if (key !== classType) cleared[key] = [];
+    //   });
+    //   return cleared;
+    // });
   };
 
   const handleSelectSearchItem = (classType, item) => {
@@ -96,12 +104,12 @@ const ViewFinishedGood = () => {
       }));
     }
     setSearchTerm((prev) => ({...prev, [classType]: ""}));
-    setSearchResults((prev) => ({...prev, [classType]: []}));
+    // setSearchResults((prev) => ({...prev, [classType]: []})); // This line is removed as per the edit hint
   };
 
   const handleSave = async () => {
     try {
-      await updateFinishedGood(id, {
+      const payload = {
         classA: editingData.classA.map((item) => ({
           raw_material: item.raw_material._id,
           quantity: item.quantity,
@@ -114,8 +122,13 @@ const ViewFinishedGood = () => {
           raw_material: item.raw_material._id,
           quantity: item.quantity,
         })),
-      });
+      };
+      console.log(payload)
+      const data = await updateFinishedGood(id, payload);
+      console.log(data);
       alert("Finished Good updated successfully");
+      // Invalidate and refetch the finished good details
+      queryClient.invalidateQueries(["finishedGoodById", id]);
       setIsEditing(false);
     } catch (err) {
       console.error(err);
@@ -157,30 +170,40 @@ const ViewFinishedGood = () => {
           </div>
         ))}
 
-        <Input
-          placeholder={`Search Raw Material for Class ${classType}`}
+        <DebouncedSearchInput
           value={searchTerm[classType]}
           onChange={(e) =>
-            setSearchTerm((prev) => ({...prev, [classType]: e.target.value}))
+            setSearchTerm((prev) => ({ ...prev, [classType]: e.target.value }))
           }
+          onFocus={() => handleSearchInputFocus(classType)}
+          placeholder={`Search Raw Material for Class ${classType}`}
+          searchFn={async (term) => {
+            try {
+              const classTypeLetter = classType.replace('class', '').toUpperCase();
+              const params = {
+                page: 1,
+                limit: 100, // get all items for dropdown
+              };
+              if (term) {
+                params.name = term;
+              }
+              const res = await getRawMaterialsByClass(classTypeLetter, params);
+              // Filter out already-selected items for this class
+              const selectedIds = editingData[classType].map(item => item.raw_material._id);
+              return (res.item || [])
+                .map((row) => ({
+                  _id: row.id,
+                  name: row.data[1], // Product Name
+                  type: row.data[2], // Type
+                }))
+                .filter(item => !selectedIds.includes(item._id));
+            } catch {
+              return [];
+            }
+          }}
+          onSelect={(item) => handleSelectSearchItem(classType, item)}
+          renderResultItem={(rm) => `${rm.name} — ${rm.type}`}
         />
-        <Button onClick={() => handleAddRawMaterial(classType)}>
-          Search & Add
-        </Button>
-
-        {searchResults[classType].length > 0 && (
-          <div className="border p-2 mt-2 space-y-1 max-h-48 overflow-y-auto">
-            {searchResults[classType].map((rm) => (
-              <div
-                key={rm._id}
-                className="cursor-pointer hover:bg-gray-100 p-1"
-                onClick={() => handleSelectSearchItem(classType, rm)}
-              >
-                {rm.name} — {rm.type}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ import CreateFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/Create
 import ViewFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/ViewFinishedGood";
 import PurchaseOrder from "./pages/Purchase/PurchaseOrder";
 import PurchaseDetails from "./pages/Purchase/PurchaseDetails";
+import CreateUserPage from "./pages/DeveloperPanel/ManageUsers/CreateUserPage";
 
 function App() {
   return (
@@ -80,6 +81,8 @@ function App() {
             element={<CreateRawMaterial />}
           />
           <Route path="manage_users" element={<ManageUsers />} />
+          
+          <Route path="manage_users/create" element={<CreateUserPage />} />
         </Route>
       </Routes>
     </div>
