@@ -25,12 +25,12 @@ const PurchaseDetails = () => {
     item: (purchase.items || []).map((item, idx) => ({
       id: `item-${idx + 1}`,
       data: [
+        item.class || "-",
         item.name || "-",
         item.type || "-",
-        purchase.class_type || "-",
         item.quantity || "-",
-        Number(item.price_per_unit || 0).toFixed(2),
-        `₹${Number((item.quantity || 0) * (item.price_per_unit || 0)).toFixed(2)}`
+        Number(item.price_per_unit?.$numberDecimal || 0).toFixed(2),
+        `₹${Number((item.quantity || 0) * (item.price_per_unit?.$numberDecimal || 0)).toFixed(2)}`
       ],
     })),
   };
@@ -43,27 +43,27 @@ const PurchaseDetails = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
-          <p className="font-medium">PO Number:</p>
+          <p className="font-semibold">PO Number:</p>
           <p>{purchase.po_number || "-"}</p>
         </div>
         <div>
-          <p className="font-medium">Vendor Name:</p>
+          <p className="font-semibold">Vendor Name:</p>
           <p>{purchase.vendor_name || "-"}</p>
         </div>
         <div>
-          <p className="font-medium">Purchase Date:</p>
+          <p className="font-semibold">Purchase Date:</p>
           <p>{new Date(purchase.purchasing_date).toLocaleDateString()}</p>
         </div>
         <div>
-          <p className="font-medium">Status:</p>
+          <p className="font-semibold">Status:</p>
           <p className="capitalize">{purchase.status || "-"}</p>
         </div>
         <div>
-          <p className="font-medium">Total Price:</p>
-          <p>₹ {Number(purchase.total_price || 0).toFixed(2)}</p>
+          <p className="font-semibold">Total Price:</p>
+          <p>₹ {Number(purchase.total_price?.$numberDecimal || 0).toFixed(2)}</p>
         </div>
         <div>
-          <p className="font-medium">Created At:</p>
+          <p className="font-semibold">Created At:</p>
           <p>{new Date(purchase.created_at).toLocaleString()}</p>
         </div>
       </div>
@@ -71,13 +71,13 @@ const PurchaseDetails = () => {
       <div>
         <h3 className="text-xl font-semibold mb-3">Raw Material Items</h3>
         {tableData.item.length === 0 ? (
-          <p className="text-gray-500">No items found in this PO.</p>
+          <p className="text-text">No items found in this PO.</p>
         ) : (
           <DaynamicTable
             header={[
+              "Class",
               "Raw Material Name",
               "Type",
-              "Class",
               "Quantity",
               "Price/Unit",
               "Subtotal"
