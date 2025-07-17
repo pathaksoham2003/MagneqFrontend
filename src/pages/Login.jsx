@@ -42,7 +42,7 @@ const Login = () => {
       if (data.data.token) {
         dispatch(loginUser(data.data));
         localStorage.setItem("token", data.data.token);
-        navigate(user?.sidebar[0]);
+        navigate("/"+data?.data?.route.sidebar[0]);
       } else {
         console.error("Invalid credentials");
       }
