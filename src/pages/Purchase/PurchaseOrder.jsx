@@ -5,6 +5,7 @@ import usePurchase from "../../services/usePurchase";
 import PurchaseMetrics from "../../components/purchase/PurchaseMetrix";
 import Pagination from "../../components/common/Pagination";
 import DaynamicTable from "../../components/common/Table";
+import { useNavigate } from "react-router-dom";
 
 const PurchaseOrder = () => {
   const headers = [
@@ -17,12 +18,17 @@ const PurchaseOrder = () => {
   const {getAllPurchaseOrders} = usePurchase();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
   //   const data = useSelector((state) => state.purchase);
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["Purchases", page, search],
     queryFn: () => getAllPurchaseOrders(page, search),
     staleTime: 5 * 60 * 1000,
   });
+  const handleRowClick = (obj) => {
+    console.log(obj);
+    navigate(`/purchase/${obj.item_id}`);
+  };
   if (isLoading)
     return <p className="text-center">Loading production data...</p>;
   if (isError)
@@ -43,6 +49,7 @@ const PurchaseOrder = () => {
           total_pages: data?.total_pages,
           total_items: data?.total_items,
         }}
+        onRowClick={handleRowClick}
       />
       <Pagination
         currentPage={page}

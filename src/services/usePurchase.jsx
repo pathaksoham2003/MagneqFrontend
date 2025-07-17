@@ -25,12 +25,17 @@ const usePurchase = () => {
     return api.patch(`${APIS.purchase_order}/add_stock`, data);
   };
 
+  const getPurchaseById = (po_id) =>{
+    return api.get(`${APIS.purchase_order}/${po_id}`);
+  };
+
   return {
     createPurchaseOrder,
     getAllPurchaseOrders,
     updatePurchaseOrder,
     getPurchaseOrderItems,
     addStockToPurchaseOrder,
+    getPurchaseById,
   };
 };
 
