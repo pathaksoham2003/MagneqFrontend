@@ -1,22 +1,24 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/buttons/Button";
-import {BsFileEarmarkArrowUp} from "react-icons/bs";
+import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import SuccessModal from "../../components/common/SuccessModal";
 import useRawMaterials from "../../services/useRawMaterials";
 import usePurchase from "../../services/usePurchase";
 import POTable from "./POTable";
-
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 const CreatePO = () => {
-  const {getRawMaterialFilterConfig, getFilteredRawMaterials} =
-    useRawMaterials();
-  const {createPurchaseOrder} = usePurchase();
-
+  const navigate = useNavigate();
+  const { getRawMaterialFilterConfig, getFilteredRawMaterials } = useRawMaterials();
+  const { createPurchaseOrder } = usePurchase();
+  const queryClient = useQueryClient();
   const [classType, setClassType] = useState("A");
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [typeOptions, setTypeOptions] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
   const [nameOptions, setNameOptions] = useState([]);
-  const [rawMaterialOptions, setRawMaterialOptions] = useState([]); 
+  const [rawMaterialOptions, setRawMaterialOptions] = useState([]);
   const [selectedRawMaterialId, setSelectedRawMaterialId] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState("");
@@ -28,12 +30,34 @@ const CreatePO = () => {
   const [filterConfig, setFilterConfig] = useState(null);
   const modalTimeoutRef = useRef(null);
 
+  const {
+        mutate: createPO,
+        isPending,
+        isSuccess,
+        isError,
+      } = useMutation({
+        mutationFn: (order)=> createPurchaseOrder(order),
+        onSuccess: () =>{
+          queryClient.invalidateQueries({queryKey:["Purchases"]});
+          setShowModal(true);
+          setTableItems([]);
+          setVendorName("");
+          setPurchaseDate("");
+          if (modalTimeoutRef.current) clearTimeout(modalTimeoutRef.current);
+          modalTimeoutRef.current = setTimeout(() => setShowModal(false), 4000);
+        },
+        onError:(err)=>{
+          console.error("Order creation failed:", err);
+          alert("Failed to create order. Please try again.");
+        },
+      });
   useEffect(() => {
     const fetchConfig = async () => {
       const res = await getRawMaterialFilterConfig();
       setFilterConfig(res?.data || res);
     };
     fetchConfig();
+
     return () => {
       if (modalTimeoutRef.current) clearTimeout(modalTimeoutRef.current);
     };
@@ -44,7 +68,10 @@ const CreatePO = () => {
     setName("");
     setRawMaterialOptions([]);
     setSelectedRawMaterialId("");
+    setSelectedTypes([]);
+
     if (!filterConfig) return;
+
     if (classType === "A") {
       setTypeOptions(filterConfig.A.types || []);
       setNameOptions(filterConfig.A.names || []);
@@ -59,7 +86,7 @@ const CreatePO = () => {
 
   useEffect(() => {
     if (classType === "B" && type) {
-      getFilteredRawMaterials({class_type: "B", type}).then((res) => {
+      getFilteredRawMaterials({ class_type: "B", type }).then((res) => {
         const names = (res?.data || res)?.map((rm) => rm.name).filter(Boolean);
         setNameOptions(names);
       });
@@ -70,123 +97,172 @@ const CreatePO = () => {
     }
   }, [classType, type]);
 
-  // For C: fetch types when name changes
   useEffect(() => {
     if (classType === "C" && name) {
-      getFilteredRawMaterials({class_type: "C", name}).then((res) => {
-        // Get all types, filter out falsy, deduplicate
-        const types = Array.from(
-          new Set((res?.data || res).map((rm) => rm.type).filter(Boolean))
-        );
+      getFilteredRawMaterials({ class_type: "C", name }).then((res) => {
+        const types = Array.from(new Set((res?.data || res).map((rm) => rm.type).filter(Boolean)));
         setTypeOptions(types);
-        setType(""); // Reset type when name changes
+        setSelectedTypes([]); // Reset selected types
       });
     }
     if (classType === "C" && !name) {
       setTypeOptions([]);
-      setType("");
+      setSelectedTypes([]);
     }
   }, [classType, name]);
 
-  // Fetch raw material options for final selection (by class, type, name)
   useEffect(() => {
-    let filters = {class_type: classType};
-    if (classType === "A") {
-      if (type) filters.type = type;
-      if (name) filters.name = name;
-    } else if (classType === "B") {
-      if (type) filters.type = type;
-      if (name) filters.name = name;
-    } else if (classType === "C") {
-      if (name) filters.name = name;
-      if (type) filters.type = type;
-    }
-    // Only fetch if enough info is selected
-    if (
-      (classType === "A" && type && name) ||
-      (classType === "B" && type && name) ||
-      (classType === "C" && name && type)
-    ) {
-      getFilteredRawMaterials(filters).then((res) => {
-        setRawMaterialOptions(res?.data || res);
-        setSelectedRawMaterialId((res?.data || res)?.[0]?._id || "");
-      });
-    } else {
-      setRawMaterialOptions([]);
-      setSelectedRawMaterialId("");
-    }
-  }, [classType, type, name]);
+    const fetchMaterials = async () => {
+      if (classType === "A" && type && name) {
+        const res = await getFilteredRawMaterials({ class_type: "A", type, name });
+        const data = res?.data || res;
+        setRawMaterialOptions(data);
+        setSelectedRawMaterialId(data?.[0]?._id || "");
+      } else if (classType === "B" && type && name) {
+        const res = await getFilteredRawMaterials({ class_type: "B", type, name });
+        const data = res?.data || res;
+        setRawMaterialOptions(data);
+        setSelectedRawMaterialId(data?.[0]?._id || "");
+      } else if (classType === "C" && name && selectedTypes.length > 0) {
+        try {
+          const allResults = await Promise.all(
+            selectedTypes.map((typeVal) =>
+              getFilteredRawMaterials({ class_type: "C", name, type: typeVal })
+            )
+          );
+          const merged = allResults.flat().map((res) => res?.data || res).flat();
+          const unique = Array.from(new Map(merged.map((m) => [m._id, m])).values());
 
-  // Add item to PO table
-  const handleAddItem = () => {
-    setError("");
-    if (!selectedRawMaterialId || !quantity || !price) {
-      setError("Please select a material, quantity, and price.");
+          setRawMaterialOptions(unique);
+          setSelectedRawMaterialId(unique?.[0]?._id || "");
+        } catch (err) {
+          console.error("Failed to fetch materials for selected types", err);
+        }
+      } else {
+        setRawMaterialOptions([]);
+        setSelectedRawMaterialId("");
+      }
+    };
+
+    fetchMaterials();
+  }, [classType, type, name, selectedTypes]);
+
+  const handleTypeToggle = (typeValue) => {
+    setSelectedTypes((prev) =>
+      prev.includes(typeValue)
+        ? prev.filter((t) => t !== typeValue)
+        : [...prev, typeValue]
+    );
+  };
+
+  const handleAddItem = async () => {
+  setError("");
+
+  if (classType === "C") {
+    if (!name || selectedTypes.length === 0) {
+      setError("Please select a name and at least one type.");
       return;
     }
-    const material = rawMaterialOptions.find(
-      (m) => m._id === selectedRawMaterialId
-    );
-    console.log(
-      "Selected material:",
-      material,
-      "All options:",
-      rawMaterialOptions,
-      "Selected ID:",
-      selectedRawMaterialId
-    );
-    if (!material) return;
-    setTableItems((prev) => [
-      ...prev,
-      {
+
+    try {
+      const allMaterials = [];
+
+      for (const type of selectedTypes) {
+        const res = await getFilteredRawMaterials({
+          class_type: "C",
+          name,
+          type,
+        });
+
+        const data = res?.data || res;
+        allMaterials.push(...data);
+      }
+
+      if (allMaterials.length === 0) {
+        setError("No materials found for the selected types.");
+        return;
+      }
+
+      const newItems = allMaterials.map((material) => ({
         raw_material_id: material._id,
         name: material.name,
         class_type: material.class_type,
         type: material.type,
-        quantity: Number(quantity),
-        price_per_unit: Number(price),
+        quantity: 1, 
+        price_per_unit: Number(price), 
         rawMaterial: material,
-      },
-    ]);
-    setSelectedRawMaterialId(rawMaterialOptions[0]?._id || "");
-    setQuantity(1);
-    setPrice("");
-  };
+      }));
 
-  // Remove item from PO table
+      setTableItems((prev) => [...prev, ...newItems]);
+      setSelectedRawMaterialId("");
+      setQuantity(1);
+      setPrice("");
+    } catch (err) {
+      console.error("Error fetching raw materials for Class C:", err);
+      setError("Failed to fetch materials. Please try again.");
+    }
+    return;
+  }
+  if (!selectedRawMaterialId || !quantity || !price) {
+    setError("Please select a material, quantity, and price.");
+    return;
+  }
+
+  const material = rawMaterialOptions.find(
+    (m) => String(m._id) === String(selectedRawMaterialId)
+  );
+
+  if (!material) {
+    setError("Selected material not found in options.");
+    return;
+  }
+
+  setTableItems((prev) => [
+    ...prev,
+    {
+      raw_material_id: material._id,
+      name: material.name,
+      class_type: material.class_type,
+      type: material.type,
+      quantity: Number(quantity),
+      price_per_unit: Number(price),
+      rawMaterial: material,
+    },
+  ]);
+
+  setSelectedRawMaterialId("");
+  setQuantity(1);
+  setPrice("");
+};
+
+
   const handleDelete = (idx) => {
     setTableItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  // Submit PO
   const handleCreatePO = async () => {
     setError("");
+
     if (!vendorName || !purchaseDate) {
       setError("Vendor name and purchase date are required.");
       return;
     }
+
     if (tableItems.length === 0) {
       setError("No items to create PO.");
       return;
     }
+
     try {
-      await createPurchaseOrder({
+      const payload = {
         vendor_name: vendorName,
         purchasing_date: purchaseDate,
-        items: tableItems.map(
-          ({raw_material_id, quantity, price_per_unit}) => ({
-            raw_material_id,
-            quantity,
-            price_per_unit,
-          })
-        ),
-      });
-      setShowModal(true);
-      setTableItems([]);
-      setVendorName("");
-      setPurchaseDate("");
-      if (modalTimeoutRef.current) clearTimeout(modalTimeoutRef.current);
-      modalTimeoutRef.current = setTimeout(() => setShowModal(false), 4000);
+        items: tableItems.map(({ raw_material_id, quantity, price_per_unit }) => ({
+          raw_material_id,
+          quantity,
+          price_per_unit, 
+        }))};
+        createPO(payload);
     } catch {
       setError("Failed to create PO. Please try again.");
     }
@@ -203,15 +279,16 @@ const CreatePO = () => {
             variant="primary"
             startIcon={<BsFileEarmarkArrowUp />}
             className="shadow-theme-xs px-3"
+            disabled
           >
             Upload CSV
           </Button>
         </div>
+
+        {/* Vendor Info */}
         <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Vendor Name
-            </label>
+            <label className="block text-sm font-medium mb-1">Vendor Name</label>
             <input
               type="text"
               value={vendorName}
@@ -221,9 +298,7 @@ const CreatePO = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Purchase Date
-            </label>
+            <label className="block text-sm font-medium mb-1">Purchase Date</label>
             <input
               type="date"
               value={purchaseDate}
@@ -232,6 +307,8 @@ const CreatePO = () => {
             />
           </div>
         </div>
+
+        {/* Material Form */}
         <div className="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
           <div>
             <label className="block text-sm font-medium mb-1">Class</label>
@@ -239,13 +316,15 @@ const CreatePO = () => {
               value={classType}
               onChange={(e) => setClassType(e.target.value)}
               className="w-full px-3 py-2 text-sm rounded-lg border"
+              style={{background:"rgba(var(--background))"}}
             >
               <option value="A">A</option>
               <option value="B">B</option>
               <option value="C">C</option>
             </select>
           </div>
-          {classType === "A" && (
+
+          {(classType === "A" || classType === "B") && (
             <>
               <div>
                 <label className="block text-sm font-medium mb-1">Type</label>
@@ -253,6 +332,7 @@ const CreatePO = () => {
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                   className="w-full px-3 py-2 text-sm rounded-lg border"
+                  style={{background:"rgba(var(--background))"}}
                 >
                   <option value="">Select Type</option>
                   {typeOptions.map((t) => (
@@ -262,12 +342,14 @@ const CreatePO = () => {
                   ))}
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">Name</label>
                 <select
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3 py-2 text-sm rounded-lg border"
+                  style={{background:"rgba(var(--background))"}}
                 >
                   <option value="">Select Name</option>
                   {nameOptions.map((n) => (
@@ -277,43 +359,26 @@ const CreatePO = () => {
                   ))}
                 </select>
               </div>
-            </>
-          )}
-          {classType === "B" && (
-            <>
               <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
+                <label className="block text-sm font-medium mb-1">Raw Material</label>
                 <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border"
+                  value={selectedRawMaterialId}
+                  onChange={(e) => setSelectedRawMaterialId(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-lg border bg-background "
+                  disabled={rawMaterialOptions.length === 0}
+                  style={{background:"rgba(var(--background))"}}
                 >
-                  <option value="">Select Type</option>
-                  {typeOptions.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <select
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border"
-                  disabled={!type}
-                >
-                  <option value="">Select Name</option>
-                  {nameOptions.map((n) => (
-                    <option key={n} value={n}>
-                      {n}
+                  <option className="bg-background text-text" value="">Select Raw Material</option>
+                  {rawMaterialOptions.map((rm) => (
+                    <option  key={rm._id} value={rm._id}>
+                      {rm.name} ({rm.type})
                     </option>
                   ))}
                 </select>
               </div>
             </>
           )}
+
           {classType === "C" && (
             <>
               <div>
@@ -321,7 +386,7 @@ const CreatePO = () => {
                 <select
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border"
+                  className="w-full px-3 py-2 text-sm rounded-lg border bg-background"
                 >
                   <option value="">Select Name</option>
                   {nameOptions.map((n) => (
@@ -331,42 +396,26 @@ const CreatePO = () => {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border"
-                  disabled={!name}
-                >
-                  <option value="">Select Type</option>
-                  {typeOptions.map((t) => (
-                    <option key={t} value={t}>
+
+              <div className="md:col-span-5">
+                <label className="block text-sm font-medium mb-1 text-text">Type</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
+                  {typeOptions.map((t, idx) => (
+                    <label key={t} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        value={t}
+                        checked={selectedTypes.includes(t)}
+                        onChange={() => handleTypeToggle(t)}
+                        className="form-checkbox rounded bg-background"
+                      />
                       {t}
-                    </option>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
             </>
           )}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Raw Material
-            </label>
-            <select
-              value={selectedRawMaterialId}
-              onChange={(e) => setSelectedRawMaterialId(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border"
-              disabled={rawMaterialOptions.length === 0}
-            >
-              <option value="">Select Raw Material</option>
-              {rawMaterialOptions.map((rm) => (
-                <option key={rm._id} value={rm._id}>
-                  {rm.name} ({rm.type})
-                </option>
-              ))}
-            </select>
-          </div>
           <div>
             <label className="block text-sm font-medium mb-1">Quantity</label>
             <input
@@ -377,10 +426,9 @@ const CreatePO = () => {
               className="w-full px-3 py-2 text-sm rounded-lg border"
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Price per Unit
-            </label>
+            <label className="block text-sm font-medium mb-1">Price per Unit</label>
             <input
               type="number"
               min="0"
@@ -391,26 +439,22 @@ const CreatePO = () => {
             />
           </div>
         </div>
-        <Button
-          type="button"
-          size="md"
-          variant="primary"
-          className="min-w-[130px] shadow-theme-xs mt-2"
-          onClick={handleAddItem}
-          disabled={!selectedRawMaterialId || !quantity || !price}
-        >
-          Add Item
-        </Button>
-        <Button
-          type="button"
-          size="md"
-          variant="success"
-          className="min-w-[130px] shadow-theme-xs mt-2 ml-4"
-          onClick={handleCreatePO}
-          disabled={tableItems.length === 0}
-        >
-          Create PO
-        </Button>
+
+        <div className="flex gap-4 mt-2">
+          <Button type="button" size="md" variant="primary" onClick={handleAddItem}>
+            Add Item
+          </Button>
+          <Button
+            type="button"
+            size="md"
+            variant="success"
+            onClick={handleCreatePO}
+            disabled={tableItems.length === 0}
+          >
+            Create PO
+          </Button>
+        </div>
+
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <POTable
           items={tableItems}
@@ -425,8 +469,8 @@ const CreatePO = () => {
           ]}
           onDelete={handleDelete}
         />
+        <SuccessModal open={showModal} onClose={() => {setShowModal(false); navigate("/purchase")}} />
       </div>
-      <SuccessModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };

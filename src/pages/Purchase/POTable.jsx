@@ -32,14 +32,12 @@ const POTable = ({ items, getHeaders, onDelete }) => {
           ) : (
             items.map((row, index) => (
               <TableRow key={index}>
-                <TableCell className="px-6 py-2">{row.class}</TableCell>
+                <TableCell className="px-6 py-2">{row.class_type}</TableCell>
                 <TableCell className="px-6 py-2">{row.type || ""}</TableCell>
                 <TableCell className="px-6 py-2">{row.name || ""}</TableCell>
                 <TableCell className="px-6 py-2">{row.rawMaterial?.name || ""}</TableCell>
                 <TableCell className="px-6 py-2">{row.quantity}</TableCell>
-                <TableCell className="px-6 py-2">{row.status || ""}</TableCell>
-                <TableCell className="px-6 py-2">{row.specification || ""}</TableCell>
-                <TableCell className="px-6 py-2">{row.date || ""}</TableCell>
+                <TableCell className="px-6 py-2">{row.price_per_unit || ""}</TableCell>
                 <TableCell className="px-6 py-2">
                   <button
                     className="text-red-500 bg-red-100 px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1"
