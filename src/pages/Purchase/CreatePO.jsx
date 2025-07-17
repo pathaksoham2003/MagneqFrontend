@@ -12,6 +12,8 @@ const CreatePO = () => {
   const { getRawMaterialFilterConfig, getFilteredRawMaterials } = useRawMaterials();
   const { createPurchaseOrder } = usePurchase();
   const queryClient = useQueryClient();
+  const [quantities, setQuantities] = useState({});
+  const [pricesPerType, setPricesPerType] = useState({});
   const [classType, setClassType] = useState("A");
   const [type, setType] = useState("");
   const [name, setName] = useState("");
@@ -175,7 +177,15 @@ const CreatePO = () => {
         });
 
         const data = res?.data || res;
-        allMaterials.push(...data);
+        allMaterials.push(...data.map((material) => ({
+          raw_material_id: material._id,
+          name: material.name,
+          class_type: material.class_type,
+          type: material.type,
+          quantity: Number(quantities[type] || 0),  // 🧠 type-specific quantity
+          price_per_unit: Number(pricesPerType[type] || 0),           // 🔢 shared price
+          rawMaterial: material,
+        })));
       }
 
       if (allMaterials.length === 0) {
@@ -183,24 +193,17 @@ const CreatePO = () => {
         return;
       }
 
-      const newItems = allMaterials.map((material) => ({
-        raw_material_id: material._id,
-        name: material.name,
-        class_type: material.class_type,
-        type: material.type,
-        quantity: 1, 
-        price_per_unit: Number(price), 
-        rawMaterial: material,
-      }));
-
-      setTableItems((prev) => [...prev, ...newItems]);
-      setSelectedRawMaterialId("");
-      setQuantity(1);
+      setTableItems((prev) => [...prev, ...allMaterials]);
+      setSelectedTypes([]);
+      setQuantities({});
+      setPricesPerType({});
+      setName("");
       setPrice("");
     } catch (err) {
       console.error("Error fetching raw materials for Class C:", err);
       setError("Failed to fetch materials. Please try again.");
     }
+
     return;
   }
   if (!selectedRawMaterialId || !quantity || !price) {
@@ -376,6 +379,27 @@ const CreatePO = () => {
                   ))}
                 </select>
               </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-sm rounded-lg border"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Price per Unit</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border"
+                    placeholder="Enter price"
+                  />
+                </div>                
             </>
           )}
 
@@ -400,44 +424,58 @@ const CreatePO = () => {
               <div className="md:col-span-5">
                 <label className="block text-sm font-medium mb-1 text-text">Type</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
-                  {typeOptions.map((t, idx) => (
-                    <label key={t} className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        value={t}
-                        checked={selectedTypes.includes(t)}
-                        onChange={() => handleTypeToggle(t)}
-                        className="form-checkbox rounded bg-background"
-                      />
-                      {t}
-                    </label>
+                  {typeOptions.map((t) => (
+                    <div key={t}>
+                      <label key={t} className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          value={t}
+                          checked={selectedTypes.includes(t)}
+                          onChange={() => handleTypeToggle(t)}
+                          className="form-checkbox rounded bg-background"
+                        />
+                        {t}
+                      </label>
+                      {selectedTypes.includes(t) && (
+                       <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div>
+                          <label className="block text-xs font-medium mb-1">Quantity</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={quantities[t] || ""}
+                            onChange={(e) =>
+                              setQuantities((prev) => ({
+                                ...prev,
+                                [t]: Number(e.target.value),
+                              }))
+                            }
+                            className="w-full px-2 py-1 text-sm rounded-md border"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium mb-1">Price/Unit</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={pricesPerType[t] || ""}
+                            onChange={(e) =>
+                              setPricesPerType((prev) => ({
+                                ...prev,
+                                [t]: Number(e.target.value),
+                              }))
+                            }
+                            className="w-full px-2 py-1 text-sm rounded-md border"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   ))}
                 </div>
               </div>
             </>
           )}
-          <div>
-            <label className="block text-sm font-medium mb-1">Quantity</label>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="w-full px-3 py-2 text-sm rounded-lg border"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Price per Unit</label>
-            <input
-              type="number"
-              min="0"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border"
-              placeholder="Enter price"
-            />
-          </div>
         </div>
 
         <div className="flex gap-4 mt-2">
