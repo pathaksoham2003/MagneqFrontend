@@ -73,16 +73,16 @@ const AddStock = () => {
     const payload = {
       po_id: selectedPO.id,
       items: tableItems.map((item) => ({
-        item_id: item.item_id,
+        item_id: item._id,
         recieved_quantity: item.recieved_quantity,
       })),
     };
-    console.log(payload);
+
     submitStock(payload);
   };
 
   useEffect(() => {
-    if (itemData?.items) {
+    if (itemData?.items?.length > 0) {
       const enriched = itemData.items.map((item) => ({
         ...item,
         recieved_quantity: 0,
@@ -155,7 +155,7 @@ const AddStock = () => {
         <div className="mb-6">
           <h4 className="font-semibold mb-2">Materials</h4>
           {materialInputs.map((item) => (
-            <div key={item.item_id} className="flex items-center gap-4 mb-2">
+            <div key={item._id} className="flex items-center gap-4 mb-2">
               <div className="w-1/4">
                 <span className="block text-sm font-medium text-text">{item.name}</span>
                 <span className="block text-xs text-muted-foreground">{item.type}</span>
