@@ -103,7 +103,7 @@ const ProductionDetails = () => {
         <div>
           <h2 className="text-xl font-semibold py-2">Class A</h2>
           <DaynamicTable
-            header={["Name", "Ava/Req", "Stock Status"]}
+            header={["Name | Type", "Ava/Req", "Stock Status"]}
             tableData={formatClassData(data?.class_a || [])}
             formatCell={formatCellWithCapsules}
           />
@@ -111,7 +111,7 @@ const ProductionDetails = () => {
         <div>
           <h2 className="text-xl font-semibold py-2">Class B</h2>
           <DaynamicTable
-            header={["Name", "Ava/Req", "Stock Status"]}
+            header={["Name | Type", "Ava/Req", "Stock Status"]}
             tableData={formatClassData(data?.class_b || [])}
             formatCell={formatCellWithCapsules}
           />
@@ -119,7 +119,7 @@ const ProductionDetails = () => {
         <div>
           <h2 className="text-xl font-semibold py-2">Class C</h2>
           <DaynamicTable
-            header={["Name", "Ava/Req", "Stock Status"]}
+            header={["Name | Type", "Ava/Req", "Stock Status"]}
             tableData={formatClassData(data?.class_c || [])}
             formatCell={formatCellWithCapsules}
           />
