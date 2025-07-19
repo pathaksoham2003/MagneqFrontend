@@ -5,13 +5,16 @@ import Badge from "../../common/Badge";
 import useSales from "../../../services/useSales";
 import Button from "../../buttons/Button";
 import Pagination from "../../common/Pagination";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../../../features/authSlice";
 
 const SalesTable = ({isDashboard}) => {
   const {getAllSales, approaveSale} = useSales();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
-
+  const {route} = useSelector(selectAuth);
+  const {user} = useSelector(selectAuth);
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["sales", page, search],
     queryFn: () => getAllSales(page, search),
@@ -49,7 +52,11 @@ const SalesTable = ({isDashboard}) => {
     }
 
     if (idx === 4) {
+      console.log(user);
       if (cell === "UN_APPROVED") {
+          if (route?.role === "CUSTOMER") {
+            return <Badge size="sm" color="warning">UN_APPROVED</Badge>;
+          } 
         return (
           <div className="flex gap-2">
             <Button
