@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useState} from "react";
 import {Link, useLocation, useNavigate} from "react-router";
 import {Logo} from "../icons";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {GoMail, GoKebabHorizontal} from "react-icons/go";
 import {useSidebar} from "../hooks/useSidebar";
@@ -16,6 +17,7 @@ const AppSidebar = () => {
   const user = useSelector((state) => state.auth.route);
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
+  const queryClient = useQueryClient();
 
   const isActive = useCallback(
     (path) => {
@@ -34,11 +36,11 @@ const AppSidebar = () => {
       .map((item) => {
         if (typeof item === "string") {
           return {
-            name: item
-              .replace(/_/g, " ")
+            name: item == "" ? "Dashboard" :
+              item.replace(/_/g, " ")
               .replace(/\b\w/g, (l) => l.toUpperCase()),
             path:
-              item !== "dashboard"
+              item !== ""
                 ? `${prefix}/${item}`.replace(/\/{2,}/g, "/")
                 : "/",
             icon: getIcon(item),
@@ -233,6 +235,7 @@ const AppSidebar = () => {
       {/* Logout */}
       <button
         onClick={() => {
+          queryClient.clear();
           dispatch(logoutUser());
           navigate("/login");
         }}

@@ -5,7 +5,7 @@ import SuccessModal from "../../components/common/SuccessModal";
 import useFinishedGoods from "../../services/useFinishedGoods";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import useQuality from "../../services/useQuality";
-import { useQueryClient } from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 
 const issueTypes = [
   {value: "Material", label: "Material"},
@@ -64,7 +64,7 @@ const CreateTicket = () => {
     mutationFn: createQualityIssue,
     onSuccess: () => {
       setShowModal(true);
-      queryClient.invalidateQueries({ queryKey: ["quality-issues"] });
+      queryClient.invalidateQueries({queryKey: ["quality-issues"]});
       if (modalTimeoutRef.current) clearTimeout(modalTimeoutRef.current);
       modalTimeoutRef.current = setTimeout(() => {
         setShowModal(false);
@@ -128,7 +128,6 @@ const CreateTicket = () => {
             description,
           };
 
-          console.log("PAYLOAD",payload)
     mutation.mutate(payload);
   };
 
@@ -167,21 +166,6 @@ const CreateTicket = () => {
         Create Ticket
       </h2>
       <form onSubmit={handleSubmit}>
-        <div className="mb-6" style={{maxWidth: 500}}>
-          <label className="block text-sm font-medium mb-1">Vendor Name</label>
-          <input
-            value="Mohan Kumar"
-            readOnly
-            className="w-full px-3 py-2 text-sm rounded-lg"
-            style={{
-              background: "rgba(var(--background))",
-              color: "rgba(var(--text))",
-              border: "1px solid rgba(var(--border))",
-              borderRadius: "0.5rem",
-            }}
-          />
-        </div>
-
         <div className="mb-6" style={{maxWidth: 500}}>
           <label className="block text-sm font-medium mb-1">Issue Type</label>
           <select
