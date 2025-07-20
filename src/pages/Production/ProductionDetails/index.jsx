@@ -9,22 +9,25 @@ import DaynamicTable from "../../../components/common/Table";
 import ItemNotInStock from "./ItemNotInStock";
 
 // Helper to structure raw data
-const formatClassData = (classItems) => {
+const formatClassData = (classItems,status) => {
+  const isUnprocessed = status === "UN_PROCESSED"
   return {
     item: classItems.map((item) => ({
       id: item._id,
-      data: [
-        item.name || "Unnamed",
-        `${item.available} / ${item.required}`,
-        item.in_stock ? "In Stock" : "Not in Stock",
-      ],
+      data: isUnprocessed
+        ? [
+            item.name || "Unnamed",
+            `${item.available} / ${item.required}`,
+            item.in_stock ? "In Stock" : "Not in Stock",
+          ]
+        : [`${item.name}` , `${item.required}`],
     })),
   };
 };
 
 // Custom cell formatter for capsules
 const formatCellWithCapsules = (cell, idx) => {
-  if (idx === 1 && typeof cell === "string" && cell.includes("/")) {
+  if (idx === 1 && typeof cell === "string") {
     const [available, required] = cell.split(" / ");
     return (
       <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
@@ -59,6 +62,7 @@ const ProductionDetails = () => {
   });
 
   if (isLoading) return <p>Loading production details...</p>;
+  const dynamicHeader = data?.status === "UN_PROCESSED"? ["Name | Type", "Ava/Req", "Stock Status"] : ["Name | Type" , "Req"];
 
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text">
@@ -96,31 +100,30 @@ const ProductionDetails = () => {
           }}
         />
       </div>
-
-      <ItemNotInStock />
-
+    { (!data?.all_in_stock && data?.status === "UN_PROCESSED") &&  <ItemNotInStock />}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <h2 className="text-xl font-semibold py-2">Class A</h2>
           <DaynamicTable
-            header={["Name | Type", "Ava/Req", "Stock Status"]}
-            tableData={formatClassData(data?.class_a || [])}
+            header={dynamicHeader}
+            tableData={formatClassData(data?.class_a || [],data?.status)}
             formatCell={formatCellWithCapsules}
           />
         </div>
         <div>
           <h2 className="text-xl font-semibold py-2">Class B</h2>
           <DaynamicTable
-            header={["Name | Type", "Ava/Req", "Stock Status"]}
-            tableData={formatClassData(data?.class_b || [])}
+            header={dynamicHeader}
+            tableData={formatClassData(data?.class_b || [],data?.status)}
             formatCell={formatCellWithCapsules}
           />
         </div>
         <div>
           <h2 className="text-xl font-semibold py-2">Class C</h2>
           <DaynamicTable
-            header={["Name | Type", "Ava/Req", "Stock Status"]}
-            tableData={formatClassData(data?.class_c || [])}
+            header={dynamicHeader}
+            tableData={formatClassData(data?.class_c || [],data?.status)}
             formatCell={formatCellWithCapsules}
           />
         </div>
