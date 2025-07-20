@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import DaynamicTable from "../common/Table";
 import Badge from "../common/Badge";
 import useProduction from "../../services/useProduction";
@@ -13,7 +13,7 @@ const ProductionTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["pendingProductions", page, search],
     queryFn: () => getPendingProductions(page, search),
@@ -54,6 +54,7 @@ const ProductionTable = () => {
             onClick={async () => {
               await startProductionById(item_id);
               await refetch();
+              queryClient.invalidateQueries({ queryKey:["sales"]});
             }}
             className="bg-blue-500 text-white px-3 py-1 text-xs rounded-md hover:bg-blue-600 transition"
           >
@@ -66,9 +67,10 @@ const ProductionTable = () => {
             onClick={async () => {
               await markAsReady(item_id);
               await refetch();
+              queryClient.invalidateQueries({ queryKey:["sales"]});
             }}
           >
-            Read
+            Ready
           </Button>
         );
       } else {
