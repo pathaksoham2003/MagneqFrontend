@@ -4,6 +4,7 @@ import {useQuery} from "@tanstack/react-query";
 import {useSelector, useDispatch} from "react-redux";
 import usePurchase from "../../services/usePurchase";
 import Pagination from "../common/Pagination";
+import { useSearch } from "../../context/SearchbarContext";
 
 const PurchaseOrder = () => {
   const headers = [
@@ -15,11 +16,11 @@ const PurchaseOrder = () => {
   ];
   const {getAllPurchaseOrders} = usePurchase();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const { searchQuery} = useSearch();
   //   const data = useSelector((state) => state.purchase);
   const {data, isLoading, isError, refetch} = useQuery({
-    queryKey: ["Purchases", page, search],
-    queryFn: () => getAllPurchaseOrders(page, search),
+    queryKey: ["Purchases", page, searchQuery],
+    queryFn: () => getAllPurchaseOrders(page, searchQuery),
     staleTime: 5 * 60 * 1000,
   });
   if (isLoading)

@@ -6,22 +6,23 @@ import useSales from "../../../services/useSales";
 import Button from "../../buttons/Button";
 import Pagination from "../../common/Pagination";
 import {useNavigate} from "react-router-dom";
+import { useSearch } from "../../../context/SearchbarContext";
 
 const SalesTable = ({isDashboard}) => {
   const navigate = useNavigate();
   const {getAllSales} = useSales();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const { searchQuery} = useSearch();
   const {data, isLoading, isError} = useQuery({
-    queryKey: ["sales", page, search],
-    queryFn: () => getAllSales(page, search),
+    queryKey: ["sales", page, searchQuery],
+    queryFn: () => getAllSales(page, searchQuery),
     staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
     if (!isDashboard) return;
     setPage(0);
-    setSearch("");
+    setSearchQuery("");
   }, [isDashboard]);
 
   const formatCell = (cell, idx) => {
