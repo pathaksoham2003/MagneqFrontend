@@ -12,7 +12,7 @@ const SalesTable = ({isDashboard}) => {
   const navigate = useNavigate();
   const {getAllSales} = useSales();
   const [page, setPage] = useState(1);
-  const { searchQuery} = useSearch();
+  const { searchQuery, setSearchQuery} = useSearch();
   const {data, isLoading, isError} = useQuery({
     queryKey: ["sales", page, searchQuery],
     queryFn: () => getAllSales(page, searchQuery),
