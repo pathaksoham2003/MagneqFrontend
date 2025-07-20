@@ -24,12 +24,17 @@ const useQuality = () => {
     return api.delete(`${APIS.quality}/${id}`);
   };
 
+  const approveQualityIssue = (id) => {
+    return api.put(`${APIS.quality}/${id}`, { action_taken: true });
+  };
+
   return {
     createQualityIssue,
     getSpecificQualityIssue,
     getAllQualityIssues,
     updateQualityIssue,
     deleteQualityIssue,
+    approveQualityIssue,
   };
 };
 

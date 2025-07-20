@@ -1,11 +1,11 @@
-import {Routes, Route, Navigate, useNavigate} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import CreatePO from "./pages/Purchase/CreatePO";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import TrackOrder from "./pages/TrackOrder";
-import Sales from "./pages/Sales";
+import Sales from "./pages/Sales/index";
 import Purchase from "./pages/Purchase/index";
 import Production from "./pages/Production";
 import Ledger from "./pages/Ledger";
@@ -20,6 +20,7 @@ import CreateTicket from "./pages/Quality/CreateTicket";
 import QualityCard from "./pages/Quality/QualityCard";
 import ProductionDetails from "./pages/Production/ProductionDetails";
 import RawMaterial from "./pages/Stores/RawMaterial";
+import RawMaterialDetail from "./pages/Stores/RawMaterialDetail";
 import ManageFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood";
 import ManageRawMaterials from "./pages/DeveloperPanel/ManageRawMaterials";
 import ManageUsers from "./pages/DeveloperPanel/ManageUsers";
@@ -29,6 +30,7 @@ import ViewFinishedGood from "./pages/DeveloperPanel/ManageFinishedGood/ViewFini
 import PurchaseOrder from "./pages/Purchase/PurchaseOrder";
 import PurchaseDetails from "./pages/Purchase/PurchaseDetails";
 import CreateUserPage from "./pages/DeveloperPanel/ManageUsers/CreateUserPage";
+import ViewSalesOrder from "./pages/Sales/ViewSalesOrder";
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
           <Route path="/create_order" element={<CreateOrder />} />
           <Route path="/track_order" element={<TrackOrder />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/sales/:id" element={<ViewSalesOrder />} />
           <Route path="/purchase" element={<Purchase />}>
             <Route index element={<PurchaseOrder />} />
             <Route path="create" element={<CreatePO />} />
@@ -51,6 +54,7 @@ function App() {
             <Route index element={<RawMaterial />} />
             <Route path="add" element={<AddStock />} />
           </Route>
+          <Route path="/raw_material/:class_type/:id" element={<RawMaterialDetail />} />
           <Route path="/production" element={<Production />} />
           <Route path="/production/:id" element={<ProductionDetails />} />
           <Route path="/ledger" element={<Ledger />} />

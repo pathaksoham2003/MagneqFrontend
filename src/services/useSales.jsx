@@ -20,8 +20,12 @@ const useSales = () => {
     return api.put(`${APIS.sales}/${id}`, data);
   };
 
-  const approaveSale = (id) => {
-    return api.patch(`${APIS.sales}/${id}/approve`);
+  const approaveSale = (id, data) => {
+    return api.patch(`${APIS.sales}/${id}/approve`, data);
+  };
+
+  const rejectSale = (id) => {
+    return api.patch(`${APIS.sales}/${id}/reject`);
   };
 
   const deleteSale = (id) => {
@@ -35,6 +39,7 @@ const useSales = () => {
     updateSale,
     deleteSale,
     approaveSale,
+    rejectSale,
   };
 };
 

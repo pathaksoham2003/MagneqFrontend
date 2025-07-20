@@ -2,34 +2,40 @@ import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
 import DaynamicTable from "../../components/common/Table";
+import Badge from "../../components/common/Badge";
 import useQuality from "../../services/useQuality";
 
 const tableHeaders = [
   "Ticket ID",
-  "Vendor name",
+  "Reported by",
   "Date",
-  "Issue",
-  "Action Taken",
+  "Issue Type",
+  "Status",
 ];
 
 const formatCell = (cell, idx) => {
-  if (idx === 4) {
-    const isYes = cell === "YES";
+  if (idx === 3) {
+    // Issue Type
     return (
-      <span
-        style={{
-          color: isYes ? "#34C759" : "#FFA500",
-          background: isYes ? "rgba(52,199,89,0.08)" : "rgba(255,165,0,0.08)",
-          padding: "2px 12px",
-          borderRadius: "12px",
-          fontWeight: 500,
-          fontSize: "14px",
-        }}
-      >
+      <Badge size="sm" color="primary">
         {cell}
-      </span>
+      </Badge>
     );
   }
+  
+  if (idx === 4) {
+    // Status
+    const isResolved = cell === "YES" || cell === true;
+    return (
+      <Badge 
+        size="sm" 
+        color={isResolved ? "success" : "warning"}
+      >
+        {isResolved ? "Resolved" : "Pending"}
+      </Badge>
+    );
+  }
+  
   return cell;
 };
 
@@ -39,7 +45,7 @@ const QualityConcen = () => {
 
   const {data, isLoading, isError} = useQuery({
     queryKey: ["quality-issues"],
-    queryFn: () => getAllQualityIssues({}),
+    queryFn: () => getAllQualityIssues(),
   });
 
   const tableData = {
@@ -48,15 +54,11 @@ const QualityConcen = () => {
           return {
             id: issue.id,
             data: [
-              issue.data[0] || issue.ticket_number || issue.id.slice(-5),
-              issue.data[1] || issue.vendor || "—",
+              issue.data[0] || issue.ticket_number || issue.id.slice(-8).toUpperCase(),
+              issue.data[1] || issue.created_by?.name || "Unknown",
               issue.data[2] || "Invalid Date",
-              issue.data[3] || issue.issue || issue.issue_type || "—",
-              issue.data[4] === "YES" || issue.data[4] === "NO"
-                ? issue.data[4]
-                : issue.action_taken
-                ? "YES"
-                : "NO",
+              issue.data[3] || issue.issue_type || "Unknown",
+              issue.data[4] || issue.action_taken,
             ],
           };
         })
@@ -77,13 +79,13 @@ const QualityConcen = () => {
           color: "var(--color-text)",
         }}
       >
-        Quality Concerns
+        Quality Issues
       </h2>
 
       {isLoading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center">Loading quality issues...</p>
       ) : isError ? (
-        <p className="text-center text-red-500">Failed to load data</p>
+        <p className="text-center text-red-500">Failed to load quality issues</p>
       ) : (
         <DaynamicTable
           header={tableHeaders}

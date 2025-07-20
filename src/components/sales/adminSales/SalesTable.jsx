@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from "react";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import DaynamicTable from "../../common/Table";
 import Badge from "../../common/Badge";
 import useSales from "../../../services/useSales";
 import Button from "../../buttons/Button";
 import Pagination from "../../common/Pagination";
+import {useNavigate} from "react-router-dom";
 
 const SalesTable = ({isDashboard}) => {
-  const {getAllSales, approaveSale} = useSales();
+  const navigate = useNavigate();
+  const {getAllSales} = useSales();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const queryClient = useQueryClient();
-
-  const {data, isLoading, isError, refetch} = useQuery({
+  const {data, isLoading, isError} = useQuery({
     queryKey: ["sales", page, search],
     queryFn: () => getAllSales(page, search),
     staleTime: 5 * 60 * 1000,
@@ -24,7 +24,7 @@ const SalesTable = ({isDashboard}) => {
     setSearch("");
   }, [isDashboard]);
 
-  const formatCell = (cell, idx, item_id) => {
+  const formatCell = (cell, idx) => {
     if (
       idx === 1 &&
       typeof cell === "string" &&
@@ -49,40 +49,32 @@ const SalesTable = ({isDashboard}) => {
     }
 
     if (idx === 4) {
-      if (cell === "UN_APPROVED") {
-        return (
-          <div className="flex gap-2">
-            <Button
-              className="px-2"
-              onClick={async () => {
-                await approaveSale(item_id);
-                queryClient.invalidateQueries({queryKey: ["pendingProductions"]});
-                await refetch();
-              }}
-            >
-              Approve
-            </Button>
-            <Button className="px-2 bg-red-200" onClick={() => refetch()}>
-              Reject
-            </Button>
-          </div>
-        );
+      // Status color logic
+      const status = cell;
+      let color = "primary";
+      let label = status;
+      if (status === "UN_APPROVED") {
+        color = "danger";
+        label = "Unapproved";
+      } else if (status === "INPROCESS") {
+        color = "warning";
+        label = "In Process";
+      } else if (status === "PROCESSED") {
+        color = "success";
+        label = "Processed";
+      } else if (status === "DELIVERED") {
+        color = "success";
+        label = "Delivered";
+      } else if (status === "DISPATCHED") {
+        color = "info";
+        label = "Dispatched";
+      } else if (status === "CANCELLED") {
+        color = "secondary";
+        label = "Cancelled";
       }
-
-      const getStatusColor = (statusText) => {
-        if (!statusText) return "light";
-        const lower = statusText.toLowerCase();
-        if (lower.includes("dispatched") || lower.includes("approved"))
-          return "success";
-        if (lower.includes("in process") || lower.includes("pending"))
-          return "warning";
-        if (lower.includes("fg") || lower.includes("cancelled")) return "info";
-        return "primary";
-      };
-
       return (
-        <Badge size="sm" color={getStatusColor(cell)}>
-          {cell ?? "—"}
+        <Badge size="sm" color={color}>
+          {label}
         </Badge>
       );
     }
@@ -95,6 +87,10 @@ const SalesTable = ({isDashboard}) => {
     setPage(parseInt(newPage));
   };
 
+  const handleRowClick = (row) => {
+    navigate(`/sales/${row.item_id}`);
+  };
+
   if (isLoading) return <p className="text-center py-4">Loading sales...</p>;
   if (isError)
     return <p className="text-center py-4 text-red-500">Error loading sales</p>;
@@ -105,6 +101,7 @@ const SalesTable = ({isDashboard}) => {
         header={data.header}
         tableData={{item: data.item}}
         formatCell={formatCell}
+        onRowClick={handleRowClick}
       />
       {/* Remove the hardcoded h2 click */}
       {isDashboard && (

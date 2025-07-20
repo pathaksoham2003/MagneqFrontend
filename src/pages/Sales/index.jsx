@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import Metrics from "../components/sales/adminSales/Metrics";
-import SalesTable from "../components/sales/adminSales/SalesTable";
-import SearchBar from "../components/common/Searchbar";
-import Button from "../components/buttons/Button";
+import Metrics from "../../components/sales/adminSales/Metrics";
+import SalesTable from "../../components/sales/adminSales/SalesTable";
+import SearchBar from "../../components/common/Searchbar";
+import Button from "../../components/buttons/Button";
 import {HiOutlineArchiveBox} from "react-icons/hi2"; //sales box
 import {PiCubeDuotone} from "react-icons/pi";
-import Pagination from "../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
 
 const Sales = () => {
   const navigate = useNavigate();

@@ -12,8 +12,16 @@ const useRawMaterials = () => {
     return api.get(`${APIS.raw_material}/filter_config`);
   };
 
+  const getRawMaterialStockStats = () => {
+    return api.get(`${APIS.raw_material}/stock_stats`);
+  };
+
   const getRawMaterialById = (id) => {
     return api.get(`${APIS.raw_material}/${id}`);
+  };
+
+  const getRawMaterialByClassAndId = (class_type, id) => {
+    return api.get(`${APIS.raw_material}/${class_type}/${id}`);
   };
 
   const createRawMaterial = (data) => {
@@ -43,15 +51,26 @@ const useRawMaterials = () => {
     });
   };
 
+  const transitionQuantity = (class_type, id, from, to, quantity = 1) => {
+    return api.patch(`${APIS.raw_material}/${class_type}/${id}/transition`, {
+      from,
+      to,
+      quantity
+    });
+  };
+
   return {
     getAllRawMaterials,
     getRawMaterialById,
+    getRawMaterialByClassAndId,
     createRawMaterial,
     updateRawMaterial,
     deleteRawMaterial,
     getFilteredRawMaterials,
     getRawMaterialsByClass,
     getRawMaterialFilterConfig,
+    getRawMaterialStockStats,
+    transitionQuantity,
   };
 };
 

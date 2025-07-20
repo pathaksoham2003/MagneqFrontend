@@ -23,7 +23,6 @@ const CreateOrder = () => {
   const [ratio, setRatio] = useState("");
   const [quantity, setQuantity] = useState("");
   const [power, setPower] = useState("");
-  const [ratePerUnit, setRatePerUnit] = useState("");
 
   const [editingId, setEditingId] = useState(null);
   const [editedItem, setEditedItem] = useState({});
@@ -74,7 +73,6 @@ const CreateOrder = () => {
         ratio: item.ratio,
         power: item.power,
         quantity: item.quantity,
-        rate_per_unit: item.rate_per_unit,
       })),
     };
 
@@ -106,8 +104,6 @@ const CreateOrder = () => {
           setQuantity={setQuantity}
           power={power}
           setPower={setPower}
-          ratePerUnit={ratePerUnit}
-          setRatePerUnit={setRatePerUnit}
           editingId={editingId}
           setEditingId={setEditingId}
           editedItem={editedItem}

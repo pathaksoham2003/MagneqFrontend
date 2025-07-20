@@ -1,10 +1,13 @@
 import React, {useEffect} from "react";
 import {useQuery} from "@tanstack/react-query";
+import {useNavigate} from "react-router-dom";
 import StoreHeader from "./StoreHeader";
 import DaynamicTable from "../../components/common/Table";
 import useRawMaterials from "../../services/useRawMaterials";
+import Button from "../../components/buttons/Button";
 
 const RawItemList = ({classType = "A"}) => {
+  const navigate = useNavigate();
   const {getRawMaterialsByClass} = useRawMaterials();
 
   const {
@@ -32,6 +35,10 @@ const RawItemList = ({classType = "A"}) => {
     total_items: 0,
   };
 
+  const handleRowClick = (row) => {
+    navigate(`/raw_material/${classType}/${row.item_id}`);
+  };
+
   return (
     <div>
       <div className="mt-8 px-2 sm:px-4 md:px-6 lg:px-8">
@@ -45,7 +52,8 @@ const RawItemList = ({classType = "A"}) => {
           <DaynamicTable
             header={tableData.header}
             tableData={tableData}
-            formatCell={(cell, idx, id) => {
+            onRowClick={handleRowClick}
+            formatCell={(cell, idx, rowId) => {
               // Handle arrays as badge groups
               if (Array.isArray(cell)) {
                 return (

@@ -22,8 +22,6 @@ const OrderItemsForm = ({
   setQuantity,
   power,
   setPower,
-  ratePerUnit,
-  setRatePerUnit,
 }) => {
   const {getModalConfig} = useFinishedGoods();
   const {
@@ -76,7 +74,7 @@ const OrderItemsForm = ({
   }, [power, model, modelConfig, setRatio]);
 
   const handleAddItem = () => {
-    if (!model || !type || !ratio || !quantity || !power || !ratePerUnit) {
+    if (!model || !type || !ratio || !quantity || !power) {
       alert("Please fill all fields before adding item.");
       return;
     }
@@ -88,7 +86,6 @@ const OrderItemsForm = ({
       ratio,
       quantity: parseFloat(quantity),
       power: parseFloat(power),
-      rate_per_unit: parseFloat(ratePerUnit),
     };
 
     setItems((prev) => [...prev, newItem]);
@@ -98,7 +95,6 @@ const OrderItemsForm = ({
     setRatio("");
     setQuantity("");
     setPower("");
-    setRatePerUnit("");
   };
 
   if (isLoading) return <p>Loading form config...</p>;
@@ -186,16 +182,6 @@ const OrderItemsForm = ({
             onChange={(e) => setQuantity(e.target.value)}
           />
         </div>
-
-        <div>
-          <Label htmlFor="rate_per_unit">Rate / Unit</Label>
-          <Input
-            name="rate_per_unit"
-            type="number"
-            value={ratePerUnit}
-            onChange={(e) => setRatePerUnit(e.target.value)}
-          />
-        </div>
       </div>
 
       <div className="pt-6">
@@ -209,15 +195,7 @@ const OrderItemsForm = ({
       {items.length > 0 && (
         <div className="mt-6">
           <DaynamicTable
-            header={[
-              "Model",
-              "Power",
-              "Ratio",
-              "Type",
-              "Quantity",
-              "Rate",
-              "Actions",
-            ]}
+            header={["Model", "Power", "Ratio", "Type", "Quantity", "Actions"]}
             tableData={{
               item: items.map((item) => ({
                 id: item.id,
@@ -227,7 +205,6 @@ const OrderItemsForm = ({
                   item.ratio,
                   item.type,
                   item.quantity,
-                  item.rate_per_unit,
                   <Badge color="primary" key={item.id}>
                     <button
                       className="text-red-400 flex gap-2"

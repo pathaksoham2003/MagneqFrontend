@@ -11,7 +11,7 @@ const Home = () => {
         </div>
 
         <div className="col-span-12 ">
-          <SalesTable />
+          <SalesTable isDashboard/>
         </div>
 
         <div className="col-span-12">
