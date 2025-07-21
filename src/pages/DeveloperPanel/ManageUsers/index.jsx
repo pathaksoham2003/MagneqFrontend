@@ -6,8 +6,9 @@ import SearchBar from "../../../components/common/Searchbar";
 import DaynamicTable from "../../../components/common/Table";
 import CreateUserModal from "./CreateUserPage";
 import {useNavigate} from "react-router-dom";
+import { useSearch } from "../../../context/SearchbarContext";
 const ManageUsers = () => {
-  const [search, setSearch] = useState("");
+  const { searchQuery} = useSearch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -15,8 +16,8 @@ const ManageUsers = () => {
   const {getUsers, createUser} = useManage();
 
   const usersQuery = useQuery({
-    queryKey: ["users", {search, page}],
-    queryFn: () => getUsers({search, page, limit: 10}),
+    queryKey: ["users", {searchQuery, page}],
+    queryFn: () => getUsers({searchQuery, page, limit: 10}),
     keepPreviousData: true,
     staleTime: 1000 * 60 * 5,
   });
@@ -50,8 +51,7 @@ const ManageUsers = () => {
         <SearchBar
           placeholder="Search users by name, role or username"
           className="max-w-md"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+
         />
 
         <Button onClick={() => navigate("/manage_users/create")}>

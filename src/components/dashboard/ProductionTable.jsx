@@ -6,17 +6,18 @@ import useProduction from "../../services/useProduction";
 import Button from "../buttons/Button";
 import Pagination from "../common/Pagination";
 import {useNavigate} from "react-router-dom";
+import { useSearch } from "../../context/SearchbarContext";
 
 const ProductionTable = () => {
   const {getPendingProductions, startProductionById, markAsReady} =
     useProduction();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const { searchQuery } = useSearch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const {data, isLoading, isError, refetch} = useQuery({
-    queryKey: ["pendingProductions", page, search],
-    queryFn: () => getPendingProductions(page, search),
+    queryKey: ["pendingProductions", page, searchQuery],
+    queryFn: () => getPendingProductions(page, searchQuery),
     staleTime: 5 * 60 * 1000,
   });
 
