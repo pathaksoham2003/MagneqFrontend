@@ -24,7 +24,7 @@ const formatStatus = (status) => {
 
 const ViewSalesOrder = () => {
   const { id } = useParams();
-  const { getSaleById, approaveSale, rejectSale } = useSalesOrders();
+  const { getSaleById, approaveSale, rejectSale, getSaleStatus } = useSalesOrders();
   const { data, isLoading } = useQuery({
     queryKey: ["salesOrderById", id],
     queryFn: () => getSaleById(id),
@@ -157,6 +157,18 @@ const ViewSalesOrder = () => {
     }
   };
 
+  const handleStatusUpdate = async () => {
+    const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
+    try {
+      await getSaleStatus(id, { status: nextStatus }); // Assuming getSaleStatus is your update function
+      await queryClient.invalidateQueries(["salesOrderById", id]);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update status");
+    }
+  }; 
+  const canUpdateStatus = status === "PROCESSED" || status === "DISPATCHED";
+  const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text p-6">
       <h2 className="font-semibold text-text text-2xl mb-4">Sales Order Details</h2>
@@ -177,6 +189,13 @@ const ViewSalesOrder = () => {
           </>
         ) : (
           <DaynamicTable header={itemTable.header} tableData={itemTable} />
+        )}
+        {canUpdateStatus && (
+          <div className="mt-4">
+            <Button onClick={handleStatusUpdate}>
+              Mark as {nextStatus}
+            </Button>
+          </div>
         )}
       </div>
     </div>

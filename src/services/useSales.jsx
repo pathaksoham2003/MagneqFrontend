@@ -32,6 +32,10 @@ const useSales = () => {
     return api.delete(`${APIS.sales}/${id}`);
   };
 
+  const getSaleStatus = (id,data) => {
+    return api.patch(`${APIS.sales}/${id}/status`, data);
+  };
+
   return {
     createSale,
     getAllSales,
@@ -40,6 +44,7 @@ const useSales = () => {
     deleteSale,
     approaveSale,
     rejectSale,
+    getSaleStatus,
   };
 };
 
