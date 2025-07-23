@@ -2,33 +2,54 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Chart from 'react-apexcharts'
 import ChartTab from '../common/ChartTab'
+import { useQuery } from '@tanstack/react-query'
+import useDashboard from "../../services/useDashboard";
 
 const StatisticsChart = () => {
   const [sales, setSales] = useState([])
   const [revenue, setRevenue] = useState([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get('/api/chartData') //Change this as per our API endpoint
-        setSales(res.data.sales)
-        setRevenue(res.data.revenue)
-      } catch (error) {
-        console.error('Error fetching chart data:', error)
-      } finally {
-        setLoading(false)
+  const {getSalesStatistics} = useDashboard();
+  const [selectedTab, setSelectedTab] = useState("overview");
+
+    const {data, isLoading, isError, refetch} = useQuery({
+      queryKey: ["SalesStatistics"],
+      queryFn: () => getSalesStatistics(),
+      staleTime: 5 * 60 * 1000,
+    });
+    let series = [];
+      if (!isLoading) {
+        if (selectedTab === "sales") {
+          series = [
+            {
+              name: "Sales",
+              data: data?.sales,
+              yAxisIndex: 0,
+            },
+          ];
+        } else if (selectedTab === "revenue") {
+          series = [
+            {
+              name: "Revenue",
+              data: data?.revenue?.map(Number),
+              yAxisIndex: 1,
+            },
+          ];
+        } else {
+          series = [
+            {
+              name: "Sales",
+              data: data?.sales,
+              yAxisIndex: 0,
+            },
+            {
+              name: "Revenue",
+              data: data?.revenue?.map(Number),
+              yAxisIndex: 1,
+            },
+          ];
+        }
       }
-    }
-
-    fetchData()
-  }, [])
-
-  const series = [
-    { name: 'Sales', data:  [180, 190, 170,180, 190, 170,180, 190, 170] },
-    { name: 'Revenue', data: [40, 30, 50,40, 30, 50,40, 30, 50] },
-  ]
-
   const options = {
     chart: {
       type: 'area',
@@ -59,28 +80,32 @@ const StatisticsChart = () => {
     },
     xaxis: {
       type: 'category',
-      categories: [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-      ],
+      categories:data?.months,
       axisBorder: { show: false },
       axisTicks: { show: false },
       tooltip: { enabled: false },
     },
-    yaxis: {
+    yaxis: [
+    {
+      title: { text: 'Sales' },
       labels: {
         style: {
           fontSize: '12px',
-          colors: ['#6B7280'],
+          colors: ['#465FFF'],
         },
       },
-      title: { text: '', style: { fontSize: '0px' } },
     },
-    legend: {
-      show: false,
-      position: 'top',
-      horizontalAlign: 'left',
+    {
+      opposite: true,
+      title: { text: 'Revenue' },
+      labels: {
+        style: {
+          fontSize: '12px',
+          colors: ['#9CB9FF'],
+        },
+      },
     },
+  ],
   }
 
   return (
@@ -95,12 +120,12 @@ const StatisticsChart = () => {
           </p>
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
-          <ChartTab />
+          <ChartTab selected={selectedTab} setSelected={setSelectedTab} />
         </div>
       </div>
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="min-w-[1000px] xl:min-w-full">
-          {!loading && (
+          {!isLoading && (
             <Chart options={options} series={series} type="area" height={310} />
           )}
         </div>

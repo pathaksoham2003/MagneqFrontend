@@ -5,10 +5,17 @@ import StoreHeader from "./StoreHeader";
 import DaynamicTable from "../../components/common/Table";
 import useRawMaterials from "../../services/useRawMaterials";
 import Button from "../../components/buttons/Button";
+import { useSearch } from "../../context/SearchbarContext";
 
 const RawItemList = ({classType = "A"}) => {
   const navigate = useNavigate();
   const {getRawMaterialsByClass} = useRawMaterials();
+  const { searchQuery } = useSearch();
+  const queryParams = {
+    search: searchQuery,   
+    type: "",             
+    name: "",                
+  };
 
   const {
     data: rawMaterialData,
@@ -17,8 +24,8 @@ const RawItemList = ({classType = "A"}) => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["rawMaterials", classType],
-    queryFn: () => getRawMaterialsByClass(classType),
+    queryKey: ["rawMaterials", classType,queryParams],
+    queryFn: () => getRawMaterialsByClass(classType, queryParams),
   });
 
   useEffect(() => {

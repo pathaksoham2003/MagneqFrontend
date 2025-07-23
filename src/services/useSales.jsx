@@ -1,9 +1,11 @@
 import useAxios from "../hooks/useAxios";
-import {APIS} from "../api/apiUrls";
+import {API_URL, APIS} from "../api/apiUrls";
 
 const useSales = () => {
   const api = useAxios();
-
+  const getTopStats = () =>{
+    return api.get(`${APIS.sales}/top-stats`)
+  };
   const createSale = (data) => {
     return api.post(`${APIS.sales}`, data);
   };
@@ -32,6 +34,14 @@ const useSales = () => {
     return api.delete(`${APIS.sales}/${id}`);
   };
 
+  const getSaleStatus = (id,data) => {
+    return api.patch(`${APIS.sales}/${id}/status`, data);
+  };
+
+  const saleRecievedAmt = (id,data) => {
+    return api.patch(`${APIS.sales}/${id}/recievedAmt`, data);
+  }
+
   return {
     createSale,
     getAllSales,
@@ -40,6 +50,9 @@ const useSales = () => {
     deleteSale,
     approaveSale,
     rejectSale,
+    getSaleStatus,
+    saleRecievedAmt,
+    getTopStats,
   };
 };
 

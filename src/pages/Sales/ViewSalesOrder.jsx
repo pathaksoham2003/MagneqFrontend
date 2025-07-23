@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import useSalesOrders from "../../services/useSales";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient  } from "@tanstack/react-query";
 import DaynamicTable from "../../components/common/Table";
 import { useSelector } from "react-redux";
 import Button from "../../components/buttons/Button";
@@ -24,7 +24,8 @@ const formatStatus = (status) => {
 
 const ViewSalesOrder = () => {
   const { id } = useParams();
-  const { getSaleById, approaveSale, rejectSale } = useSalesOrders();
+  const { getSaleById, approaveSale, rejectSale, getSaleStatus,saleRecievedAmt } = useSalesOrders();
+  const [receivedInput, setReceivedInput] = useState("");
   const { data, isLoading } = useQuery({
     queryKey: ["salesOrderById", id],
     queryFn: () => getSaleById(id),
@@ -70,6 +71,20 @@ const ViewSalesOrder = () => {
           }
           if (Array.isArray(val)) {
             return val.join(", ");
+          }
+          if(key === "Total Price"){
+            return Number(val).toLocaleString("en-IN", {
+              style: "currency",
+              currency: "INR",
+              minimumFractionDigits: 2,
+            }); 
+          }
+          if(key === "Recieved Amount"){
+            return Number(val).toLocaleString("en-IN", {
+              style: "currency",
+              currency: "INR",
+              minimumFractionDigits: 2,
+            }); 
           }
           return val;
         }),
@@ -157,6 +172,27 @@ const ViewSalesOrder = () => {
     }
   };
 
+  const handleStatusUpdate = async () => {
+    const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
+    try {
+      await getSaleStatus(id, { status: nextStatus }); // Assuming getSaleStatus is your update function
+      await queryClient.invalidateQueries(["salesOrderById", id]);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update status");
+    }
+  }; 
+  const handleAmountSubmit = async () => {
+    const data = {
+      "recieved_amt":Number(receivedInput)
+    }
+    await  saleRecievedAmt(id,data);
+    await queryClient.invalidateQueries(["salesOrderById", id]);
+    setReceivedInput("");
+  };
+
+  const canUpdateStatus = status === "PROCESSED" || status === "DISPATCHED";
+  const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text p-6">
       <h2 className="font-semibold text-text text-2xl mb-4">Sales Order Details</h2>
@@ -177,6 +213,32 @@ const ViewSalesOrder = () => {
           </>
         ) : (
           <DaynamicTable header={itemTable.header} tableData={itemTable} />
+        )}
+        {canUpdateStatus && (
+          <div className="mt-4">
+            <Button onClick={handleStatusUpdate}>
+              Mark as {nextStatus}
+            </Button>
+          </div>
+        )}
+        {headerData["Recieved Amount"] < headerData["Total Price"] && (
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-2">Add Received Amount</h3>
+            <div className="flex gap-2 items-center">
+              <Input
+                type="number"
+                min={1}
+                max = {headerData["Total Price"]-headerData["Recieved Amount"]}
+                placeholder={`Due Amount: ₹${Number(headerData["Total Price"]) - Number(headerData["Recieved Amount"])}`}
+                className="w-28"
+                value={receivedInput}
+                onChange={e => setReceivedInput(e.target.value)}
+              />
+              <Button onClick={handleAmountSubmit} disabled={!receivedInput}>
+                Submit Amount
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>

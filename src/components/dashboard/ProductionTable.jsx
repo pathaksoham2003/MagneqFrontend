@@ -1,22 +1,23 @@
 import React, {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import DaynamicTable from "../common/Table";
 import Badge from "../common/Badge";
 import useProduction from "../../services/useProduction";
 import Button from "../buttons/Button";
 import Pagination from "../common/Pagination";
 import {useNavigate} from "react-router-dom";
+import { useSearch } from "../../context/SearchbarContext";
 
 const ProductionTable = () => {
   const {getPendingProductions, startProductionById, markAsReady} =
     useProduction();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const { searchQuery } = useSearch();
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const {data, isLoading, isError, refetch} = useQuery({
-    queryKey: ["pendingProductions", page, search],
-    queryFn: () => getPendingProductions(page, search),
+    queryKey: ["pendingProductions", page, searchQuery],
+    queryFn: () => getPendingProductions(page, searchQuery),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -54,6 +55,7 @@ const ProductionTable = () => {
             onClick={async () => {
               await startProductionById(item_id);
               await refetch();
+              queryClient.invalidateQueries({ queryKey:["sales"]});
             }}
             className="bg-blue-500 text-white px-3 py-1 text-xs rounded-md hover:bg-blue-600 transition"
           >
@@ -66,9 +68,10 @@ const ProductionTable = () => {
             onClick={async () => {
               await markAsReady(item_id);
               await refetch();
+              queryClient.invalidateQueries({ queryKey:["sales"]});
             }}
           >
-            Read
+            Ready
           </Button>
         );
       } else {
