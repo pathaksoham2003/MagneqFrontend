@@ -21,7 +21,6 @@ const CreateFinishedGood = () => {
     nm: "",
     sf: "",
     overhead_load: "",
-    MODEL_NUMBER: "",
   });
 
   const mutation = useMutation({
@@ -47,7 +46,6 @@ const CreateFinishedGood = () => {
       power,
       type,
       ratio,
-      MODEL_NUMBER,
       motor_shaft_diameter,
       motor_frame_size,
       rpm,
@@ -67,7 +65,6 @@ const CreateFinishedGood = () => {
       type,
       ratio,
       other_specification: {
-        MODEL_NUMBER,
         motor_shaft_diameter,
         motor_frame_size,
         rpm,

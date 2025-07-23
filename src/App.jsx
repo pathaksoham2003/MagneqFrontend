@@ -31,6 +31,8 @@ import PurchaseOrder from "./pages/Purchase/PurchaseOrder";
 import PurchaseDetails from "./pages/Purchase/PurchaseDetails";
 import CreateUserPage from "./pages/DeveloperPanel/ManageUsers/CreateUserPage";
 import ViewSalesOrder from "./pages/Sales/ViewSalesOrder";
+import ManageSuppliers from "./pages/DeveloperPanel/ManageSuppliers";
+import ManageCustomers from "./pages/DeveloperPanel/ManageCustomers";
 
 function App() {
   return (
@@ -47,14 +49,17 @@ function App() {
           <Route path="/purchase" element={<Purchase />}>
             <Route index element={<PurchaseOrder />} />
             <Route path="create" element={<CreatePO />} />
-            <Route path=":id" element={<PurchaseDetails/>} />
+            <Route path=":id" element={<PurchaseDetails />} />
             <Route path="track" element={<CreatePO />} />
           </Route>
           <Route path="/store" element={<Stores />}>
             <Route index element={<RawMaterial />} />
             <Route path="add" element={<AddStock />} />
           </Route>
-          <Route path="/raw_material/:class_type/:id" element={<RawMaterialDetail />} />
+          <Route
+            path="/raw_material/:class_type/:id"
+            element={<RawMaterialDetail />}
+          />
           <Route path="/production" element={<Production />} />
           <Route path="/production/:id" element={<ProductionDetails />} />
           <Route path="/ledger" element={<Ledger />} />
@@ -85,7 +90,10 @@ function App() {
             element={<CreateRawMaterial />}
           />
           <Route path="manage_users" element={<ManageUsers />} />
-          
+          <Route path="manage_suppliers" element={<ManageSuppliers />} />
+          <Route path="manage_suppliers/create" element={<ManageSuppliers />} />
+          <Route path="manage_customers" element={<ManageCustomers />} />
+          <Route path="manage_customers/create" element={<ManageCustomers />} />
           <Route path="manage_users/create" element={<CreateUserPage />} />
         </Route>
       </Routes>

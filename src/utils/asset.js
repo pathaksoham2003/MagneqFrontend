@@ -12,9 +12,13 @@ import {BsHouseGear} from "react-icons/bs";
 import {RiSubtractLine} from "react-icons/ri";
 import { VscGraphLine } from "react-icons/vsc";
 import { BsExclamationCircle } from "react-icons/bs";
+import { PiTruck } from "react-icons/pi";
+import { HiOutlineUserGroup } from "react-icons/hi2";
 
 export const getIcon = (key) => {
   const iconMap = {
+    manage_suppliers:PiTruck,
+    manage_customers:HiOutlineUserGroup,
     create_order: HiOutlineArchiveBox,
     track_order: PiCubeDuotone,
     ledger: TbFileInvoice,

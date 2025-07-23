@@ -45,11 +45,17 @@ const useManage = () => {
     });
   };
 
+  const getUsersByRole = (role) => {
+    console.log(APIS.manage_user)
+    return api.get(`${APIS.manage_user}`, { params: { role } });
+  };
+
   return {
     getUsers,
     createUser,
     getFinishedGoods,
     getRawMaterialsByClass,
+    getUsersByRole,
   };
 };
 

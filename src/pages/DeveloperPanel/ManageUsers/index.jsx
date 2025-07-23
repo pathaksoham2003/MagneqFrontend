@@ -1,48 +1,25 @@
 import React, {useState} from "react";
 import Button from "../../../components/buttons/Button";
 import useManage from "../../../services/useManage";
-import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import SearchBar from "../../../components/common/Searchbar";
 import DaynamicTable from "../../../components/common/Table";
 import CreateUserModal from "./CreateUserPage";
 import {useNavigate} from "react-router-dom";
 const ManageUsers = () => {
   const [search, setSearch] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const {getUsers, createUser} = useManage();
+  const {getUsersByRole} = useManage();
 
   const usersQuery = useQuery({
-    queryKey: ["users", {search, page}],
-    queryFn: () => getUsers({search, page, limit: 10}),
-    keepPreviousData: true,
+    queryKey: ["users", "OTHERS"],
+    queryFn: () => getUsersByRole("OTHERS"),
     staleTime: 1000 * 60 * 5,
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["users"]});
-      setIsModalOpen(false);
-    },
-  });
-
-  const onUserCreated = async (userData) => {
-    await createUserMutation.mutateAsync(userData);
-  };
-
   const headers = ["Name", "Username", "Role"];
 
-  const tableData = usersQuery.data
-    ? {
-        item: usersQuery.data.item.map((row) => ({
-          id: row.id,
-          data: row.data,
-        })),
-      }
-    : {item: []};
+  const tableData = usersQuery;
 
   return (
     <div className="space-y-6 p-4">
