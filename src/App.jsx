@@ -33,6 +33,8 @@ import CreateUserPage from "./pages/DeveloperPanel/ManageUsers/CreateUserPage";
 import ViewSalesOrder from "./pages/Sales/ViewSalesOrder";
 import ManageSuppliers from "./pages/DeveloperPanel/ManageSuppliers";
 import ManageCustomers from "./pages/DeveloperPanel/ManageCustomers";
+import CreateSupplier from "./pages/DeveloperPanel/ManageSuppliers/CreateSupplier";
+import CreateCustomer from "./pages/DeveloperPanel/ManageCustomers/CreateCustomer";
 
 function App() {
   return (
@@ -91,9 +93,9 @@ function App() {
           />
           <Route path="manage_users" element={<ManageUsers />} />
           <Route path="manage_suppliers" element={<ManageSuppliers />} />
-          <Route path="manage_suppliers/create" element={<ManageSuppliers />} />
+          <Route path="manage_suppliers/create" element={<CreateSupplier />} />
           <Route path="manage_customers" element={<ManageCustomers />} />
-          <Route path="manage_customers/create" element={<ManageCustomers />} />
+          <Route path="manage_customers/create" element={<CreateCustomer />} />
           <Route path="manage_users/create" element={<CreateUserPage />} />
         </Route>
       </Routes>

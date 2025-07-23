@@ -45,9 +45,10 @@ const useManage = () => {
     });
   };
 
-  const getUsersByRole = (role) => {
-    console.log(APIS.manage_user)
-    return api.get(`${APIS.manage_user}`, { params: { role } });
+  const getUsersByRole = ({role, page = 1, limit = 10, search = ""}) => {
+    return api.get(`${APIS.manage_user}`, {
+      params: {role, page, limit, search},
+    });
   };
 
   return {
