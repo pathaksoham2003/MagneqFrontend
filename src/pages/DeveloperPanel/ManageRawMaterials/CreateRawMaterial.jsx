@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../../components/buttons/Button";
+import useRawMaterials from "../../../services/useRawMaterials";
+import { useMutation } from "@tanstack/react-query";
 
 const CreateRawMaterial = () => {
   const { class_type } = useParams();
@@ -11,6 +13,8 @@ const CreateRawMaterial = () => {
   const [specs, setSpecs] = useState([]);
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
+
+  const { createRawMaterial } = useRawMaterials();
 
   useEffect(() => {
     setName("");
@@ -37,13 +41,25 @@ const CreateRawMaterial = () => {
     setSpecs(updated);
   };
 
+  const { mutate: createMutation, isLoading } = useMutation({
+    mutationFn: createRawMaterial,
+    onSuccess: () => {
+      alert("Raw Material Created!");
+      navigate(`/raw_material/${class_type}`);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      alert("Creation failed: " + (error?.response?.data?.error || "Unknown error"));
+    },
+  });
+
   const handleSubmit = () => {
     if (!name || !type) {
       alert("Name and Type are required.");
       return;
     }
 
-    const specObject = specs.reduce((acc, curr) => {
+    const quantity = specs.reduce((acc, curr) => {
       if (curr.key) acc[curr.key] = curr.value;
       return acc;
     }, {});
@@ -52,12 +68,10 @@ const CreateRawMaterial = () => {
       class_type,
       name,
       type,
-      quantity: class_type === "B" || class_type === "A" ? { ...specObject } : specObject,
+      quantity,
     };
 
-    console.log("Submitting Raw Material:", payload);
-    alert("Raw Material Created!");
-    navigate(`/raw_material/${class_type}`);
+    createMutation(payload); // trigger backend mutation
   };
 
   return (
@@ -122,11 +136,7 @@ const CreateRawMaterial = () => {
                     className="flex-1 border-b border-gray-200 px-3 py-2 outline-none"
                     placeholder="Value"
                   />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleRemoveSpec(idx)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleRemoveSpec(idx)}>
                     Delete
                   </Button>
                 </div>
@@ -140,7 +150,9 @@ const CreateRawMaterial = () => {
         <Button variant="outline" onClick={() => navigate(-1)}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <Button onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit"}
+        </Button>
       </div>
     </div>
   );
