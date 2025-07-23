@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import useManage from "../../../services/useManage";
 import useFinishedGoods from "../../../services/useFinishedGoods";
@@ -45,7 +45,7 @@ const ManageFinishedGood = () => {
       <DaynamicTable
         header={finishedGoodsData?.header}
         tableData={finishedGoodsData}
-        onRowClick={(item)=>navigate("/finished_good/"+item.item_id)}
+        onRowClick={(item) => navigate("/finished_good/" + item.item_id)}
       />
     </div>
   );
