@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import useManage from "../../../services/useManage";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import DaynamicTable from "../../../components/common/Table";
 import Pagination from "../../../components/common/Pagination";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import BasicSearchBar from "../../../components/common/BasicSearchBar";
 import Button from "../../../components/buttons/Button";
 
 const ManageSuppliers = () => {
-  const { getUsersByRole } = useManage();
+  const {getUsersByRole} = useManage();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
@@ -21,7 +21,7 @@ const ManageSuppliers = () => {
   } = useQuery({
     queryKey: ["SUPPLIER", search, currentPage],
     queryFn: () =>
-      getUsersByRole({ role: "SUPPLIER", search, page: currentPage, limit }),
+      getUsersByRole({role: "SUPPLIER", search, page: currentPage, limit}),
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
   });
@@ -40,14 +40,13 @@ const ManageSuppliers = () => {
 
   return (
     <div className="space-y-6 p-4">
-      <h2 className="text-xl font-semibold mt-4">Suppliers</h2>
       <div className="flex justify-between">
         <BasicSearchBar
           placeholder="Search users by name, role or username"
           className="max-w-md"
           onChange={(e) => {
             setSearch(e.target.value);
-            setCurrentPage(1); 
+            setCurrentPage(1);
           }}
           value={search}
         />
@@ -55,6 +54,7 @@ const ManageSuppliers = () => {
           Create Supplier
         </Button>
       </div>
+      <h2 className="text-xl font-semibold mt-4">Suppliers</h2>
 
       {isLoading && <p>Loading suppliers...</p>}
       {isError && <p className="text-red-500">Failed to load suppliers.</p>}
@@ -63,7 +63,7 @@ const ManageSuppliers = () => {
         <>
           <DaynamicTable
             header={usersQuery.header}
-            tableData={{ item: transformedData }}
+            tableData={{item: transformedData}}
           />
           <Pagination
             currentPage={currentPage}
