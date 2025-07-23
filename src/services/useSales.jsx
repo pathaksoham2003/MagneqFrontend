@@ -36,6 +36,10 @@ const useSales = () => {
     return api.patch(`${APIS.sales}/${id}/status`, data);
   };
 
+  const saleRecievedAmt = (id,data) => {
+    return api.patch(`${APIS.sales}/${id}/recievedAmt`, data);
+  }
+
   return {
     createSale,
     getAllSales,
@@ -45,6 +49,7 @@ const useSales = () => {
     approaveSale,
     rejectSale,
     getSaleStatus,
+    saleRecievedAmt,
   };
 };
 
