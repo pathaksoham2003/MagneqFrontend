@@ -7,10 +7,12 @@ import Button from "../buttons/Button";
 import Pagination from "../common/Pagination";
 import {useNavigate} from "react-router-dom";
 import { useSearch } from "../../context/SearchbarContext";
+import useNotification from "../../services/useNotification";
 
 const ProductionTable = () => {
   const {getPendingProductions, startProductionById, markAsReady} =
     useProduction();
+  const {createNotification}=useNotification();
   const [page, setPage] = useState(1);
   const { searchQuery } = useSearch();
   const navigate = useNavigate();
@@ -63,10 +65,14 @@ const ProductionTable = () => {
           </Button>
         );
       } else if (cell === "IN_PROCESSES") {
+          const productionIdCell = data?.item.find(item => item.id === item_id)?.data?.[0];
+          const productionNumber = productionIdCell?.match(/\d+/)?.[0]; // This gives "38"
         return (
           <Button
             onClick={async () => {
+              const message = `Sales #${productionNumber} is ready to be Dispatched.`;
               await markAsReady(item_id);
+              await createNotification({type:"sales",payload:{message}})
               await refetch();
               queryClient.invalidateQueries({ queryKey:["sales"]});
             }}
@@ -83,7 +89,6 @@ const ProductionTable = () => {
   };
 
   const handleRowClick = (obj) => {
-    console.log(obj);
     navigate(`/production/${obj.item_id}`);
   };
 

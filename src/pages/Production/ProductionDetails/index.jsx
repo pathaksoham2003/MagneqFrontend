@@ -1,12 +1,13 @@
 import React from "react";
 import SearchBar from "../../../components/common/Searchbar";
 import useProduction from "../../../services/useProduction";
-import {useQuery} from "@tanstack/react-query";
+import {QueryClient, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import Button from "../../../components/buttons/Button";
 import {HiOutlineArchiveBox} from "react-icons/hi2";
 import DaynamicTable from "../../../components/common/Table";
 import ItemNotInStock from "./ItemNotInStock";
+import useNotification from "../../../services/useNotification";
 
 // Helper to structure raw data
 const formatClassData = (classItems,status) => {
@@ -55,11 +56,41 @@ const formatCellWithCapsules = (cell, idx) => {
 const ProductionDetails = () => {
   const {getProductionById} = useProduction();
   const {id: production_id} = useParams();
-
+  const { createNotification } = useNotification();
+  const queryClient = useQueryClient();
   const {isLoading, data} = useQuery({
     queryKey: ["productionId", production_id],
     queryFn: () => getProductionById(production_id),
   });
+
+const handleNotifyToPurchase = async () => {
+  if (!data) return;
+
+  const allClasses = [...(data.class_a || []), ...(data.class_b || []), ...(data.class_c || [])];
+  const outOfStockItems = allClasses.filter((item) => item.in_stock === false);
+
+  if (outOfStockItems.length === 0) {
+    alert("All items are in stock. No notification needed.");
+    return;
+  }
+
+  const message = outOfStockItems
+    .map((item) => `${item.name} - Required: ${item.required}`)
+    .join(", ");
+
+  try {
+    await createNotification({
+      type: "purchase",
+      role: "PURCHASE_EXEC",
+      payload: { message },
+    });
+    queryClient.invalidateQueries({queryKey:["notifications"]})
+    alert("Notification sent to Purchase team.");
+  } catch (error) {
+    console.error("Failed to send notification:", error);
+    alert("Error sending notification.");
+  }
+};
 
   if (isLoading) return <p>Loading production details...</p>;
   const dynamicHeader = data?.status === "UN_PROCESSED"? ["Name | Type", "Ava/Req", "Stock Status"] : ["Name | Type" , "Req"];
@@ -70,14 +101,15 @@ const ProductionDetails = () => {
 
       <div className="flex justify-between items-center pt-5">
         <h2 className="font-semibold text-text text-2xl">Detailed View</h2>
+        { (!data?.all_in_stock && data?.status === "UN_PROCESSED") &&  
         <Button
           size="lg"
           type="button"
           startIcon={<HiOutlineArchiveBox size={18} />}
-          onClick={()=>{}}
+          onClick={handleNotifyToPurchase}
         >
           Notify To Purchase
-        </Button>
+        </Button>}
       </div>
 
       <div>
