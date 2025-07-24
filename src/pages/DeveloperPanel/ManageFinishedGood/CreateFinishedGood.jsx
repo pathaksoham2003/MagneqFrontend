@@ -100,10 +100,6 @@ const CreateFinishedGood = () => {
         </div>
 
         <div>
-          <label className="text-sm font-medium">Model Number</label>
-          <Input name="MODEL_NUMBER" value={form.MODEL_NUMBER} onChange={handleChange} />
-        </div>
-        <div>
           <label className="text-sm font-medium">Motor Shaft Diameter</label>
           <Input name="motor_shaft_diameter" value={form.motor_shaft_diameter} onChange={handleChange} />
         </div>
