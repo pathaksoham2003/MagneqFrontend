@@ -52,12 +52,17 @@ const useManage = () => {
   };
 
 
-  const getAllCustomers = async ({ page = 1, limit = 20, search = "" } = {}) => {
-    const response = await api.get(`${APIS.manage_customer}`, {
-      params: { page, limit, search },
-    });
-    return response;
-  };
+const getAllCustomers = async ({ page = 1, limit = 20, search = "" } = {}) => {
+  const response = await api.get(`${APIS.manage_customer}`, {
+    params: {
+      page: parseInt(page), 
+      limit: parseInt(limit),
+      search,
+    },
+  });
+  return response;
+};
+
 
 
 

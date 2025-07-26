@@ -8,7 +8,7 @@ import BasicSearchBar from "../../../components/common/BasicSearchBar";
 import Button from "../../../components/buttons/Button";
 
 const ManageCustomers = () => {
-  const { getUsersByRole } = useManage();
+  const { getAllCustomers } = useManage();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10; 
@@ -21,18 +21,18 @@ const ManageCustomers = () => {
   } = useQuery({
     queryKey: ["CUSTOMER", search, currentPage],
     queryFn: () =>
-      getUsersByRole({ role: "CUSTOMER", search, page: currentPage, limit }),
+      getAllCustomers({ page: currentPage, limit,search }),
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
   });
 
-  const transformedData = userData?.item?.map((user, idx) => ({
-    id: user.user_name || idx,
+  const transformedData = userData?.item?.map((user, idx) => (
+    {
+    id: user.id || idx,
     data: [
-      user.name || "—",
-      user.user_name || "—",
-      user.role || "—",
-      user.created_at || "—",
+      user.data[0] || "—",
+      user.data[1] || "—",
+      user.data[2] || "—",
     ],
   }));
 
