@@ -68,18 +68,39 @@ const OrderNameInput = ({ repName, setRepName, customerName, setCustomerName }) 
         <div>
           <Label htmlFor="customerName" className="text-md font-medium mb-2">Customer Name</Label>
           <Input
-            id="customerName"
-            name="customerName"
-            type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            id="customerSearch"
+            name="customerSearch"
+            value={searchInput}
+            placeholder="Search customer..."
+            className="mb-1"
+            onFocus={() => setIsDropdownOpen(true)}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
+          {isDropdownOpen && (
+            <ul className="absolute z-10 w-fit bg-white border border-gray-300 max-h-60 overflow-y-auto shadow-md rounded-md mt-1">
+              {isLoading ? (
+                <li className="px-4 py-2 text-gray-500">Loading...</li>
+              ) : data && data.item.length > 0 ? (
+                data.item.map((customer) => (
+                  <li
+                    key={customer.id}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSelect(customer.data[0])}
+                  >
+                    {customer.data[0]}
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-2 text-gray-500">No customers found</li>
+              )}
+            </ul>
+          )}
         </div>
       </div>
     );
   }
 
-  // ADMIN view with search-as-you-type dropdown
+
   return (
     <div className="relative w-full max-w-md space-y-2" ref={dropdownRef}>
       <Label htmlFor="customerSearch" className="text-xl font-medium">Customer Name</Label>
