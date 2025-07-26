@@ -17,7 +17,7 @@ const NotificationDropdown = () => {
   });
   const notifications = data?.notifications || [];
   const unread = notifications.some((n) => n.status === "PENDING");
-  console.log(notifications);
+
 
   return (
     <div className="relative inline-block text-left">

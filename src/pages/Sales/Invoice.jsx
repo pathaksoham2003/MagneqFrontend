@@ -3,7 +3,7 @@ import logo from "../../../public/logoBased.js";
 const Invoice = ({ customerDetails, orderDetails }) => {
   if (!orderDetails?.items) return <div>No order data</div>;
 
-  const { customer_name, customer_address, customer_phone } = customerDetails || {};
+  const { customer_name, customer_address, customer_gst } = customerDetails || {};
   const { salesOrderId, date, items, totalAmount } = orderDetails;
 
   return (
@@ -31,7 +31,7 @@ const Invoice = ({ customerDetails, orderDetails }) => {
         <h3 className="font-semibold mb-1">Bill To:</h3>
         <p><strong>Name:</strong> {customer_name}</p>
         <p><strong>Address:</strong> {customer_address}</p>
-        <p><strong>Phone:</strong> {customer_phone}</p>
+        <p><strong>GSTIN:</strong> {customer_gst}</p>
       </div>
 
       {/* Item Table */}
@@ -45,14 +45,14 @@ const Invoice = ({ customerDetails, orderDetails }) => {
             <th className="border px-2 py-1">Amount</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {items.map((item, idx) => (
-            <tr key={idx}>
-              <td className="border px-2 py-1">{idx + 1}</td>
-              <td className="border px-2 py-1">{item.finished_good || item.product_name}</td>
-              <td className="border px-2 py-1">{item.quantity}</td>
-              <td className="border px-2 py-1">₹{Number(item.rate_per_unit).toFixed(2)}</td>
-              <td className="border px-2 py-1">
+            <tr className="p-2" key={idx}>
+              <td className="border p-1 px-2 py-1 ">{idx + 1}</td>
+              <td className="border p-1 px-2 py-1 ">{item.finished_good || item.product_name}</td>
+              <td className="border p-1 px-2 py-1 ">{item.quantity}</td>
+              <td className="border p-1 px-2 py-1 ">₹{Number(item.rate_per_unit).toFixed(2)}</td>
+              <td className="border p-1 px-2 py-1 ">
                 ₹{(item.quantity * item.rate_per_unit).toFixed(2)}
               </td>
             </tr>
