@@ -25,7 +25,7 @@ const ManageCustomers = () => {
     staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
   });
-  console.log(userData);
+
   const transformedData = userData?.item?.map((user, idx) => (
     {
     id: user.id || idx,
