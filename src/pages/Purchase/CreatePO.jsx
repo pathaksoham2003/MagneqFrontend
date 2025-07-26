@@ -7,6 +7,7 @@ import useRawMaterials from "../../services/useRawMaterials";
 import usePurchase from "../../services/usePurchase";
 import POTable from "./POTable";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 const CreatePO = () => {
   const navigate = useNavigate();
   const { getRawMaterialFilterConfig, getFilteredRawMaterials } = useRawMaterials();
@@ -50,7 +51,7 @@ const CreatePO = () => {
         },
         onError:(err)=>{
           console.error("Order creation failed:", err);
-          alert("Failed to create order. Please try again.");
+          toast.error("Failed to create order. Please try again.");
         },
       });
   useEffect(() => {

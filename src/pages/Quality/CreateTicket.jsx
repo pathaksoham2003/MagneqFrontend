@@ -6,6 +6,7 @@ import useFinishedGoods from "../../services/useFinishedGoods";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import useQuality from "../../services/useQuality";
 import {useQueryClient} from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const issueTypes = [
   {value: "Material", label: "Material"},
@@ -73,7 +74,7 @@ const CreateTicket = () => {
     },
     onError: (error) => {
       console.error("Failed to create quality issue:", error);
-      alert("Failed to submit ticket. Please try again.");
+      toast.error("Failed to submit ticket. Please try again.");
     },
   });
 

@@ -8,6 +8,7 @@ import axios from "axios";
 import useFinishedGoods from "../../services/useFinishedGoods";
 import DaynamicTable from "../common/Table";
 import {LuTrash} from "react-icons/lu";
+import { toast } from "react-hot-toast";
 
 const OrderItemsForm = ({
   items,
@@ -75,7 +76,7 @@ const OrderItemsForm = ({
 
   const handleAddItem = () => {
     if (!model || !type || !ratio || !quantity || !power) {
-      alert("Please fill all fields before adding item.");
+      toast.error("Please fill all fields before adding item.");
       return;
     }
 

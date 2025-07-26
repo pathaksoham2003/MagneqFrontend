@@ -1,13 +1,14 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import SearchBar from "../../../components/common/Searchbar";
 import useProduction from "../../../services/useProduction";
 import {QueryClient, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import Button from "../../../components/buttons/Button";
 import {HiOutlineArchiveBox} from "react-icons/hi2";
 import DaynamicTable from "../../../components/common/Table";
 import ItemNotInStock from "./ItemNotInStock";
 import useNotification from "../../../services/useNotification";
+import { toast } from "react-hot-toast";
 
 // Helper to structure raw data
 const formatClassData = (classItems,status) => {
@@ -70,7 +71,7 @@ const handleNotifyToPurchase = async () => {
   const outOfStockItems = allClasses.filter((item) => item.in_stock === false);
 
   if (outOfStockItems.length === 0) {
-    alert("All items are in stock. No notification needed.");
+    toast.info("All items are in stock. No notification needed.");
     return;
   }
 
@@ -85,10 +86,10 @@ const handleNotifyToPurchase = async () => {
       payload: { message },
     });
     queryClient.invalidateQueries({queryKey:["notifications"]})
-    alert("Notification sent to Purchase team.");
+    toast.success("Notification sent to Purchase team.");
   } catch (error) {
     console.error("Failed to send notification:", error);
-    alert("Error sending notification.");
+    toast.error("Error sending notification.");
   }
 };
 

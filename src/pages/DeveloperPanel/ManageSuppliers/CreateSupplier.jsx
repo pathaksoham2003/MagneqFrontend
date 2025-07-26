@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import { toast } from "react-hot-toast";
 import Button from "../../../components/buttons/Button";
 import useManage from "../../../services/useManage";
 import Input from "../../../components/forms/Input";
@@ -28,6 +29,7 @@ const CreateSupplier = () => {
 
     if (!form.name || !form.user_name || !form.password) {
       setError("All fields are required");
+      toast.error("All fields are required");
       return;
     }
 
@@ -35,9 +37,12 @@ const CreateSupplier = () => {
     try {
       await createUser(form);
       queryClient.invalidateQueries({ queryKey:["SUPPLIER"]});
+      toast.success("Supplier created successfully!");
       navigate("/manage_suppliers");
     } catch (err) {
-      setError(err.message || "Failed to create user");
+      const errorMessage = err.message || "Failed to create supplier";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

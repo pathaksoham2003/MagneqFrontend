@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 import { HiOutlineArchiveBox } from "react-icons/hi2";
 import { PiCubeDuotone } from "react-icons/pi"; 
@@ -21,6 +22,7 @@ const PurchaseMetrics = ()=>{
             setMetrics(res.data);
         } catch (err) {
             console.error('Failed to fetch metrics:', err);
+            toast.error('Failed to load purchase metrics');
         } finally {
             setLoading(false);
         }

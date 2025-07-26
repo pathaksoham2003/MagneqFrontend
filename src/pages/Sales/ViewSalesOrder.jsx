@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import html2pdf from "html2pdf.js";
+import { toast } from "react-hot-toast";
 
 import useSalesOrders from "../../services/useSales";
 import { selectAuth } from "../../features/authSlice";
@@ -135,7 +136,7 @@ const ViewSalesOrder = () => {
     setIsApproving(true);
     const hasZero = editPrices?.some(item => !item.rate_per_unit || Number(item.rate_per_unit) === 0);
     if (hasZero) {
-      alert("All items must have a non-zero price before approval.");
+      toast.error("All items must have a non-zero price before approval.");
       setIsApproving(false);
       return;
     }
@@ -148,8 +149,10 @@ const ViewSalesOrder = () => {
       }));
       await approaveSale(id, { finished_goods: updatedItems });
       await queryClient.invalidateQueries(["salesOrderById", id]);
-    } catch {
-      alert("Approval failed");
+      toast.success("Sales order approved successfully!");
+    } catch (error) {
+      console.error("Approval failed:", error);
+      toast.error("Approval failed");
     } finally {
       setIsApproving(false);
     }
@@ -160,8 +163,10 @@ const ViewSalesOrder = () => {
     try {
       await rejectSale(id);
       await queryClient.invalidateQueries(["salesOrderById", id]);
-    } catch {
-      alert("Rejection failed");
+      toast.success("Sales order rejected successfully!");
+    } catch (error) {
+      console.error("Rejection failed:", error);
+      toast.error("Rejection failed");
     } finally {
       setIsApproving(false);
     }
@@ -172,8 +177,10 @@ const ViewSalesOrder = () => {
     try {
       await getSaleStatus(id, { status: nextStatus });
       await queryClient.invalidateQueries(["salesOrderById", id]);
-    } catch {
-      alert("Failed to update status");
+      toast.success("Sales order status updated successfully!");
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      toast.error("Failed to update status");
     }
   };
 
