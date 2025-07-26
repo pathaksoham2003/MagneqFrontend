@@ -1,49 +1,52 @@
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useSalesOrders from "../../services/useSales";
-import { useQuery, useQueryClient  } from "@tanstack/react-query";
-import DaynamicTable from "../../components/common/Table";
 import { useSelector } from "react-redux";
-import Button from "../../components/buttons/Button";
-import Input from "../../components/forms/Input";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import html2pdf from "html2pdf.js";
+
+import useSalesOrders from "../../services/useSales";
 import { selectAuth } from "../../features/authSlice";
 
+import DaynamicTable from "../../components/common/Table";
+import Button from "../../components/buttons/Button";
+import Input from "../../components/forms/Input";
+import Invoice from "./Invoice"; // Make sure this exists and is correctly implemented
+
 const formatStatus = (status) => {
-  if (typeof status === 'boolean') {
+  if (typeof status === "boolean") {
     return status ? (
       <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Completed</span>
     ) : (
       <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Pending</span>
     );
   }
-  if (typeof status === 'string') {
-    return status.replace(/_/g, ' ');
-  }
+  if (typeof status === "string") return status.replace(/_/g, " ");
   return status;
 };
 
 const ViewSalesOrder = () => {
   const { id } = useParams();
-  const { getSaleById, approaveSale, rejectSale, getSaleStatus,saleRecievedAmt } = useSalesOrders();
+  const invoiceRef = useRef();
+  const queryClient = useQueryClient();
   const [receivedInput, setReceivedInput] = useState("");
+  const [editPrices, setEditPrices] = useState(null);
+  const [isApproving, setIsApproving] = useState(false);
+
+  const { getSaleById, approaveSale, rejectSale, getSaleStatus, saleRecievedAmt } = useSalesOrders();
   const { data, isLoading } = useQuery({
     queryKey: ["salesOrderById", id],
     queryFn: () => getSaleById(id),
   });
-  const queryClient = useQueryClient();
+
   const user = useSelector(selectAuth);
   const userRole = user?.route?.role;
 
-  // Approval state for editing prices
-  const [editPrices, setEditPrices] = useState(null);
-  const [isApproving, setIsApproving] = useState(false);
-
-  React.useEffect(() => {
-    if (data && data.itemLevelData?.items) {
+  useEffect(() => {
+    if (data?.itemLevelData?.items) {
       setEditPrices(data.itemLevelData.items.map(item => ({
         ...item,
         rate_per_unit: item.rate_per_unit,
-        fg_id: item.fg_id, // ensure fg_id is present
+        fg_id: item.fg_id,
       })));
     }
   }, [data]);
@@ -53,47 +56,31 @@ const ViewSalesOrder = () => {
 
   const status = data.headerLevelData?.Status;
   const isUnapproved = status === "UN_APPROVED";
-  const canApprove = (userRole === "SALES_EXEC" || userRole === "ADMIN") && isUnapproved;
+  const canApprove = (["SALES_EXEC", "ADMIN"].includes(userRole)) && isUnapproved;
 
-  // Header-level data
   const headerData = data.headerLevelData || {};
+  const itemLevel = data.itemLevelData || {};
+
   const headerTable = {
     header: Object.keys(headerData),
-    item: [
-      {
-        id: headerData["Order Id"] || "order-id",
-        data: Object.entries(headerData).map(([key, val]) => {
-          if (key === "Date of Creation") {
-            return new Date(val).toLocaleDateString();
-          }
-          if (key === "Status") {
-            return formatStatus(val);
-          }
-          if (Array.isArray(val)) {
-            return val.join(", ");
-          }
-          if(key === "Total Price"){
-            return Number(val).toLocaleString("en-IN", {
-              style: "currency",
-              currency: "INR",
-              minimumFractionDigits: 2,
-            }); 
-          }
-          if(key === "Recieved Amount"){
-            return Number(val).toLocaleString("en-IN", {
-              style: "currency",
-              currency: "INR",
-              minimumFractionDigits: 2,
-            }); 
-          }
-          return val;
-        }),
-      },
-    ],
+    item: [{
+      id: headerData["Order Id"] || "order-id",
+      data: Object.entries(headerData).map(([key, val]) => {
+        if (key === "Date of Creation") return new Date(val).toLocaleDateString();
+        if (key === "Status") return formatStatus(val);
+        if (Array.isArray(val)) return val.join(", ");
+        if (["Total Price", "Recieved Amount"].includes(key)) {
+          return Number(val).toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2,
+          });
+        }
+        return val;
+      }),
+    }],
   };
 
-  // Item-level data for display
-  const itemLevel = data.itemLevelData || {};
   const itemTable = {
     header: itemLevel.header || [],
     item: (itemLevel.items || []).map((row, idx) => ({
@@ -108,7 +95,6 @@ const ViewSalesOrder = () => {
     })),
   };
 
-  // Editable table for approval
   const approvalTable = {
     header: itemLevel.header || [],
     item: (editPrices || []).map((row, idx) => ({
@@ -121,10 +107,13 @@ const ViewSalesOrder = () => {
           min={0}
           className="w-24"
           value={row.rate_per_unit}
-          onChange={e => {
-            const val = e.target.value;
-            setEditPrices(prices => prices.map((r, i) => i === idx ? { ...r, rate_per_unit: val } : r));
-          }}
+          onChange={e =>
+            setEditPrices(prices =>
+              prices.map((r, i) =>
+                i === idx ? { ...r, rate_per_unit: e.target.value } : r
+              )
+            )
+          }
         />,
         (row.quantity * row.rate_per_unit).toFixed(2),
         formatStatus(row.status),
@@ -132,71 +121,94 @@ const ViewSalesOrder = () => {
     })),
   };
 
-  // Approve handler
   const handleApprove = async () => {
     setIsApproving(true);
+    const hasZero = editPrices?.some(item => !item.rate_per_unit || Number(item.rate_per_unit) === 0);
+    if (hasZero) {
+      alert("All items must have a non-zero price before approval.");
+      setIsApproving(false);
+      return;
+    }
     try {
-      // Prevent approval if any rate_per_unit is 0 or empty
-      const hasZero = (editPrices || []).some(item => !item.rate_per_unit || Number(item.rate_per_unit) === 0);
-      if (hasZero) {
-        alert("All items must have a non-zero price before approval.");
-        setIsApproving(false);
-        return;
-      }
-      // Prepare updated items with new prices
-      const updatedItems = (editPrices || []).map(item => ({
-        fg_id: item.fg_id, // send fg_id to backend
+      const updatedItems = editPrices.map(item => ({
+        fg_id: item.fg_id,
         rate_per_unit: Number(item.rate_per_unit),
         quantity: item.quantity,
         item_total_price: Number(item.rate_per_unit) * Number(item.quantity),
       }));
       await approaveSale(id, { finished_goods: updatedItems });
       await queryClient.invalidateQueries(["salesOrderById", id]);
-      setIsApproving(false);
     } catch {
-      setIsApproving(false);
       alert("Approval failed");
+    } finally {
+      setIsApproving(false);
     }
   };
 
-  // Reject handler
   const handleReject = async () => {
     setIsApproving(true);
     try {
       await rejectSale(id);
       await queryClient.invalidateQueries(["salesOrderById", id]);
-      setIsApproving(false);
     } catch {
-      setIsApproving(false);
       alert("Rejection failed");
+    } finally {
+      setIsApproving(false);
     }
   };
 
   const handleStatusUpdate = async () => {
     const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
     try {
-      await getSaleStatus(id, { status: nextStatus }); // Assuming getSaleStatus is your update function
+      await getSaleStatus(id, { status: nextStatus });
       await queryClient.invalidateQueries(["salesOrderById", id]);
-    } catch (error) {
-      console.log(error);
+    } catch {
       alert("Failed to update status");
     }
-  }; 
+  };
+
   const handleAmountSubmit = async () => {
-    const data = {
-      "recieved_amt":Number(receivedInput)
-    }
-    await  saleRecievedAmt(id,data);
+    await saleRecievedAmt(id, { recieved_amt: Number(receivedInput) });
     await queryClient.invalidateQueries(["salesOrderById", id]);
     setReceivedInput("");
   };
 
-  const canUpdateStatus = status === "PROCESSED" || status === "DISPATCHED";
+  const canUpdateStatus = ["PROCESSED", "DISPATCHED"].includes(status);
   const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
+
+const handleDownloadInvoice = () => {
+  const element = invoiceRef.current;
+
+  if (!element) return;
+
+  setTimeout(() => {
+    html2pdf()
+      .set({
+        margin: 0.5,
+        filename: `Invoice_${headerData["Order Id"]}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      })
+      .from(element)
+      .save();
+  }, 500); // Delay ensures image renders fully
+};
+
+
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text p-6">
-      <h2 className="font-semibold text-text text-2xl mb-4">Sales Order Details</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="font-semibold text-2xl">Sales Order Details</h2>
+        {status !== "UN_APPROVED" && (
+          <Button onClick={handleDownloadInvoice}>
+            Download Invoice
+          </Button>
+        )}
+      </div>
+
       <DaynamicTable header={headerTable.header} tableData={headerTable} />
+
       <div className="mt-6">
         <h3 className="text-xl font-semibold mb-2">Order Items</h3>
         {canApprove ? (
@@ -214,6 +226,7 @@ const ViewSalesOrder = () => {
         ) : (
           <DaynamicTable header={itemTable.header} tableData={itemTable} />
         )}
+
         {canUpdateStatus && (
           <div className="mt-4">
             <Button onClick={handleStatusUpdate}>
@@ -221,6 +234,7 @@ const ViewSalesOrder = () => {
             </Button>
           </div>
         )}
+
         {headerData["Recieved Amount"] < headerData["Total Price"] && (
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Add Received Amount</h3>
@@ -228,11 +242,11 @@ const ViewSalesOrder = () => {
               <Input
                 type="number"
                 min={1}
-                max = {headerData["Total Price"]-headerData["Recieved Amount"]}
-                placeholder={`Due Amount: ₹${Number(headerData["Total Price"]) - Number(headerData["Recieved Amount"])}`}
+                max={headerData["Total Price"] - headerData["Recieved Amount"]}
+                placeholder={`Due Amount: ₹${headerData["Total Price"] - headerData["Recieved Amount"]}`}
                 className="w-28"
                 value={receivedInput}
-                onChange={e => setReceivedInput(e.target.value)}
+                onChange={(e) => setReceivedInput(e.target.value)}
               />
               <Button onClick={handleAmountSubmit} disabled={!receivedInput}>
                 Submit Amount
@@ -240,6 +254,26 @@ const ViewSalesOrder = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Invoice for download (hidden) */}
+      <div className="hidden">
+        <div ref={invoiceRef}>
+          {console.log("these are itemLevelData",data.itemLevelData.items)};
+          <Invoice
+            orderDetails={{
+              items:data.itemLevelData.items  || [],
+              totalAmount: data.headerLevelData["Total Price"],
+              salesOrderId: data.headerLevelData["Order Id"],
+              date: data.headerLevelData["Date of Creation"],
+            }}
+            customerDetails={{
+              customer_name: data.headerLevelData["Customer Name"],
+              customer_address: data.headerLevelData["Customer Address"],
+              customer_phone: data.headerLevelData["Customer Phone Number"],
+            }}
+          />
+        </div>
       </div>
     </div>
   );
