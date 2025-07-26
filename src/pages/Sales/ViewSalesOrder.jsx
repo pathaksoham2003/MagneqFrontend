@@ -6,11 +6,11 @@ import html2pdf from "html2pdf.js";
 
 import useSalesOrders from "../../services/useSales";
 import { selectAuth } from "../../features/authSlice";
-
+import useManage from "../../services/useManage";
 import DaynamicTable from "../../components/common/Table";
 import Button from "../../components/buttons/Button";
 import Input from "../../components/forms/Input";
-import Invoice from "./Invoice"; // Make sure this exists and is correctly implemented
+import Invoice from "./Invoice";
 
 const formatStatus = (status) => {
   if (typeof status === "boolean") {
@@ -28,18 +28,28 @@ const ViewSalesOrder = () => {
   const { id } = useParams();
   const invoiceRef = useRef();
   const queryClient = useQueryClient();
+
   const [receivedInput, setReceivedInput] = useState("");
   const [editPrices, setEditPrices] = useState(null);
   const [isApproving, setIsApproving] = useState(false);
 
+  const { getAllCustomers } = useManage();
   const { getSaleById, approaveSale, rejectSale, getSaleStatus, saleRecievedAmt } = useSalesOrders();
+  const user = useSelector(selectAuth);
+  const userRole = user?.route?.role;
+
   const { data, isLoading } = useQuery({
     queryKey: ["salesOrderById", id],
     queryFn: () => getSaleById(id),
   });
 
-  const user = useSelector(selectAuth);
-  const userRole = user?.route?.role;
+  const customerName = data?.headerLevelData?.["Customer Name"] || "";
+
+  const { data: customerData } = useQuery({
+    queryKey: ["customerByName", customerName],
+    queryFn: () => getAllCustomers({ page: 1, limit: 20, search: customerName }),
+    enabled: !!customerName,
+  });
 
   useEffect(() => {
     if (data?.itemLevelData?.items) {
@@ -176,25 +186,23 @@ const ViewSalesOrder = () => {
   const canUpdateStatus = ["PROCESSED", "DISPATCHED"].includes(status);
   const nextStatus = status === "PROCESSED" ? "DISPATCHED" : "DELIVERED";
 
-const handleDownloadInvoice = () => {
-  const element = invoiceRef.current;
+  const handleDownloadInvoice = () => {
+    const element = invoiceRef.current;
+    if (!element) return;
 
-  if (!element) return;
-
-  setTimeout(() => {
-    html2pdf()
-      .set({
-        margin: 0.5,
-        filename: `Invoice_${headerData["Order Id"]}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      })
-      .from(element)
-      .save();
-  }, 500); // Delay ensures image renders fully
-};
-
+    setTimeout(() => {
+      html2pdf()
+        .set({
+          margin: 0.5,
+          filename: `Invoice_${headerData["Order Id"]}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .save();
+    }, 500);
+  };
 
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text p-6">
@@ -256,21 +264,20 @@ const handleDownloadInvoice = () => {
         )}
       </div>
 
-      {/* Invoice for download (hidden) */}
+      {/* Hidden Invoice for PDF */}
       <div className="hidden">
         <div ref={invoiceRef}>
-          {console.log("these are itemLevelData",data.itemLevelData.items)};
           <Invoice
             orderDetails={{
-              items:data.itemLevelData.items  || [],
+              items: data.itemLevelData.items || [],
               totalAmount: data.headerLevelData["Total Price"],
               salesOrderId: data.headerLevelData["Order Id"],
               date: data.headerLevelData["Date of Creation"],
             }}
             customerDetails={{
-              customer_name: data.headerLevelData["Customer Name"],
-              customer_address: data.headerLevelData["Customer Address"],
-              customer_phone: data.headerLevelData["Customer Phone Number"],
+              customer_name: customerData?.["item"][0]["data"][0] || "N/A",
+              customer_address: customerData?.["item"][0]["data"][1] || "N/A",
+              customer_gst: customerData?.["item"][0]["data"][2] || "N/A",
             }}
           />
         </div>

@@ -51,12 +51,23 @@ const useManage = () => {
     });
   };
 
+
+  const getAllCustomers = async ({ page = 1, limit = 20, search = "" } = {}) => {
+    const response = await api.get(`${APIS.manage_customer}`, {
+      params: { page, limit, search },
+    });
+    return response;
+  };
+
+
+
   return {
     getUsers,
     createUser,
     getFinishedGoods,
     getRawMaterialsByClass,
     getUsersByRole,
+    getAllCustomers
   };
 };
 
