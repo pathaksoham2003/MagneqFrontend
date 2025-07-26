@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import Button from "../../../components/buttons/Button";
 import useFinishedGoods from "../../../services/useFinishedGoods";
 import useRawMaterials from "../../../services/useRawMaterials";
 import DaynamicTable from "../../../components/common/Table";
-import {useQuery} from "@tanstack/react-query";
-import {useQueryClient} from "@tanstack/react-query";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import Input from "../../../components/forms/Input";
 import DebouncedSearchInput from '../../../utils/DebouncedSearchInput';
 
@@ -126,13 +126,13 @@ const ViewFinishedGood = () => {
       console.log(payload)
       const data = await updateFinishedGood(id, payload);
       console.log(data);
-      alert("Finished Good updated successfully");
+      toast.success("Finished Good updated successfully");
       // Invalidate and refetch the finished good details
       queryClient.invalidateQueries(["finishedGoodById", id]);
       setIsEditing(false);
     } catch (err) {
       console.error(err);
-      alert("Update failed");
+      toast.error("Update failed");
     }
   };
 

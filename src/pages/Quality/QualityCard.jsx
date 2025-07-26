@@ -4,6 +4,7 @@ import Badge from "../../components/common/Badge";
 import { HiOutlineArchiveBox, HiOutlineCheck, HiOutlineTrash } from "react-icons/hi2";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import useQuality from "../../services/useQuality";
 import { useSelector } from "react-redux";
 import { selectAuth } from "../../features/authSlice";
@@ -44,8 +45,10 @@ const QualityCard = () => {
       await approveQualityIssue(id);
       queryClient.invalidateQueries(["quality-issue", id]);
       queryClient.invalidateQueries(["quality-issues"]);
+      toast.success("Quality issue approved successfully!");
     } catch (error) {
       console.error("Failed to approve quality issue:", error);
+      toast.error("Failed to approve quality issue");
     } finally {
       setIsApproving(false);
     }
@@ -61,9 +64,11 @@ const QualityCard = () => {
     setIsDeleting(true);
     try {
       await deleteQualityIssue(id);
+      toast.success("Quality issue deleted successfully!");
       navigate("/quality");
     } catch (error) {
       console.error("Failed to delete quality issue:", error);
+      toast.error("Failed to delete quality issue");
     } finally {
       setIsDeleting(false);
     }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import useFinishedGoods from "../../../services/useFinishedGoods";
 import Input from "../../../components/forms/Input";
 import Button from "../../../components/buttons/Button";
@@ -27,11 +28,11 @@ const CreateFinishedGood = () => {
     mutationFn: (data) => createFinishedGood(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["finishedGoods"]);
-      alert("Finished good created successfully.");
+      toast.success("Finished good created successfully.");
       navigate("/finished_good");
     },
     onError: (err) => {
-      alert("Error creating finished good: " + err.message);
+      toast.error("Error creating finished good: " + err.message);
     },
   });
 
@@ -55,7 +56,7 @@ const CreateFinishedGood = () => {
     } = form;
 
     if (!model || !power || !type || !ratio) {
-      alert("Model, Power, Type and Ratio are required.");
+      toast.error("Model, Power, Type and Ratio are required.");
       return;
     }
 

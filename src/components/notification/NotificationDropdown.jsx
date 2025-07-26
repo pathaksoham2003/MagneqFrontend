@@ -1,42 +1,88 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useRef, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useNotification from "../../services/useNotification";
 import { FiBell } from "react-icons/fi";
 
-
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-    const {getAllNotifications} = useNotification();
-  const {
-    data,
-    isLoading,
-  } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: getAllNotifications,
-    refetchInterval: 10000 , 
-  });
-  const notifications = data?.notifications || [];
-  const unread = notifications.some((n) => n.status === "PENDING");
+  const dropdownRef = useRef(null);
+  const queryClient = useQueryClient();
+  const { getAllNotifications, markAllAsRead } = useNotification();
+const { data, isLoading } = useQuery({
+  queryKey: ["notifications"],
+  queryFn: getAllNotifications,
+  refetchInterval: 10000,
+});
 
+const notifications = (data?.notifications || []).filter(n => !n.isRead);
+const unreadCount = notifications.length;
+
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape") setIsOpen(false);
+    }
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  // Mark all as read handler
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+      queryClient.invalidateQueries(["notifications"]);
+    } catch (err) {
+      // Optionally show a toast or error
+    }
+  };
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
+        aria-label="Show notifications"
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative text-xl p-2 rounded-full hover:bg-gray-100 focus:outline-none"
       >
         <FiBell className="text-2xl text-text" />
-        {unread && (
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-600 rounded-full"></span>
+        {unreadCount > 0 && (
+          <span className="absolute top-1.5 right-1.5 h-5 w-5 bg-red-600 text-white text-xs flex items-center justify-center rounded-full">
+            {unreadCount}
+          </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-border shadow-lg rounded-md z-50">
-          <div className="p-4 border-b">
+        <div
+          className="absolute right-0 mt-2 w-80 bg-white border border-border shadow-lg rounded-md z-50"
+          role="menu"
+        >
+          <div className="p-4 border-b flex items-center justify-between">
             <h3 className="text-sm font-semibold text-gray-700">Notifications</h3>
+            {unreadCount > 0 && (
+              <button
+                className="text-xs text-blue-600 hover:underline ml-2"
+                onClick={handleMarkAllAsRead}
+              >
+                Mark all as read
+              </button>
+            )}
           </div>
-
           <div className="max-h-72 overflow-y-auto">
             {isLoading ? (
               <div className="p-4 text-sm text-gray-500">Loading...</div>
@@ -45,7 +91,12 @@ const NotificationDropdown = () => {
             ) : (
               <ul className="divide-y divide-gray-100">
                 {notifications.map((n) => (
-                  <li key={n._id} className="p-4 hover:bg-gray-50">
+                  <li
+                    key={n._id}
+                    className={`p-4 hover:bg-gray-50 cursor-pointer ${n.status === "PENDING" ? "bg-gray-100" : ""}`}
+                    role="menuitem"
+                    tabIndex={0}
+                  >
                     <p className="text-sm font-medium text-gray-800">
                       {n.type.toUpperCase()}
                     </p>

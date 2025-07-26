@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import OrderNameInput from "../components/sales/OrderInputName";
 import OrderItemsForm from "../components/sales/OrderItemsForm";
 import Button from "../components/buttons/Button";
@@ -37,13 +38,13 @@ const CreateOrder = () => {
     mutationFn: (orderPayload) => createSale(orderPayload),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ["sales"]});
-      alert("Order submitted successfully!");
+      toast.success("Order submitted successfully!");
       resetForm();
       navigate("/sales");
     },
     onError: (err) => {
       console.error("Order creation failed:", err);
-      alert("Failed to create order. Please try again.");
+      toast.error("Failed to create order. Please try again.");
     },
   });
 
@@ -57,7 +58,7 @@ const CreateOrder = () => {
     e.preventDefault();
 
     if (items.length === 0) {
-      alert("Please add at least one item before submitting.");
+      toast.error("Please add at least one item before submitting.");
       return;
     }
 

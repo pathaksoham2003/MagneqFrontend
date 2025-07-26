@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../../components/buttons/Button";
 import useRawMaterials from "../../../services/useRawMaterials";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const CreateRawMaterial = () => {
   const { class_type } = useParams();
@@ -44,18 +45,18 @@ const CreateRawMaterial = () => {
   const { mutate: createMutation, isLoading } = useMutation({
     mutationFn: createRawMaterial,
     onSuccess: () => {
-      alert("Raw Material Created!");
+      toast.success("Raw Material Created!");
       navigate(`/raw_material/${class_type}`);
     },
     onError: (error) => {
       console.error("Error:", error);
-      alert("Creation failed: " + (error?.response?.data?.error || "Unknown error"));
+      toast.error("Creation failed: " + (error?.response?.data?.error || "Unknown error"));
     },
   });
 
   const handleSubmit = () => {
     if (!name || !type) {
-      alert("Name and Type are required.");
+      toast.error("Name and Type are required.");
       return;
     }
 

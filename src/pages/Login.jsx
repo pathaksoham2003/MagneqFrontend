@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import useAuth from "../services/useAuth";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -42,13 +43,16 @@ const Login = () => {
       if (data.data.token) {
         dispatch(loginUser(data.data));
         localStorage.setItem("token", data.data.token);
+        toast.success("Login successful!");
         navigate("/"+data?.data?.route.sidebar[0]);
       } else {
         console.error("Invalid credentials");
+        toast.error("Invalid credentials");
       }
     },
     onError: (err) => {
       console.error("Login failed:", err.response?.data || err.message);
+      toast.error("Login failed. Please check your credentials.");
     },
   });
 

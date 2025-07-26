@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import usePurchase from "../../services/usePurchase";
 import Button from "../../components/buttons/Button";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/table/Table";
@@ -53,7 +54,7 @@ const AddStock = () => {
     },
     onError: (err) => {
       console.error("Stock submission failed:", err);
-      alert("Failed to submit stock. Please try again.");
+      toast.error("Failed to submit stock. Please try again.");
     },
   });
 

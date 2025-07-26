@@ -8,7 +8,7 @@ const useNotification = () => {
     const getAllNotifications = () =>{
         return api.get(`${APIS.notification}/`);
     }
-    const markAsRead =(notificationId) => {
+    const markAllAsRead =(notificationId) => {
       return api.patch(`${APIS.notification}/${notificationId}/read`);
     }
     const createNotification = (data) => {
@@ -16,7 +16,7 @@ const useNotification = () => {
     }
     return {
         getAllNotifications,
-        markAsRead,
+        markAllAsRead,
         createNotification
     }
 }
