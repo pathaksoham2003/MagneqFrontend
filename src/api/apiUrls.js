@@ -18,4 +18,5 @@ export const APIS = {
   manage_finished_good: API_URL + "/manage/finished_good",
   manage_raw_material: API_URL + "/manage/raw_material",
   notification: API_URL + "/notification",
+  profile_update: API_URL + "/profile_update",
 };
