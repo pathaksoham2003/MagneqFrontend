@@ -23,7 +23,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     user_name: "",
     password: "",
-    role: "ADMIN",
+    role: "STAFF",
     active: false,
   });
 
@@ -58,6 +58,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(formData)
     mutation.mutate(formData);
   };
 
@@ -115,8 +116,7 @@ const Login = () => {
             <div>
               <Label htmlFor="role">Role</Label>
               <Select id="role" name="role" value={formData.role} onChange={handleChange}>
-                <option value="ADMIN">Admin</option>
-                <option value="EXECUTIVE">Sales Executive</option>
+                <option value="STAFF">Magneq Staff</option>
                 <option value="CUSTOMER">Customer</option>
               </Select>
             </div>

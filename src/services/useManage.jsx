@@ -63,6 +63,17 @@ const getAllCustomers = async ({ page = 1, limit = 20, search = "" } = {}) => {
   return response;
 };
 
+const getAllVendors = async ({ page = 1, limit = 20, search = "" } = {}) => {
+  const response = await api.get(`${APIS.manage_vendors}`, {
+    params: {
+      page: parseInt(page), 
+      limit: parseInt(limit),
+      search,
+    },
+  });
+  return response;
+};
+
 
 
 
@@ -72,7 +83,8 @@ const getAllCustomers = async ({ page = 1, limit = 20, search = "" } = {}) => {
     getFinishedGoods,
     getRawMaterialsByClass,
     getUsersByRole,
-    getAllCustomers
+    getAllCustomers,
+    getAllVendors
   };
 };
 
