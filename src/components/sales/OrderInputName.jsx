@@ -9,7 +9,7 @@ const OrderNameInput = ({ repName, setRepName, customerName, setCustomerName }) 
   const user = useSelector((state) => state.auth.route);
   const role = user?.role || "default";
 
-  const [searchInput, setSearchInput] = useState(""); // input value for search
+  const [searchInput, setSearchInput] = useState(""); 
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page] = useState(1);
   const { getAllCustomers } = useManage();

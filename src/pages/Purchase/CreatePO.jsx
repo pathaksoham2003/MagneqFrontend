@@ -1,23 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/buttons/Button";
+import Label from "../../components/forms/Label";
+import Input from "../../components/forms/Input";
 import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import SuccessModal from "../../components/common/SuccessModal";
 import useRawMaterials from "../../services/useRawMaterials";
 import usePurchase from "../../services/usePurchase";
 import POTable from "./POTable";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import useManage from "../../services/useManage";
+
 const CreatePO = () => {
   const navigate = useNavigate();
   const { getRawMaterialFilterConfig, getFilteredRawMaterials } = useRawMaterials();
   const { createPurchaseOrder } = usePurchase();
+  const {getAllVendors} = useManage();
   const queryClient = useQueryClient();
+  const [searchInput, setSearchInput] = useState(""); 
   const [quantities, setQuantities] = useState({});
   const [pricesPerType, setPricesPerType] = useState({});
   const [classType, setClassType] = useState("A");
   const [type, setType] = useState("");
   const [name, setName] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [typeOptions, setTypeOptions] = useState([]);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [nameOptions, setNameOptions] = useState([]);
@@ -32,7 +39,36 @@ const CreatePO = () => {
   const [error, setError] = useState("");
   const [filterConfig, setFilterConfig] = useState(null);
   const modalTimeoutRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const handleSelect = (value) => {
+    setVendorName(value);
+    setSearchInput(value);
+    setIsDropdownOpen(false);
+  };
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(searchInput);
+    }, 50);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["vendors",  debouncedQuery],
+    queryFn: () => getAllVendors({ limit: 20, search: debouncedQuery }),
+    enabled: !!debouncedQuery, 
+    staleTime: 5 * 60 * 1000,
+  });
   const {
         mutate: createPO,
         isPending,
@@ -292,14 +328,37 @@ const CreatePO = () => {
         {/* Vendor Info */}
         <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Vendor Name</label>
-            <input
-              type="text"
-              value={vendorName}
-              onChange={(e) => setVendorName(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border"
-              placeholder="Enter vendor name"
-            />
+            <Label htmlFor="VendorName" className="text-md font-medium mb-2">Vendor Name</Label>
+          <Input
+            id="vendorSearch"
+            name="vendorSearch"
+            value={searchInput}
+            placeholder="Search Vendor..."
+            className="mb-1"
+            onFocus={() => setIsDropdownOpen(true)}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+          {isDropdownOpen && (
+            <ul className="absolute z-10 w-fit bg-white border border-gray-300 max-h-60 overflow-y-auto shadow-md rounded-md mt-1">
+              {console.log(data?.data)}
+              {isLoading ? (
+                <li className="px-4 py-2 text-gray-500">Loading...</li>
+              ) : data && data.item.length > 0 ? (
+                data.item.map((vendor) => (
+                  <li
+                    key={vendor.id}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSelect(vendor.data[0])}
+                  >
+                    {vendor.data[0]}
+                  </li>
+                ))
+              ) : (
+                
+                <li className="px-4 py-2 text-gray-500">No Vendor found</li>
+              )}
+            </ul>
+          )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Purchase Date</label>

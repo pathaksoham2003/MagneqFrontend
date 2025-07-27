@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import {Logo} from "../icons";
 import NotificationDropdown from '../components/notification/NotificationDropdown';
 import { useSidebar } from '../hooks/useSidebar'
 import { ThemeToggleButton } from '../components/common/ThemeToggleButton'
+import ProfileDropdown from '../components/common/ProfileDropdown'
 
 const AppHeader = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false)
@@ -121,6 +122,7 @@ const AppHeader = () => {
           <div className="flex items-center gap-2 2xsm:gap-3">
             <NotificationDropdown userRole={"PRODUCTION"} /> 
             <ThemeToggleButton />
+            <ProfileDropdown />
           </div>
         </div>
       </div>
