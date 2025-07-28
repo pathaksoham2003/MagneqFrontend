@@ -12,6 +12,10 @@ const usePurchase = () => {
     return api.get(`${APIS.purchase_order}`);
   };
 
+  const getPendingPurchaseOrders = () => {
+    return api.get(`${APIS.purchase_order}/pending`);
+  };
+
   const updatePurchaseOrder = (id, data) => {
     return api.put(`${APIS.purchase_order}/${id}`, data);
   };
@@ -33,6 +37,7 @@ const usePurchase = () => {
     createPurchaseOrder,
     getAllPurchaseOrders,
     updatePurchaseOrder,
+    getPendingPurchaseOrders,
     getPurchaseOrderItems,
     addStockToPurchaseOrder,
     getPurchaseById,
