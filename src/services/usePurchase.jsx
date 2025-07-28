@@ -29,6 +29,10 @@ const usePurchase = () => {
     return api.get(`${APIS.purchase_order}/${po_id}`);
   };
 
+  const getPurchaseStats = () =>{
+    return api.get(`${APIS.purchase_order}/stats`);
+  };
+
   return {
     createPurchaseOrder,
     getAllPurchaseOrders,
@@ -36,6 +40,7 @@ const usePurchase = () => {
     getPurchaseOrderItems,
     addStockToPurchaseOrder,
     getPurchaseById,
+    getPurchaseStats,
   };
 };
 
