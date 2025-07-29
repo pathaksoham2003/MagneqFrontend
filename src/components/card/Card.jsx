@@ -3,7 +3,7 @@ import Badge from '../common/Badge';
 
 const Card = ({ title, icon: Icon, value, percent }) => {
   const isPositive = typeof percent === 'string' && percent.trim().startsWith('+');
-  const trendColor = isPositive ? '[#f6fef9]' : 'error';
+  const trendColor = isPositive ? 'success' : 'error';
   const TrendIcon = isPositive ? IoIosArrowRoundUp : IoIosArrowRoundDown;
 
   return (
