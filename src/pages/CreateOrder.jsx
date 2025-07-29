@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+import {toast} from "react-hot-toast";
 import OrderNameInput from "../components/sales/OrderInputName";
 import OrderItemsForm from "../components/sales/OrderItemsForm";
 import Button from "../components/buttons/Button";
 import useSales from "../services/useSales";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const CreateOrder = () => {
   const navigate = useNavigate();
@@ -14,6 +14,8 @@ const CreateOrder = () => {
   const role = user?.role || "ADMIN";
   const {createSale} = useSales();
   const queryClient = useQueryClient();
+
+  console.log(role);
 
   const [repName, setRepName] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -63,8 +65,8 @@ const CreateOrder = () => {
     }
 
     const payload = {
-      customer_name: customerName,
-      magneq_user: repName || user?.name || "",
+      customer_name: role !== "CUSTOMER" ? customerName : (user?.name || "CUSTOMER"),
+      magneq_user: role !== "CUSTOMER" ? (repName || user?.name || "" ): (user?.name || "CUSTOMER"),
       description,
       delivery_date: new Date().toISOString().split("T")[0],
       created_by: user?._id || null,
@@ -84,12 +86,16 @@ const CreateOrder = () => {
     <div className="grid gap-4 md:gap-6 bg-background text-text p-15 md:p-15 rounded-lg shadow-sm">
       <h1 className="text-3xl font-semibold text-text">Create Order</h1>
 
-      <OrderNameInput
-        repName={repName}
-        setRepName={setRepName}
-        customerName={customerName}
-        setCustomerName={setCustomerName}
-      />
+      {role !== "CUSTOMER" ? (
+        <OrderNameInput
+          repName={repName}
+          setRepName={setRepName}
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+        />
+      ) : (
+        <></>
+      )}
 
       <form onSubmit={handleSubmit}>
         <OrderItemsForm

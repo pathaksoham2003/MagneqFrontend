@@ -44,6 +44,7 @@ const Login = () => {
         dispatch(loginUser(data.data));
         localStorage.setItem("token", data.data.token);
         toast.success("Login successful!");
+        console.log(data?.data?.route.sidebar[0])
         navigate("/"+data?.data?.route.sidebar[0]);
       } else {
         console.error("Invalid credentials");
@@ -119,11 +120,6 @@ const Login = () => {
                 <option value="STAFF">Magneq Staff</option>
                 <option value="CUSTOMER">Customer</option>
               </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Checkbox id="active" name="active" checked={formData.active} onChange={handleChange} />
-              <Label htmlFor="active" className="mb-0 mt-1">Active</Label>
             </div>
 
             <Button type="submit" size="md" variant="primary" className="w-full" disabled={mutation.isLoading}>
