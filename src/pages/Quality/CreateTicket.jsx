@@ -337,7 +337,7 @@ const CreateTicket = () => {
             );
           })}
 
-        <div className="mb-6">
+        {/* <div className="mb-6">
           {issueType === "Material" && (
             <button
               type="button"
@@ -347,7 +347,7 @@ const CreateTicket = () => {
               + Add more Items
             </button>
           )}
-        </div>
+        </div> */}
 
         <div className="mb-8" style={{maxWidth: 500}}>
           <label className="block text-sm font-medium mb-1">

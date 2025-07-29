@@ -164,7 +164,7 @@ const QualityCard = () => {
             <div>
               <label className="text-sm font-medium text-gray-500">Created By</label>
               <p className="text-text">
-                {issue.created_by?.name || "Unknown"}
+                {issue.created_by || "Unknown"}
               </p>
             </div>
           </div>
