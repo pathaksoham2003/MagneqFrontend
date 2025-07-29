@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Button from "../../../components/buttons/Button";
 import useManage from "../../../services/useManage";
@@ -12,15 +12,19 @@ const CreateCustomer = () => {
     role: "CUSTOMER",
     user_name: "",
     password: "",
+    address: "",
+    gst_no: "",
+    phone: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const {createUser} = useManage();
+  const { createUser } = useManage();
   const queryClient = useQueryClient();
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -28,15 +32,15 @@ const CreateCustomer = () => {
     setError("");
 
     if (!form.name || !form.user_name || !form.password) {
-      setError("All fields are required");
-      toast.error("All fields are required");
+      setError("Name, username, and password are required");
+      toast.error("Name, username, and password are required");
       return;
     }
 
     setLoading(true);
     try {
       await createUser(form);
-      queryClient.invalidateQueries({ queryKey:["CUSTOMER"]});
+      queryClient.invalidateQueries({ queryKey: ["CUSTOMER"] });
       toast.success("Customer created successfully!");
       navigate("/manage_customers");
     } catch (err) {
@@ -50,7 +54,7 @@ const CreateCustomer = () => {
 
   return (
     <div className="p-6 mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Create User</h2>
+      <h2 className="text-xl font-semibold mb-4">Create Customer</h2>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-3">
@@ -73,7 +77,26 @@ const CreateCustomer = () => {
             value={form.password}
             onChange={handleChange}
           />
+          <Input
+            name="address"
+            placeholder="Address"
+            value={form.address}
+            onChange={handleChange}
+          />
+          <Input
+            name="gst_no"
+            placeholder="GST Number"
+            value={form.gst_no}
+            onChange={handleChange}
+          />
+          <Input
+            name="phone"
+            placeholder="Phone Number"
+            value={form.phone}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="flex justify-end gap-2 mt-4">
           <Button
             size="lg"

@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Button from "../../../components/buttons/Button";
 import useManage from "../../../services/useManage";
@@ -9,34 +9,34 @@ import { useQueryClient } from "@tanstack/react-query";
 const CreateSupplier = () => {
   const [form, setForm] = useState({
     name: "",
+    phone: "",
     role: "SUPPLIER",
-    user_name: "",
-    password: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const {createUser} = useManage();
+  const { createUser } = useManage();
   const queryClient = useQueryClient();
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!form.name || !form.user_name || !form.password) {
-      setError("All fields are required");
-      toast.error("All fields are required");
+    if (!form.name || !form.phone) {
+      setError("Name and phone number are required");
+      toast.error("Name and phone number are required");
       return;
     }
 
     setLoading(true);
     try {
       await createUser(form);
-      queryClient.invalidateQueries({ queryKey:["SUPPLIER"]});
+      queryClient.invalidateQueries({ queryKey: ["SUPPLIER"] });
       toast.success("Supplier created successfully!");
       navigate("/manage_suppliers");
     } catch (err) {
@@ -61,16 +61,9 @@ const CreateSupplier = () => {
             onChange={handleChange}
           />
           <Input
-            name="user_name"
-            placeholder="Username"
-            value={form.user_name}
-            onChange={handleChange}
-          />
-          <Input
-            name="password"
-            placeholder="Password"
-            type="password"
-            value={form.password}
+            name="phone"
+            placeholder="Phone Number"
+            value={form.phone}
             onChange={handleChange}
           />
         </div>
