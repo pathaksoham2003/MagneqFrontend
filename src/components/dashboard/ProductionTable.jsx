@@ -51,6 +51,18 @@ const ProductionTable = () => {
 
     // Status Action Buttons
     if (idx === 5 && typeof cell === "string") {
+      const status = cell;
+      let color = "primary";
+      let label = status;
+      if (cell ==="NOT_IN_STOCK"){
+        color = "danger";
+        label = "Not In Stock";
+        return (
+        <Badge size="sm" color={color}>
+          {label}
+        </Badge>
+        );
+      } else 
       if (cell === "IN_STOCK") {
         return (
           <Button
