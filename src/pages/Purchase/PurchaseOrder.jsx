@@ -6,6 +6,7 @@ import PurchaseMetrics from "../../components/purchase/PurchaseMetrix";
 import Pagination from "../../components/common/Pagination";
 import DaynamicTable from "../../components/common/Table";
 import { useNavigate } from "react-router-dom";
+import Badge from "../../components/common/Badge";
 
 const PurchaseOrder = () => {
   const headers = [
@@ -29,6 +30,57 @@ const PurchaseOrder = () => {
     console.log(obj);
     navigate(`/purchase/${obj.item_id}`);
   };
+  const formatCell = (cell, idx) => {
+    if (
+      idx === 1 &&
+      typeof cell === "string" &&
+      /^\d{4}-\d{2}-\d{2}T/.test(cell)
+    ) {
+      return new Date(cell).toLocaleDateString();
+    }
+
+    if (idx === 3 && Array.isArray(cell)) {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {cell.map((entry, i) => (
+            <div
+              key={i}
+              className="bg-background text-text text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap"
+            >
+              {entry.split("/").join(" | ")}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (idx === 4) {
+      // Status color logic
+      const status = cell;
+      let color = "primary";
+      let label = status;
+      if (status === "NOT_IN_STOCK") {
+        color = "danger";
+        label = "Not In Stock";
+      } else if (status === "PENDING") {
+        color = "warning";
+        label = "Pending";
+      } else if (status === "PROCESSED") {
+        color = "success";
+        label = "Processed";
+      } else if (status === "COMPLETE") {
+        color = "success";
+        label = "Complete";
+      }
+      return (
+        <Badge size="sm" color={color}>
+          {label}
+        </Badge>
+      );
+    }
+
+    return cell ?? "—";
+  };
   if (isLoading)
     return <p className="text-center">Loading production data...</p>;
   if (isError)
@@ -50,6 +102,7 @@ const PurchaseOrder = () => {
           total_items: data?.total_items,
         }}
         onRowClick={handleRowClick}
+        formatCell={formatCell}
       />
       <Pagination
         currentPage={page}
