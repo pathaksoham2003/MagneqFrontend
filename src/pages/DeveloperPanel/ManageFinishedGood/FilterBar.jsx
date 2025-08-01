@@ -9,8 +9,12 @@ const FilterBar = ({modalConfig, filters, setFilters}) => {
 
   const ratioOptions =
     filters.model && filters.power
-      ? modalConfig[filters.model]?.ratios?.[filters.power] || []
-      : [];
+       ? [...(modalConfig[filters.model]?.ratios?.[filters.power] || [])]
+        .map(parseFloat)
+        .filter((r) => !isNaN(r))
+        .sort((a, b) => a - b)
+        .map(String)
+    : [];
 
   return (
     <div className="flex gap-4 mb-4">
