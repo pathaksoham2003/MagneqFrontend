@@ -3,7 +3,6 @@ import {HiOutlineArchiveBox} from "react-icons/hi2";
 import {useNavigate} from "react-router-dom";
 import Button from "../components/buttons/Button";
 import SearchBar from "../components/common/Searchbar";
-import Metrics from "../components/dashboard/Metrics";
 import {PiCubeDuotone} from "react-icons/pi";
 import ProductionTable from "../components/dashboard/ProductionTable";
 
@@ -12,9 +11,6 @@ const Production = () => {
   return (
     <div className="grid gap-4 md:gap-6 bg-background text-text ">
       <SearchBar placeholder={"Search using Order Id"} />
-      <div className="col-span-12 space-y-4 ">
-        <Metrics />
-      </div>
       <div className="col-span-12 ">
         <ProductionTable />
       </div>
