@@ -15,7 +15,7 @@ const PurchaseMetrics = () => {
     onError: () => toast.error('Failed to load purchase metrics'),
     staleTime: 5 * 60 * 1000, 
   });
-  console.log(metrics);
+
   if (isLoading || !metrics) return "null";
   if (isError) return "completing";
 

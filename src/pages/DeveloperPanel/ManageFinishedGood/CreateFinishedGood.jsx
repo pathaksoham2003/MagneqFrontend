@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {toast} from "react-hot-toast";
 import useFinishedGoods from "../../../services/useFinishedGoods";
 import Input from "../../../components/forms/Input";
 import Button from "../../../components/buttons/Button";
@@ -9,7 +9,7 @@ import Button from "../../../components/buttons/Button";
 const CreateFinishedGood = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { createFinishedGood } = useFinishedGoods();
+  const {createFinishedGood} = useFinishedGoods();
 
   const [form, setForm] = useState({
     model: "",
@@ -37,8 +37,8 @@ const CreateFinishedGood = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setForm((prev) => ({...prev, [name]: value}));
   };
 
   const handleSubmit = () => {
@@ -96,17 +96,34 @@ const CreateFinishedGood = () => {
           <Input name="ratio" value={form.ratio} onChange={handleChange} />
         </div>
         <div>
-          <label className="text-sm font-medium">Type (B/V)</label>
-          <Input name="type" value={form.type} onChange={handleChange} />
+          <label className="text-sm font-medium">Type</label>
+          <select
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Type</option>
+            <option value="Base (Foot)">Base (Foot)</option>
+            <option value="Vertical (Flange)">Vertical (Flange)</option>
+          </select>
         </div>
 
         <div>
           <label className="text-sm font-medium">Motor Shaft Diameter</label>
-          <Input name="motor_shaft_diameter" value={form.motor_shaft_diameter} onChange={handleChange} />
+          <Input
+            name="motor_shaft_diameter"
+            value={form.motor_shaft_diameter}
+            onChange={handleChange}
+          />
         </div>
         <div>
           <label className="text-sm font-medium">Motor Frame Size</label>
-          <Input name="motor_frame_size" value={form.motor_frame_size} onChange={handleChange} />
+          <Input
+            name="motor_frame_size"
+            value={form.motor_frame_size}
+            onChange={handleChange}
+          />
         </div>
         <div>
           <label className="text-sm font-medium">RPM</label>
@@ -122,13 +139,21 @@ const CreateFinishedGood = () => {
         </div>
         <div>
           <label className="text-sm font-medium">Overhead Load</label>
-          <Input name="overhead_load" value={form.overhead_load} onChange={handleChange} />
+          <Input
+            name="overhead_load"
+            value={form.overhead_load}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
       <div className="flex justify-end gap-4 pt-4">
-        <Button variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
-        <Button onClick={handleSubmit} loading={mutation.isLoading}>Submit</Button>
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} loading={mutation.isLoading}>
+          Submit
+        </Button>
       </div>
     </div>
   );

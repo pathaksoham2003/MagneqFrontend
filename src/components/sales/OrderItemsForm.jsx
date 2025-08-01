@@ -34,7 +34,7 @@ const OrderItemsForm = ({
     queryFn: async () => {
       const data = await getModalConfig();
       Object.keys(data).forEach((modelKey) => {
-        data[modelKey].powers = data[modelKey].powers.map(Number);
+        data[modelKey].powers = data[modelKey].powers.map(item=>item);
         const ratios = data[modelKey].ratios;
         const normalizedRatios = {};
         Object.keys(ratios).forEach((powerKey) => {
@@ -46,6 +46,8 @@ const OrderItemsForm = ({
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  console.log(modelConfig)
 
   const [availablePowers, setAvailablePowers] = useState([]);
   const [availableRatios, setAvailableRatios] = useState([]);
@@ -86,7 +88,7 @@ const OrderItemsForm = ({
       type,
       ratio,
       quantity: parseFloat(quantity),
-      power: parseFloat(power),
+      power: power.toString(),
     };
 
     setItems((prev) => [...prev, newItem]);
@@ -169,8 +171,8 @@ const OrderItemsForm = ({
             onChange={(e) => setType(e.target.value)}
           >
             <option value="">Select Type</option>
-            <option value="B">Base</option>
-            <option value="V">Vertical</option>
+            <option value="Base (Foot)">{`Base (Foot)`}</option>
+            <option value="Vertical (Flange)">{`Vertical (Flange)`}</option>
           </Select>
         </div>
 

@@ -73,8 +73,8 @@ const FilterBar = ({modalConfig, filters, setFilters}) => {
         onChange={(e) => setFilters({...filters, type: e.target.value})}
       >
         <option value="">All Types</option>
-        <option value="B">B</option>
-        <option value="V">V</option>
+       <option value="Base (Foot)">{`Base (Foot)`}</option>
+            <option value="Vertical (Flange)">{`Vertical (Flange)`}</option>
       </Select>
     </div>
   );

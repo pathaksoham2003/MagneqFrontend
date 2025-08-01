@@ -16,8 +16,8 @@ const issueTypes = [
 ];
 
 const typeOptions = [
-  {value: "B", label: "Base"},
-  {value: "V", label: "Vertical"},
+  {value: "Base (Foot)", label: "Base (Foot)"},
+  {value: "Vertical (Flange)", label: "Vertical (Flange)"},
 ];
 
 const initialItem = () => ({
@@ -48,7 +48,7 @@ const CreateTicket = () => {
     queryFn: async () => {
       const data = await getModalConfig();
       Object.keys(data).forEach((modelKey) => {
-        data[modelKey].powers = data[modelKey].powers.map(Number);
+        data[modelKey].powers = data[modelKey].powers.map(item=>item);
         const normalizedRatios = {};
         Object.keys(data[modelKey].ratios).forEach((powerKey) => {
           normalizedRatios[powerKey.toString()] =
