@@ -63,7 +63,6 @@ const ProfileDropdown = () => {
   });
 
   useEffect(() => {
-    console.log(user);
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -117,7 +116,6 @@ const ProfileDropdown = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(user)
     e.preventDefault();
     if(formData.user_name!== user.user.user_name){
       toast.error("Username not matching");
@@ -136,12 +134,6 @@ const ProfileDropdown = () => {
       toast.error('New password must be at least 6 characters long');
       return;
     }
-    console.log({
-      user_name: formData.user_name,
-      current_password: formData.current_password,
-      new_password: formData.new_password,
-      role: user.route.role
-    });
     updateProfileMutation({
       user_name: formData.user_name,
       current_password: formData.current_password,
