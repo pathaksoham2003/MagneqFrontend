@@ -16,8 +16,8 @@ const issueTypes = [
 ];
 
 const typeOptions = [
-  {value: "B", label: "Base"},
-  {value: "V", label: "Vertical"},
+  {value: "B", label: "Base(Foot)"},
+  {value: "V", label: "Vertical(Flange)"},
 ];
 
 const initialItem = () => ({
@@ -199,9 +199,14 @@ const CreateTicket = () => {
               (modelConfig &&
                 item.model &&
                 item.power &&
-                modelConfig[item.model]?.ratios?.[item.power]) ||
-              [];
-
+                Array.isArray(modelConfig[item.model]?.ratios?.[item.power])
+                  ? [...modelConfig[item.model].ratios[item.power]]
+                      .map(parseFloat)
+                      .filter((r) => !isNaN(r))
+                      .sort((a, b) => a - b)
+                      .map(String)
+                  : []
+              );
             return (
               <div key={idx} className="flex flex-wrap gap-4 mb-4 items-end">
                 <div className="flex-1 min-w-[150px]">

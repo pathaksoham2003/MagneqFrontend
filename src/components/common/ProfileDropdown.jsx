@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Input from '../forms/Input';
 import Button from '../buttons/Button';
-// import useProfile from '../../services/useProfile';
+import useProfile from '../../services/useProfile';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,27 +23,28 @@ const ProfileDropdown = () => {
   const user = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-//   const { updateProfile } = useProfile();
+  const { updateProfile } = useProfile();
   const queryClient = useQueryClient();
 
   // Profile update mutation
   const {
     mutate: updateProfileMutation,
     isPending,
-    isSuccess,
+    onSuccess,
     isError,
     error,
   } = useMutation({
     mutationFn: (data) => updateProfile(data),
     onSuccess: (response) => {
-      if (response.data.success) {
+      if (response.success) {
         toast.success('Profile updated successfully');
         setIsEditing(false);
         setFormData({
           user_name: formData.user_name,
           current_password: '',
           new_password: '',
-          confirm_password: ''
+          confirm_password: '',
+          role: user.route.role,
         });
         setShowPassword(false);
         
@@ -116,8 +117,11 @@ const ProfileDropdown = () => {
   };
 
   const handleSubmit = (e) => {
+    console.log(user)
     e.preventDefault();
-    
+    if(formData.user_name!== user.user.user_name){
+      toast.error("Username not matching");
+    }
     if (!formData.current_password || !formData.new_password) {
       toast.error('Current password and new password are required');
       return;
@@ -132,11 +136,17 @@ const ProfileDropdown = () => {
       toast.error('New password must be at least 6 characters long');
       return;
     }
-
+    console.log({
+      user_name: formData.user_name,
+      current_password: formData.current_password,
+      new_password: formData.new_password,
+      role: user.route.role
+    });
     updateProfileMutation({
       user_name: formData.user_name,
       current_password: formData.current_password,
-      new_password: formData.new_password
+      new_password: formData.new_password,
+      role: user.route.role
     });
   };
 
@@ -243,6 +253,7 @@ const ProfileDropdown = () => {
                 loading={isPending}
                 disabled={isPending}
                 className="flex-1"
+                onClick={handleSubmit}
               >
                 Update Profile
               </Button>
