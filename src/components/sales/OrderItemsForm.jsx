@@ -67,7 +67,7 @@ const OrderItemsForm = ({
       modelConfig?.[model]?.ratios &&
       modelConfig[model].ratios[power.toString()]
     ) {
-      const sortedRatios = [...modelConfig[model].ratios[power.toString()]].sort((a, b) => {
+    const sortedRatios = [...modelConfig[model].ratios[power.toString()]].sort((a, b) => {
       return parseFloat(a) - parseFloat(b);
     });
       setAvailableRatios(sortedRatios);
@@ -172,8 +172,8 @@ const OrderItemsForm = ({
             onChange={(e) => setType(e.target.value)}
           >
             <option value="">Select Type</option>
-            <option value="B">Base (Foot) </option>
-            <option value="V">Vertical (Flange)</option>
+            <option value="B">Base</option>
+            <option value="V">Vertical</option>
           </Select>
         </div>
 
