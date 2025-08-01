@@ -16,8 +16,8 @@ const issueTypes = [
 ];
 
 const typeOptions = [
-  {value: "B", label: "Base(Foot)"},
-  {value: "V", label: "Vertical(Flange)"},
+  {value: "B", label: "Base"},
+  {value: "V", label: "Vertical"},
 ];
 
 const initialItem = () => ({
