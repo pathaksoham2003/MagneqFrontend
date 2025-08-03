@@ -67,7 +67,7 @@ const ViewSalesOrder = () => {
 
   const status = data.headerLevelData?.Status;
   const isUnapproved = status === "UN_APPROVED";
-  const canApprove = (["SALES_EXEC", "ADMIN"].includes(userRole)) && isUnapproved;
+  const canApprove = (["SALES", "ADMIN"].includes(userRole)) && isUnapproved;
 
   const headerData = data.headerLevelData || {};
   const itemLevel = data.itemLevelData || {};
