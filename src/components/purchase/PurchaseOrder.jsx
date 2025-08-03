@@ -34,6 +34,7 @@ const PurchaseOrder = () => {
   return (
     <div>
       <h1 className="text-3xl ml-2 mb-3">Purchase Orders</h1>
+      hi
       <DaynamicTable
         header={headers}
         tableData={{
