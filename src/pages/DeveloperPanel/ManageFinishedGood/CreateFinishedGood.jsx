@@ -21,6 +21,7 @@ const CreateFinishedGood = () => {
     rpm: "",
     nm: "",
     sf: "",
+    base_price:"",
     overhead_load: "",
   });
 
@@ -47,6 +48,7 @@ const CreateFinishedGood = () => {
       power,
       type,
       ratio,
+      base_price,
       motor_shaft_diameter,
       motor_frame_size,
       rpm,
@@ -65,6 +67,7 @@ const CreateFinishedGood = () => {
       power,
       type,
       ratio,
+      base_price,
       other_specification: {
         motor_shaft_diameter,
         motor_frame_size,
@@ -144,6 +147,10 @@ const CreateFinishedGood = () => {
             value={form.overhead_load}
             onChange={handleChange}
           />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Base Price</label>
+          <Input name="base_price" value={form.base_price} onChange={handleChange} />
         </div>
       </div>
 

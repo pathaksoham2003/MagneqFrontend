@@ -115,16 +115,22 @@ const ViewSalesOrder = () => {
         row.finished_good,
         <Input
           type="number"
-          min={0}
+          min={row.base_price}
           className="w-24"
-          value={row.rate_per_unit}
-          onChange={e =>
+          
+          placeholder={"Base Price is "+Number(row.base_price).toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2,
+          })}
+          onChange={(e) =>{
             setEditPrices(prices =>
               prices.map((r, i) =>
                 i === idx ? { ...r, rate_per_unit: e.target.value } : r
               )
             )
           }
+        }
         />,
         (row.quantity * row.rate_per_unit).toFixed(2),
         formatStatus(row.status),
@@ -134,9 +140,9 @@ const ViewSalesOrder = () => {
 
   const handleApprove = async () => {
     setIsApproving(true);
-    const hasZero = editPrices?.some(item => !item.rate_per_unit || Number(item.rate_per_unit) === 0);
+    const hasZero = editPrices?.some(item => !item.rate_per_unit || Number(item.rate_per_unit) === 0 || Number(item.rate_per_unit) < item.base_price);
     if (hasZero) {
-      toast.error("All items must have a non-zero price before approval.");
+      toast.error("All items must have a non-zero price greater should be above the base price before approval.");
       setIsApproving(false);
       return;
     }

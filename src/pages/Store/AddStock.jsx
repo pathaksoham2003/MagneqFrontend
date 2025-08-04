@@ -44,6 +44,7 @@ const AddStock = () => {
     mutationFn: (stockData) => addStockToPurchaseOrder(stockData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rawMaterials"] });
+      queryClient.invalidateQueries({ queryKey: ["Purchases"] });
       queryClient.invalidateQueries({ queryKey: ["POItems", selectedPO.po_number, selectedClass] });
       setShowModal(true);
       setTableItems([]);
@@ -71,6 +72,7 @@ const AddStock = () => {
   };
 
   const handleSubmit = () => {
+
     const payload = {
       po_id: selectedPO.id,
       items: tableItems.map((item) => ({
@@ -108,7 +110,6 @@ const AddStock = () => {
         </Button>
       </div>
 
-      {/* Select PO */}
       <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Select PO</label>
