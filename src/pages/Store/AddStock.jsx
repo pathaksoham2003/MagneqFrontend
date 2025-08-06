@@ -44,6 +44,7 @@ const AddStock = () => {
     mutationFn: (stockData) => addStockToPurchaseOrder(stockData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rawMaterials"] });
+      queryClient.invalidateQueries({ queryKey: ["Purchases"] });
       queryClient.invalidateQueries({ queryKey: ["POItems", selectedPO.po_number, selectedClass] });
       setShowModal(true);
       setTableItems([]);
@@ -71,6 +72,7 @@ const AddStock = () => {
   };
 
   const handleSubmit = () => {
+
     const payload = {
       po_id: selectedPO.id,
       items: tableItems.map((item) => ({
@@ -96,7 +98,7 @@ const AddStock = () => {
     <div className="p-8 w-full px-6 mx-auto mt-10 rounded-2xl shadow border">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Add Stock</h2>
-        <Button
+        {/* <Button
           type="button"
           size="md"
           variant="primary"
@@ -105,10 +107,9 @@ const AddStock = () => {
           disabled
         >
           Upload CSV
-        </Button>
+        </Button> */}
       </div>
 
-      {/* Select PO */}
       <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Select PO</label>
