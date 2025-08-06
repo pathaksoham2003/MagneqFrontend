@@ -54,11 +54,12 @@ const ViewSalesOrder = () => {
 
   useEffect(() => {
     if (data?.itemLevelData?.items) {
-      setEditPrices(data.itemLevelData.items.map(item => ({
+      const initializedItems = data.itemLevelData.items.map(item => ({
         ...item,
-        rate_per_unit: item.rate_per_unit,
+        rate_per_unit: Number(item.rate_per_unit || item.base_price || 0),
         fg_id: item.fg_id,
-      })));
+      }));
+      setEditPrices(initializedItems);
     }
   }, [data]);
 
@@ -117,7 +118,7 @@ const ViewSalesOrder = () => {
           type="number"
           min={row.base_price}
           className="w-24"
-          
+          value = {row.rate_per_unit }
           placeholder={"Base Price is "+Number(row.base_price).toLocaleString("en-IN", {
             style: "currency",
             currency: "INR",
@@ -132,7 +133,7 @@ const ViewSalesOrder = () => {
           }
         }
         />,
-        (row.quantity * row.rate_per_unit).toFixed(2),
+        (row.quantity * (row.rate_per_unit || row.base_price)).toFixed(2),
         formatStatus(row.status),
       ],
     })),
