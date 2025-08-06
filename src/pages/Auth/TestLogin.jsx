@@ -15,36 +15,42 @@ const predefinedLogins = [
     label: "Bob Sales",
     user_name: "sales",
     password: "sales123",
+    description: "Access to sales-related features and dashboards.",
     role: "STAFF",
   },
   {
     label: "Developer David",
     user_name: "developer",
     password: "developer123",
+    description: "Admin-level features for developers and customization.",
     role: "STAFF",
   },
   {
     label: "Charlie Admin",
     user_name: "admin",
     password: "admin123",
+    description: "Full admin panel with complete system access.",
     role: "STAFF",
   },
   {
     label: "Purchase",
     user_name: "purchase",
     password: "purchase123",
+    description: "Manage procurement and vendor interactions.",
     role: "STAFF",
   },
   {
     label: "Production Executive",
     user_name: "production",
     password: "production123",
+    description: "Access to production planning and operations.",
     role: "STAFF",
   },
   {
     label: "Customer (Kapoor Sons)",
     user_name: "ks_corp",
     password: "customer123",
+    description: "Customer portal access with order tracking.",
     role: "CUSTOMER",
   },
 ];
@@ -66,7 +72,10 @@ const TestLogin = () => {
         localStorage.setItem("token", data.data.token);
         toast.success("Login successful!");
         const sidebar = data?.data?.route?.sidebar;
-        const redirectPath = typeof sidebar?.[0] === "string" ? sidebar[0] : sidebar?.[0]?.route || "dashboard";
+        const redirectPath =
+          typeof sidebar?.[0] === "string"
+            ? sidebar[0]
+            : sidebar?.[0]?.route || "dashboard";
         navigate("/" + redirectPath);
       } else {
         toast.error("Invalid credentials");
@@ -81,6 +90,7 @@ const TestLogin = () => {
     mutation.mutate({
       user_name: user.user_name,
       password: user.password,
+      description: "",
       role: user.role,
       active: true,
     });
@@ -88,14 +98,24 @@ const TestLogin = () => {
 
   return (
     <div className="relative overflow-hidden flex min-h-screen w-full">
-      <img src={loginBG} alt="Login Background" className="absolute h-full w-full object-cover -z-20" />
+      <img
+        src={loginBG}
+        alt="Login Background"
+        className="absolute h-full w-full object-cover -z-20"
+      />
 
       <div className="flex w-full flex-col lg:flex-row">
         {/* LEFT: Info section */}
         <div className="relative lg:w-1/2 flex items-center justify-center px-8 py-12 text-white">
-          <img src={Background} alt="Overlay Texture" className="absolute inset-0 h-fit object-cover -z-10" />
+          <img
+            src={Background}
+            alt="Overlay Texture"
+            className="absolute inset-0 h-fit object-cover -z-10"
+          />
           <div className="w-fit pl-4">
-            <p className="text-2xl mb-3">Leading Manufacturer of a wide range of</p>
+            <p className="text-2xl mb-3">
+              Leading Manufacturer of a wide range of
+            </p>
             <h1 className="text-5xl font-extrabold leading-tight">
               Geared Motor and Helical Gearbox.
             </h1>
@@ -104,24 +124,38 @@ const TestLogin = () => {
 
         {/* RIGHT: Logo + Quick Login */}
         <div className="lg:w-1/2 flex flex-col items-center justify-center px-6 py-12">
-          <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-xl space-y-5">
-            <img src={Logo} alt="Magneq" className="mx-auto mb-4 max-w-[160px]" />
+          <div className="w-full max-w-2xl bg-white p-8 rounded-xl shadow-xl space-y-6">
+            <img
+              src={Logo}
+              alt="Magneq"
+              className="mx-auto mb-4 max-w-[160px]"
+            />
 
-            <h2 className="text-center text-lg font-semibold">Quick Login Options</h2>
+            <h2 className="text-center text-xl font-bold text-gray-800">
+              Quick Login Options
+            </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-4">
               {predefinedLogins.map((user) => (
-                <Button
+                <div
                   key={user.user_name}
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => handleAutoLogin(user)}
-                  disabled={mutation.isLoading}
+                  className="flex items-center justify-between gap-4 p-4 border rounded-lg shadow-sm hover:shadow-md transition duration-200"
                 >
-                  {mutation.isLoading ? "Signing In..." : user.label}
-                </Button>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-800">{user.label}</p>
+                    <p className="text-xs text-gray-600 mt-1">{user.description}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleAutoLogin(user)}
+                    disabled={mutation.isLoading}
+                    className="whitespace-nowrap w-full max-w-32"
+                  >
+                    {mutation.isLoading ? "Signing In..." : "Test Login"}
+                  </Button>
+                </div>
               ))}
             </div>
           </div>
