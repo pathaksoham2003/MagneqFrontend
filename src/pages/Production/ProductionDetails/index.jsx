@@ -82,7 +82,7 @@ const handleNotifyToPurchase = async () => {
   try {
     await createNotification({
       type: "purchase",
-      role: "PURCHASE_EXEC",
+      role: "PURCHASE",
       payload: { message },
     });
     queryClient.invalidateQueries({queryKey:["notifications"]})

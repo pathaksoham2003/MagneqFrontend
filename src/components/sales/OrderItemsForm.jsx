@@ -34,7 +34,7 @@ const OrderItemsForm = ({
     queryFn: async () => {
       const data = await getModalConfig();
       Object.keys(data).forEach((modelKey) => {
-        data[modelKey].powers = data[modelKey].powers.map(Number);
+        data[modelKey].powers = data[modelKey].powers.map(item=>item);
         const ratios = data[modelKey].ratios;
         const normalizedRatios = {};
         Object.keys(ratios).forEach((powerKey) => {
@@ -46,6 +46,8 @@ const OrderItemsForm = ({
     },
     staleTime: 5 * 60 * 1000,
   });
+
+
 
   const [availablePowers, setAvailablePowers] = useState([]);
   const [availableRatios, setAvailableRatios] = useState([]);
@@ -83,23 +85,43 @@ const OrderItemsForm = ({
       return;
     }
 
-    const newItem = {
-      id: Date.now(),
-      model,
-      type,
-      ratio,
-      quantity: parseFloat(quantity),
-      power: parseFloat(power),
-    };
+    const newQuantity = parseFloat(quantity);
 
-    setItems((prev) => [...prev, newItem]);
+    setItems(prevItems => {
+      const existingIndex = prevItems.findIndex(
+        item =>
+          item.model === model &&
+          item.power === power.toString() &&
+          item.ratio === ratio &&
+          item.type === type
+      );
 
+      if (existingIndex !== -1) {
+        const updatedItems = [...prevItems];
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantity: updatedItems[existingIndex].quantity + newQuantity,
+        };
+        return updatedItems;
+      } else {
+        const newItem = {
+          id: Date.now(),
+          model,
+          type,
+          ratio,
+          quantity: newQuantity,
+          power: power.toString(),
+        };
+        return [...prevItems, newItem];
+      }
+    });
     setModel("");
     setType("");
     setRatio("");
     setQuantity("");
     setPower("");
   };
+
 
   if (isLoading) return <p>Loading form config...</p>;
   if (isError) return <p>Error loading form config</p>;
@@ -172,8 +194,8 @@ const OrderItemsForm = ({
             onChange={(e) => setType(e.target.value)}
           >
             <option value="">Select Type</option>
-            <option value="B">Base</option>
-            <option value="V">Vertical</option>
+            <option value="Base (Foot)">{`Base (Foot)`}</option>
+            <option value="Vertical (Flange)">{`Vertical (Flange)`}</option>
           </Select>
         </div>
 

@@ -87,6 +87,7 @@ const ProfileDropdown = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    queryClient.clear();
     dispatch(logoutUser());
     navigate('/login');
     toast.success('Logged out successfully');

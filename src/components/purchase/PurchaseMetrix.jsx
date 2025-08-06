@@ -10,12 +10,12 @@ import Card from '../card/Card';
 const PurchaseMetrics = () => {
     const {getPurchaseStats} = usePurchase();
   const { data: metrics, isLoading, isError } = useQuery({
-    queryKey: ['purchase-metrics'],
+    queryKey: ['Purchases'],
     queryFn: getPurchaseStats,
     onError: () => toast.error('Failed to load purchase metrics'),
     staleTime: 5 * 60 * 1000, 
   });
-  console.log(metrics);
+
   if (isLoading || !metrics) return "null";
   if (isError) return "completing";
 
@@ -24,7 +24,7 @@ const PurchaseMetrics = () => {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 ">
       <Card
-        title="Class A"
+        title="Total Purchase Amount"
         icon={HiOutlineArchiveBox}
         value={`₹ ${parseFloat(total_purchases).toLocaleString()}`}
         percent={total_purchases_change}
@@ -38,7 +38,7 @@ const PurchaseMetrics = () => {
         className="min-h-[160px] p-6 bg-background text-text shadow-md rounded-xl"
       />
       <Card
-        title="Class C"
+        title="Pending Purchase Orders"
         icon={BsBriefcase}
         value={pending_orders}
         percent={pending_orders_change}
