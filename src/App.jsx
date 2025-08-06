@@ -36,6 +36,7 @@ import ManageCustomers from "./pages/DeveloperPanel/ManageCustomers";
 import CreateSupplier from "./pages/DeveloperPanel/ManageSuppliers/CreateSupplier";
 import CreateCustomer from "./pages/DeveloperPanel/ManageCustomers/CreateCustomer";
 import CreatePRO from "./pages/Production/CreatePRO"
+import TestLogin from "./pages/Auth/TestLogin";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
       <ReactQueryDevtools initialIsOpen={false} />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/login/test" element={<TestLogin />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/create_order" element={<CreateOrder />} />

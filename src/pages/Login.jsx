@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../components/forms/Input";
 import Label from "../components/forms/Label";
 import Select from "../components/forms/Select";
@@ -34,6 +34,10 @@ const Login = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
+  useEffect(()=>{
+    localStorage.removeItem('test');
+  },[])
 
   const user = useSelector(selectAuth); 
   const mutation = useMutation({
