@@ -14,9 +14,6 @@ const CreateOrder = () => {
   const role = user?.role || "ADMIN";
   const {createSale} = useSales();
   const queryClient = useQueryClient();
-
-  console.log(role);
-
   const [repName, setRepName] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [description, setDescription] = useState("");
@@ -26,7 +23,6 @@ const CreateOrder = () => {
   const [ratio, setRatio] = useState("");
   const [quantity, setQuantity] = useState("");
   const [power, setPower] = useState("");
-
   const [editingId, setEditingId] = useState(null);
   const [editedItem, setEditedItem] = useState({});
 

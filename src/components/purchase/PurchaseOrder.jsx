@@ -5,6 +5,7 @@ import {useSelector, useDispatch} from "react-redux";
 import usePurchase from "../../services/usePurchase";
 import Pagination from "../common/Pagination";
 import { useSearch } from "../../context/SearchbarContext";
+import Badge from "../common/Badge";
 
 const PurchaseOrder = () => {
   const headers = [
@@ -23,6 +24,7 @@ const PurchaseOrder = () => {
     queryFn: () => getAllPurchaseOrders(page, searchQuery),
     staleTime: 5 * 60 * 1000,
   });
+  
   if (isLoading)
     return <p className="text-center">Loading production data...</p>;
   if (isError)
@@ -40,6 +42,7 @@ const PurchaseOrder = () => {
           total_pages: data?.total_pages,
           total_items: data?.total_items,
         }}
+        formatCell={formatCell}
       />
       <Pagination
         currentPage={page}

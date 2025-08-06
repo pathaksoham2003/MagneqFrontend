@@ -214,7 +214,7 @@ const AppSidebar = () => {
         {renderMenuItems(navItems)}
       </nav>
 
-      {/* Support */}
+      {/* Support
       <nav className="mb-10">
         <h2
           className={`mb-3 text-xs font-semibold uppercase tracking-widest text-text ${
@@ -230,7 +230,7 @@ const AppSidebar = () => {
           )}
         </h2>
         {renderMenuItems(supportItems)}
-      </nav>
+      </nav> */}
 
       {/* Logout */}
       <button

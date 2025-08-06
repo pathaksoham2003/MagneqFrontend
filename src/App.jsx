@@ -35,6 +35,7 @@ import ManageSuppliers from "./pages/DeveloperPanel/ManageSuppliers";
 import ManageCustomers from "./pages/DeveloperPanel/ManageCustomers";
 import CreateSupplier from "./pages/DeveloperPanel/ManageSuppliers/CreateSupplier";
 import CreateCustomer from "./pages/DeveloperPanel/ManageCustomers/CreateCustomer";
+import CreatePRO from "./pages/Production/CreatePRO"
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             element={<RawMaterialDetail />}
           />
           <Route path="/production" element={<Production />} />
+          <Route path="/create_pro" element={<CreatePRO />} />
           <Route path="/production/:id" element={<ProductionDetails />} />
           <Route path="/ledger" element={<Ledger />} />
 

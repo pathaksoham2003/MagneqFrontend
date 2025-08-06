@@ -54,7 +54,7 @@ const SalesTable = ({isDashboard}) => {
       const status = cell;
       let color = "primary";
       let label = status;
-      if (status === "UN_APPROVED") {
+      if (status === "Unapproved") {
         color = "danger";
         label = "Unapproved";
       } else if (status === "INPROCESS") {

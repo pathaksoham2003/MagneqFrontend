@@ -47,7 +47,7 @@ const OrderItemsForm = ({
     staleTime: 5 * 60 * 1000,
   });
 
-  console.log(modelConfig)
+
 
   const [availablePowers, setAvailablePowers] = useState([]);
   const [availableRatios, setAvailableRatios] = useState([]);
@@ -69,7 +69,10 @@ const OrderItemsForm = ({
       modelConfig?.[model]?.ratios &&
       modelConfig[model].ratios[power.toString()]
     ) {
-      setAvailableRatios(modelConfig[model].ratios[power.toString()]);
+    const sortedRatios = [...modelConfig[model].ratios[power.toString()]].sort((a, b) => {
+      return parseFloat(a) - parseFloat(b);
+    });
+      setAvailableRatios(sortedRatios);
     } else {
       setAvailableRatios([]);
     }
@@ -82,23 +85,43 @@ const OrderItemsForm = ({
       return;
     }
 
-    const newItem = {
-      id: Date.now(),
-      model,
-      type,
-      ratio,
-      quantity: parseFloat(quantity),
-      power: power.toString(),
-    };
+    const newQuantity = parseFloat(quantity);
 
-    setItems((prev) => [...prev, newItem]);
+    setItems(prevItems => {
+      const existingIndex = prevItems.findIndex(
+        item =>
+          item.model === model &&
+          item.power === power.toString() &&
+          item.ratio === ratio &&
+          item.type === type
+      );
 
+      if (existingIndex !== -1) {
+        const updatedItems = [...prevItems];
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantity: updatedItems[existingIndex].quantity + newQuantity,
+        };
+        return updatedItems;
+      } else {
+        const newItem = {
+          id: Date.now(),
+          model,
+          type,
+          ratio,
+          quantity: newQuantity,
+          power: power.toString(),
+        };
+        return [...prevItems, newItem];
+      }
+    });
     setModel("");
     setType("");
     setRatio("");
     setQuantity("");
     setPower("");
   };
+
 
   if (isLoading) return <p>Loading form config...</p>;
   if (isError) return <p>Error loading form config</p>;
