@@ -36,6 +36,8 @@ import ManageCustomers from "./pages/DeveloperPanel/ManageCustomers";
 import CreateSupplier from "./pages/DeveloperPanel/ManageSuppliers/CreateSupplier";
 import CreateCustomer from "./pages/DeveloperPanel/ManageCustomers/CreateCustomer";
 import CreatePRO from "./pages/Production/CreatePRO"
+import TrackVendor from "./pages/Purchase/TrackVendor";
+import VendorPurchases from "./pages/Purchase/VendorPurchases";
 
 function App() {
   return (
@@ -53,7 +55,8 @@ function App() {
             <Route index element={<PurchaseOrder />} />
             <Route path="create" element={<CreatePO />} />
             <Route path=":id" element={<PurchaseDetails />} />
-            <Route path="track" element={<CreatePO />} />
+            <Route path=":id/list" element={<VendorPurchases />} />
+            <Route path="track_vendor" element={<TrackVendor />} />
           </Route>
           <Route path="/store" element={<Stores />}>
             <Route index element={<RawMaterial />} />
