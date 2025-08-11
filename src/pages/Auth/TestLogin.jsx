@@ -12,20 +12,6 @@ import { toast } from "react-hot-toast";
 
 const predefinedLogins = [
   {
-    label: "Bob Sales",
-    user_name: "sales",
-    password: "sales123",
-    description: "Access to sales-related features and dashboards.",
-    role: "STAFF",
-  },
-  {
-    label: "Developer David",
-    user_name: "developer",
-    password: "developer123",
-    description: "Admin-level features for developers and customization.",
-    role: "STAFF",
-  },
-  {
     label: "Charlie Admin",
     user_name: "admin",
     password: "admin123",
@@ -52,6 +38,20 @@ const predefinedLogins = [
     password: "customer123",
     description: "Customer portal access with order tracking.",
     role: "CUSTOMER",
+  },
+  {
+    label: "Developer David",
+    user_name: "developer",
+    password: "developer123",
+    description: "Admin-level features for developers and customization.",
+    role: "STAFF",
+  },
+  {
+    label: "Bob Sales",
+    user_name: "sales",
+    password: "sales123",
+    description: "Access to sales-related features and dashboards.",
+    role: "STAFF",
   },
 ];
 
