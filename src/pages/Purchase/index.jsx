@@ -37,7 +37,7 @@ const Purchase = () => {
         variant="primary"
         startIcon={<PiCubeDuotone />}
         onClick={() => {
-          navigate("/track_po");
+          navigate("/purchase");
         }}
       >
         Track Purchase Goods

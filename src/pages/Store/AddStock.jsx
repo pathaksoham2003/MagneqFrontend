@@ -157,7 +157,9 @@ const AddStock = () => {
         <div className="mb-6">
           <h4 className="font-semibold mb-2">Materials</h4>
           {materialInputs.map((item) => (
-            <div key={item._id} className="flex items-center gap-4 mb-2">
+            <div>
+              {item.class_type == selectedClass ?
+              <div key={item._id} className="flex items-center gap-4 mb-2">
               <div className="w-1/4">
                 <span className="block text-sm font-medium text-text">{item.name}</span>
                 <span className="block text-xs text-muted-foreground">{item.type}</span>
@@ -171,6 +173,7 @@ const AddStock = () => {
                 className="border px-3 py-1 rounded w-1/4"
               />
               <span className="text-xs text-gray-500">Max: {item.max_allowed}</span>
+            </div> : <></>}
             </div>
           ))}
           <Button
