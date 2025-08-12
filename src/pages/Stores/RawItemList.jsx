@@ -1,20 +1,24 @@
-import React, {useEffect} from "react";
-import {useQuery} from "@tanstack/react-query";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import StoreHeader from "./StoreHeader";
 import DaynamicTable from "../../components/common/Table";
 import useRawMaterials from "../../services/useRawMaterials";
-import Button from "../../components/buttons/Button";
+import Pagination from "../../components/common/Pagination";
 import { useSearch } from "../../context/SearchbarContext";
 
-const RawItemList = ({classType = "A"}) => {
+const RawItemList = ({ classType = "A" }) => {
   const navigate = useNavigate();
-  const {getRawMaterialsByClass} = useRawMaterials();
+  const { getRawMaterialsByClass } = useRawMaterials();
   const { searchQuery } = useSearch();
+
+  const [currentPage, setCurrentPage] = useState(1);
+
   const queryParams = {
-    search: searchQuery,   
-    type: "",             
-    name: "",                
+    search: searchQuery,
+    type: "",
+    name: "",
+    page: currentPage, 
   };
 
   const {
@@ -22,17 +26,15 @@ const RawItemList = ({classType = "A"}) => {
     isLoading,
     isError,
     error,
-    refetch,
   } = useQuery({
-    queryKey: ["rawMaterials", classType,queryParams],
+    queryKey: ["rawMaterials", classType, currentPage, searchQuery], 
     queryFn: () => getRawMaterialsByClass(classType, queryParams),
+    keepPreviousData: true, 
   });
 
   useEffect(() => {
-    refetch();
-  }, [classType]);
-
-  console.log(rawMaterialData);
+    setCurrentPage(1);
+  }, [classType, searchQuery]);
 
   const tableData = rawMaterialData ?? {
     header: [],
@@ -46,22 +48,25 @@ const RawItemList = ({classType = "A"}) => {
     navigate(`/raw_material/${classType}/${row.item_id}`);
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
-    <div>
-      <div className="mt-8 px-2 sm:px-4 md:px-6 lg:px-8">
-        {isLoading ? (
-          <p className="text-center py-6">Loading...</p>
-        ) : isError ? (
-          <p className="text-center text-red-500 py-6">
-            Error: {error.message || "Something went wrong"}
-          </p>
-        ) : (
+    <div className="mt-8 px-2 sm:px-4 md:px-6 lg:px-8">
+      {isLoading ? (
+        <p className="text-center py-6">Loading...</p>
+      ) : isError ? (
+        <p className="text-center text-red-500 py-6">
+          Error: {error.message || "Something went wrong"}
+        </p>
+      ) : (
+        <>
           <DaynamicTable
             header={tableData.header}
             tableData={tableData}
             onRowClick={handleRowClick}
-            formatCell={(cell, idx, rowId) => {
-              // Handle arrays as badge groups
+            formatCell={(cell, idx) => {
               if (Array.isArray(cell)) {
                 return (
                   <div className="flex flex-wrap gap-2">
@@ -76,19 +81,26 @@ const RawItemList = ({classType = "A"}) => {
                   </div>
                 );
               }
-
-              // If Status column (idx === 3) and value is empty
               if (idx === 3 && !cell) {
                 return (
                   <span className="text-xs text-gray-400 italic">Unknown</span>
                 );
               }
-
               return cell ?? "—";
             }}
           />
-        )}
-      </div>
+
+          {tableData.total_pages > 1 && (
+            <div className="mt-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={tableData.total_pages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
