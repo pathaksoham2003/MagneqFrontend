@@ -6,6 +6,7 @@ import DaynamicTable from "../../../components/common/Table";
 import FilterBar from "./FilterBar";
 import Button from "../../../components/buttons/Button";
 import {useNavigate} from "react-router-dom";
+import Pagination from "../../../components/common/Pagination";
 
 const ManageFinishedGood = () => {
   const {getFinishedGoods} = useManage();
@@ -17,17 +18,20 @@ const ManageFinishedGood = () => {
     ratio: "",
     type: "",
   });
-
+  const [page,setPage] = useState(1);
   const {data: modalConfig} = useQuery({
     queryKey: ["modalConfig"],
     queryFn: getModalConfig,
   });
-
-  const {data: finishedGoodsData} = useQuery({
-    queryKey: ["finishedGoods", filters],
-    queryFn: () => getFinishedGoods(filters),
+  const handlePageChange = (newPage) => {
+    console.log(newPage);
+    setPage(parseInt(newPage));
+  };
+  const {data: finishedGoodsData, isLoading} = useQuery({
+    queryKey: ["finishedGoods", filters,page],
+    queryFn: () => getFinishedGoods({...filters,page}),
   });
-
+  console.log(finishedGoodsData);
   const navigate = useNavigate();
   return (
     <div className="p-4">
@@ -47,6 +51,13 @@ const ManageFinishedGood = () => {
         tableData={finishedGoodsData}
         onRowClick={(item) => navigate("/finished_good/" + item.item_id)}
       />
+      {!isLoading &&
+        <Pagination
+        currentPage={page}
+        totalPages={finishedGoodsData.total_pages}
+        onPageChange={handlePageChange}
+        />
+    }
     </div>
   );
 };

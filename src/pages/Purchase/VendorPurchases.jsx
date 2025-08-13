@@ -33,7 +33,7 @@ const VendorPurchases = () => {
     
     console.log({ id, page: currentPage });
     const handleRowClick = (row) => {
-    navigate(`/purchase/${row.item_id}/list`);
+    navigate(`/purchase/${row.item_id}`);
   };
   const totalPages = data?.total_pages || 1;
 
