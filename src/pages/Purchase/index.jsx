@@ -37,10 +37,10 @@ const Purchase = () => {
         variant="primary"
         startIcon={<PiCubeDuotone />}
         onClick={() => {
-          navigate("/purchase");
+          navigate("/purchase/track_vendor");
         }}
       >
-        Track Purchase Goods
+        Track Vendor Purchases
       </Button>
       <div className="col-span-12 ">
         <Outlet />
