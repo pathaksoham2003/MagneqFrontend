@@ -29,6 +29,7 @@ const PurchaseDetails = () => {
         item.name || "-",
         item.type || "-",
         item.quantity || "-",
+        item.recieved_quantity || "-",
         Number(item.price_per_unit?.$numberDecimal || 0).toFixed(2),
         `₹${Number((item.quantity || 0) * (item.price_per_unit?.$numberDecimal || 0)).toFixed(2)}`
       ],
@@ -79,6 +80,7 @@ const PurchaseDetails = () => {
               "Raw Material Name",
               "Type",
               "Quantity",
+              "Recieved",
               "Price/Unit",
               "Subtotal"
             ]}
